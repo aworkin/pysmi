@@ -22,13 +22,6 @@ from pysmi import debug
 import jinja2
 
 
-if sys.version_info[0] > 2:
-    # noinspection PyShadowingBuiltins
-    unicode = str
-    # noinspection PyShadowingBuiltins
-    long = int
-
-
 class JsonCodeGen(IntermediateCodeGen):
     """Turns MIB AST into JSON document.
 

@@ -4,21 +4,11 @@
 # Copyright (c) 2015-2020, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/pysmi/license.html
 #
-import sys
 from pysmi import error
 
 
-if sys.version_info[0] > 2:
-    # noinspection PyShadowingBuiltins
-    unicode = str
-    # noinspection PyShadowingBuiltins
-    long = int
-
-    def dorepr(s):
-        return repr(s)
-else:
-    def dorepr(s):
-        return repr(s.encode('utf-8')).decode('utf-8')
+def dorepr(s):
+    return repr(s)
 
 def updateDict(d1, d2):
     d1.update(d2)
@@ -279,12 +269,12 @@ class AbstractCodeGen:
 
     @staticmethod
     def isBinary(s):
-        return (isinstance(s, (str, unicode)) and
+        return (isinstance(s, str) and
                 s[0] == '\'' and s[-2:] in ('\'b', '\'B'))
 
     @staticmethod
     def isHex(s):
-        return (isinstance(s, (str, unicode)) and s[0] == '\''
+        return (isinstance(s, str) and s[0] == '\''
                 and s[-2:] in ('\'h', '\'H'))
 
     def str2int(self, s):

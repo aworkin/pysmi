@@ -6,18 +6,11 @@
 #
 # Build an internally used symbol table for each passed MIB.
 #
-import sys
 from keyword import iskeyword
 from pysmi.mibinfo import MibInfo
 from pysmi.codegen.base import AbstractCodeGen, dorepr
 from pysmi import error
 from pysmi import debug
-
-if sys.version_info[0] > 2:
-    # noinspection PyShadowingBuiltins
-    unicode = str
-    # noinspection PyShadowingBuiltins
-    long = int
 
 
 class SymtableCodeGen(AbstractCodeGen):
@@ -392,7 +385,7 @@ class SymtableCodeGen(AbstractCodeGen):
     def genDefVal(self, data, classmode=False):  # XXX should be fixed, see pysnmp.py
         defval = data[0]
 
-        if isinstance(defval, (int, long)):  # number
+        if isinstance(defval, int):  # number
             val = str(defval)
 
         elif self.isHex(defval):  # hex
@@ -469,12 +462,12 @@ class SymtableCodeGen(AbstractCodeGen):
     def genOid(self, data, classmode=False):
         out = ()
         for el in data[0]:
-            if isinstance(el, (str, unicode)):
+            if isinstance(el, str):
                 parent = self.transOpers(el)
                 self._parentOids.add(parent)
                 out += ((parent, self._importMap.get(parent, self.moduleName[0])),)
 
-            elif isinstance(el, (int, long)):
+            elif isinstance(el, int):
                 out += (el,)
 
             elif isinstance(el, tuple):

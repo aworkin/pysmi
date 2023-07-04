@@ -3,5 +3,5 @@ __version__ = '0.4.0'
 
 import sys
 
-if sys.version_info[:2] < (2, 4):
-    raise RuntimeError('PySMI requires Python 2.4 or later')
+if sys.version_info[:2] < (3, 8):
+    raise RuntimeError('PySMI requires Python 3.8 or later')

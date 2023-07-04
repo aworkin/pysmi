@@ -16,10 +16,6 @@ from pysmi.codegen.base import AbstractCodeGen
 from pysmi import error
 from pysmi import debug
 
-if sys.version_info[0] > 2:
-    unicode = str
-    long = int
-
 
 class IntermediateCodeGen(AbstractCodeGen):
     """Turns MIB AST into an intermediate representation.
@@ -606,7 +602,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         outDict = OrderedDict(basetype=defvalType[0][0])
 
-        if isinstance(defval, (int, long)):  # number
+        if isinstance(defval, int):  # number
             outDict.update(
                 value=defval,
                 format='decimal'
@@ -809,11 +805,11 @@ class IntermediateCodeGen(AbstractCodeGen):
         out = ()
         parent = ''
         for el in data[0]:
-            if isinstance(el, (str, unicode)):
+            if isinstance(el, str):
                 parent = self.transOpers(el)
                 out += ((parent, self._importMap.get(parent, self.moduleName[0])),)
 
-            elif isinstance(el, (int, long)):
+            elif isinstance(el, int):
                 out += (el,)
 
             elif isinstance(el, tuple):
