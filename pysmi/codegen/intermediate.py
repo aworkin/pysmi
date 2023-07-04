@@ -4,14 +4,15 @@
 # Copyright (c) 2015-2019, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/pysmi/license.html
 #
-import sys
 import re
-from time import strptime, strftime
 from collections import OrderedDict
-from pysmi.mibinfo import MibInfo
-from pysmi.codegen.base import AbstractCodeGen
-from pysmi import error
+from time import strftime
+from time import strptime
+
 from pysmi import debug
+from pysmi import error
+from pysmi.codegen.base import AbstractCodeGen
+from pysmi.mibinfo import MibInfo
 
 
 class IntermediateCodeGen(AbstractCodeGen):

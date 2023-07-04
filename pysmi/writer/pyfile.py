@@ -5,9 +5,9 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
+import py_compile
 import sys
 import tempfile
-import py_compile
 
 try:
     import importlib

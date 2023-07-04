@@ -7,10 +7,12 @@
 # Build an internally used symbol table for each passed MIB.
 #
 from keyword import iskeyword
-from pysmi.mibinfo import MibInfo
-from pysmi.codegen.base import AbstractCodeGen, dorepr
-from pysmi import error
+
 from pysmi import debug
+from pysmi import error
+from pysmi.codegen.base import AbstractCodeGen
+from pysmi.codegen.base import dorepr
+from pysmi.mibinfo import MibInfo
 
 
 class SymtableCodeGen(AbstractCodeGen):

@@ -7,10 +7,12 @@
 import os
 import sys
 import tempfile
-from pysmi.writer.base import AbstractWriter
-from pysmi.compat import encode, decode
+
 from pysmi import debug
 from pysmi import error
+from pysmi.compat import decode
+from pysmi.compat import encode
+from pysmi.writer.base import AbstractWriter
 
 
 class FileWriter(AbstractWriter):

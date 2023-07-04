@@ -4,12 +4,13 @@
 # Copyright (c) 2015-2020, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/pysmi/license.html
 #
-import sys
 import re
+
 import ply.lex as lex
-from pysmi.lexer.base import AbstractLexer
-from pysmi import error
+
 from pysmi import debug
+from pysmi import error
+from pysmi.lexer.base import AbstractLexer
 
 UNSIGNED32_MAX = 4294967295
 UNSIGNED64_MAX = 18446744073709551615
