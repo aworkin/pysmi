@@ -52,7 +52,7 @@ statusMissing = MibStatus('missing')
 statusBorrowed = MibStatus('borrowed')
 
 
-class MibCompiler(object):
+class MibCompiler:
     """Top-level, user-facing, composite MIB compiler object.
 
     MibCompiler implements high-level MIB transformation processing logic.

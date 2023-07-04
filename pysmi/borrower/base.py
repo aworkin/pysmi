@@ -8,7 +8,7 @@ from pysmi import error
 from pysmi import debug
 
 
-class AbstractBorrower(object):
+class AbstractBorrower:
     genTexts = False
     exts = ''
 

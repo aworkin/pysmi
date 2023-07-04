@@ -16,7 +16,7 @@ from pysmi import debug
 from pysmi import error
 
 
-class FileLike(object):
+class FileLike:
     """Stripped down, binary file mock to work with ZipFile"""
     def __init__(self, buf, name):
         self.name = name

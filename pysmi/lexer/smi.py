@@ -265,7 +265,7 @@ class SmiV2Lexer(AbstractLexer):
         # t.lexer.skip(1)
 
 
-class SupportSmiV1Keywords(object):
+class SupportSmiV1Keywords:
     @staticmethod
     def reserved():
         reserved_words = [

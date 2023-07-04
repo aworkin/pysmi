@@ -34,7 +34,7 @@ flagMap = {
 }
 
 
-class Printer(object):
+class Printer:
     def __init__(self, logger=None, handler=None, formatter=None):
         if logger is None:
             logger = logging.getLogger('pysmi')
@@ -73,7 +73,7 @@ else:
             pass
 
 
-class Debug(object):
+class Debug:
     defaultPrinter = None
 
     def __init__(self, *flags, **options):
