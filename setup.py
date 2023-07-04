@@ -25,18 +25,11 @@ Intended Audience :: Telecommunications Industry
 License :: OSI Approved :: BSD License
 Natural Language :: English
 Operating System :: OS Independent
-Programming Language :: Python :: 2
-Programming Language :: Python :: 2.4
-Programming Language :: Python :: 2.5
-Programming Language :: Python :: 2.6
-Programming Language :: Python :: 2.7
 Programming Language :: Python :: 3
-Programming Language :: Python :: 3.2
-Programming Language :: Python :: 3.3
-Programming Language :: Python :: 3.4
-Programming Language :: Python :: 3.5
-Programming Language :: Python :: 3.6
-Programming Language :: Python :: 3.7
+Programming Language :: Python :: 3.8
+Programming Language :: Python :: 3.9
+Programming Language :: Python :: 3.10
+Programming Language :: Python :: 3.11
 Topic :: Communications
 Topic :: System :: Monitoring
 Topic :: System :: Networking :: Monitoring
@@ -57,8 +50,8 @@ def howto_install_setuptools():
 """)
 
 
-if sys.version_info[:2] < (2, 4):
-    print("ERROR: this package requires Python 2.4 or later!")
+if sys.version_info[:2] < (3, 8):
+    print("ERROR: this package requires Python 3.8 or later!")
     sys.exit(1)
 
 
@@ -75,23 +68,9 @@ except ImportError:
 
     from distutils.core import setup, Command
 
-    params = {}
-
-    if sys.version_info[:2] < (2, 6):
-        params['requires'] = ['ply(==3.4)', 'simplejson(==2.1)', 'jinja2(<=2.6)']
-    else:
-        params['requires'] = ['ply', 'jinja2(>=2.10.1)']
-
-    if sys.version_info[:2] < (2, 7):
-        params['requires'].append('ordereddict')
+    params = {'requires': ['ply', 'jinja2(>=2.10.1)']}
 else:
-    if sys.version_info[:2] < (2, 6):
-        params['install_requires'] = ['ply==3.4', 'simplejson==2.1', 'jinja2<=2.6']
-    else:
-        params['install_requires'] = ['ply', 'jinja2>=2.10.1']
-
-    if sys.version_info[:2] < (2, 7):
-        params['install_requires'].append('ordereddict')
+    params['install_requires'] = ['ply', 'jinja2>=2.10.1']
 
 doclines = [x.strip() for x in (__doc__ or '').split('\n') if x]
 
@@ -128,15 +107,7 @@ params.update({
                 os.path.join('scripts', 'mibcopy.py')]
 })
 
-# handle unittest discovery feature
-if sys.version_info[0:2] < (2, 7) or \
-                sys.version_info[0:2] in ((3, 0), (3, 1)):
-    try:
-        import unittest2 as unittest
-    except ImportError:
-        unittest = None
-else:
-    import unittest
+import unittest
 
 if unittest:
     class PyTest(Command):
