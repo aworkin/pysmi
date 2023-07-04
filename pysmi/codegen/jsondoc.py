@@ -6,14 +6,8 @@
 #
 import sys
 import os
-try:
-    import json
-except ImportError:
-    import simplejson as json
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+import json
+from collections import OrderedDict
 from pysmi.codegen.intermediate import IntermediateCodeGen
 from pysmi.codegen import jfilters
 from pysmi import error

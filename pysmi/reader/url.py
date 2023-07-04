@@ -4,15 +4,8 @@
 # Copyright (c) 2015-2020, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/pysmi/license.html
 #
-try:
-    # noinspection PyUnresolvedReferences
-    import urlparse
-    from urllib import url2pathname
-
-except ImportError:
-    # noinspection PyUnresolvedReferences
-    from urllib import parse as urlparse
-    from urllib.request import url2pathname
+from urllib import parse as urlparse
+from urllib.request import url2pathname
 
 from pysmi.reader.localfile import FileReader
 from pysmi.reader.zipreader import ZipReader

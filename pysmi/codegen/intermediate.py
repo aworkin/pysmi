@@ -7,10 +7,7 @@
 import sys
 import re
 from time import strptime, strftime
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 from pysmi.mibinfo import MibInfo
 from pysmi.codegen.base import AbstractCodeGen
 from pysmi import error

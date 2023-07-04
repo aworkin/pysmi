@@ -7,14 +7,8 @@
 import socket
 import sys
 import time
-
-try:
-    # noinspection PyUnresolvedReferences
-    from urllib2 import Request, urlopen
-except ImportError:
-    # noinspection PyUnresolvedReferences
-    from urllib.request import Request
-    from urllib.request import urlopen
+from urllib.request import Request
+from urllib.request import urlopen
 
 from pysmi.reader.base import AbstractReader
 from pysmi.mibinfo import MibInfo

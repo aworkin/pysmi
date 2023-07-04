@@ -6,10 +6,7 @@
 #
 import sys
 import os
-try:
-    from collections import OrderedDict
-except ImportError:
-    from ordereddict import OrderedDict
+from collections import OrderedDict
 from pysmi.codegen.intermediate import IntermediateCodeGen
 from pysmi.codegen import jfilters
 from pysmi import error

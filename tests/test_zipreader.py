@@ -9,11 +9,6 @@ import os
 import tempfile
 
 import unittest
-try:
-    import StringIO
-
-except ImportError:
-    from io import StringIO
 
 from pysmi.reader.zipreader import ZipReader
 
