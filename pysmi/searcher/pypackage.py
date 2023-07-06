@@ -5,9 +5,8 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import struct
 import time
-
+import struct
 try:
     import importlib
 
@@ -53,7 +52,7 @@ class PyPackageSearcher(AbstractSearcher):
         self.__loader = None
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._package)
+        return f'{self.__class__.__name__}{{"{self._package}"}}'
 
     @staticmethod
     def _parseDosTime(dosdate, dostime):
@@ -90,10 +89,10 @@ class PyPackageSearcher(AbstractSearcher):
                 return PyFileSearcher(os.path.split(p.__file__)[0]).fileExists(mibname, mtime, rebuild=rebuild)
 
             else:
-                raise error.PySmiFileNotFoundError('%s is neither importable nor a file' % self._package, searcher=self)
+                raise error.PySmiFileNotFoundError(f'{self._package} is neither importable nor a file', searcher=self)
 
         except ImportError:
-            raise error.PySmiFileNotFoundError('%s is not importable, trying as a path' % self._package, searcher=self)
+            raise error.PySmiFileNotFoundError(f'{self._package} is not importable, trying as a path', searcher=self)
 
         for pySfx in BYTECODE_SUFFIXES:
             f = os.path.join(self._package, mibname.upper()) + pySfx
@@ -111,7 +110,7 @@ class PyPackageSearcher(AbstractSearcher):
                 if pyTime >= mtime:
                     raise error.PySmiFileNotModifiedError()
                 else:
-                    raise error.PySmiFileNotFoundError('older file %s exists' % mibname, searcher=self)
+                    raise error.PySmiFileNotFoundError(f'older file {mibname} exists', searcher=self)
 
             else:
                 debug.logger & debug.flagSearcher and debug.logger('bad magic in %s' % f)
@@ -135,6 +134,6 @@ class PyPackageSearcher(AbstractSearcher):
             if pyTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
             else:
-                raise error.PySmiFileNotFoundError('older file %s exists' % mibname, searcher=self)
+                raise error.PySmiFileNotFoundError(f'older file {mibname} exists', searcher=self)
 
-        raise error.PySmiFileNotFoundError('no file %s found' % mibname, searcher=self)
+        raise error.PySmiFileNotFoundError(f'no file {mibname} found', searcher=self)

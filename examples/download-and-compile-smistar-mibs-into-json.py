@@ -26,7 +26,7 @@ httpSources = [
 
 
 def printOut(mibName, jsonDoc, cbCtx):
-    print('\n\n# MIB module %s' % mibName)
+    print(f'\n\n# MIB module {mibName}')
     print(jsonDoc)
 
 # Initialize compiler infrastructure
@@ -47,4 +47,5 @@ mibCompiler.addSearchers(StubSearcher(*JsonCodeGen.baseMibs))
 # run recursive MIB compilation
 results = mibCompiler.compile(*inputMibs)
 
-print('\n# Results: %s' % ', '.join(['%s:%s' % (x, results[x]) for x in results]))
+result_message = ', '.join([f'{k}:{results[v]}' for k, v in results.items()])
+print(f'\n# Results: {result_message}')

@@ -32,7 +32,7 @@ class FileWriter(AbstractWriter):
         self._path = decode(os.path.normpath(path))
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._path)
+        return f'{self.__class__.__name__}{{"{self._path}"}}'
 
     def getData(self, mibname, dryRun=False):
         filename = os.path.join(self._path, decode(mibname)) + self.suffix
@@ -61,10 +61,11 @@ class FileWriter(AbstractWriter):
 
             except OSError:
                 raise error.PySmiWriterError(
-                    'failure creating destination directory %s: %s' % (self._path, sys.exc_info()[1]), writer=self)
+                    f'failure creating destination directory {self._path}: {sys.exc_info()[1]}', writer=self)
 
         if comments:
-            data = '#\n' + ''.join(['# %s\n' % x for x in comments]) + '#\n' + data
+            comment_lines = [f'# {x}\n' for x in comments]
+            data = f'#\n{"".join(comment_lines)}#\n{data}'
 
         filename = os.path.join(self._path, decode(mibname)) + self.suffix
 
@@ -85,6 +86,6 @@ class FileWriter(AbstractWriter):
                 except OSError:
                     pass
 
-            raise error.PySmiWriterError('failure writing file %s: %s' % (filename, exc[1]), file=filename, writer=self)
+            raise error.PySmiWriterError(f'failure writing file {filename}: {exc[1]}', file=filename, writer=self)
 
         debug.logger & debug.flagWriter and debug.logger('%s stored in %s' % (mibname, filename))

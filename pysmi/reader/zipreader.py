@@ -97,7 +97,7 @@ class ZipReader(AbstractReader):
                 'ZIP file %s open failure: %s' % (self._name, sys.exc_info()[1]))
 
             if not ignoreErrors:
-                self._pendingError = error.PySmiError('file %s access error: %s' % (self._name, sys.exc_info()[1]))
+                self._pendingError = error.PySmiError(f'file {self._name} access error: {sys.exc_info()[1]}')
 
     def _readZipDirectory(self, fileObj):
 
@@ -155,7 +155,7 @@ class ZipReader(AbstractReader):
         return dataObj, mtime
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._name)
+        return f'{self.__class__.__name__}{{"{self._name}"}}'
 
     def getData(self, mibname, **options):
         debug.logger & debug.flagReader and debug.logger('looking for MIB %s at %s' % (mibname, self._name))
@@ -164,7 +164,7 @@ class ZipReader(AbstractReader):
             raise self._pendingError
 
         if not self._members:
-            raise error.PySmiReaderFileNotFoundError('source MIB %s not found' % mibname, reader=self)
+            raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
 
@@ -186,9 +186,9 @@ class ZipReader(AbstractReader):
             )
 
             if len(mibData) == self.maxMibSize:
-                raise IOError('MIB %s/%s too large' % (self._name, mibfile))
+                raise IOError(f'MIB {self._name}/{mibfile} too large')
 
-            return MibInfo(path='zip://%s/%s' % (self._name, mibfile),
+            return MibInfo(path=f'zip://{self._name}/{mibfile}',
                            file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
-        raise error.PySmiReaderFileNotFoundError('source MIB %s not found' % mibname, reader=self)
+        raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)

@@ -41,7 +41,7 @@ class FileReader(AbstractReader):
         self._mibIndex = None
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._path)
+        return f'{self.__class__.__name__}{{"{self._path}"}}'
 
     def getSubdirs(self, path, recursive=True, ignoreErrors=True):
         if not recursive:
@@ -57,7 +57,7 @@ class FileReader(AbstractReader):
                 return dirs
 
             else:
-                raise error.PySmiError('directory %s access error: %s' % (path, sys.exc_info()[1]))
+                raise error.PySmiError(f'directory {path} access error: {sys.exc_info()[1]}')
 
         for d in subdirs:
             d = os.path.join(decode(path), decode(d))
@@ -123,17 +123,17 @@ class FileReader(AbstractReader):
                         fp.close()
 
                         if len(mibData) == self.maxMibSize:
-                            raise IOError('MIB %s too large' % f)
+                            raise IOError(f'MIB {f} too large')
 
-                        return MibInfo(path='file://%s' % f, file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
+                        return MibInfo(path=f'file://{f}', file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
                     except (OSError, IOError):
                         debug.logger & debug.flagReader and debug.logger(
                             'source file %s open failure: %s' % (f, sys.exc_info()[1]))
 
                         if not self._ignoreErrors:
-                            raise error.PySmiError('file %s access error: %s' % (f, sys.exc_info()[1]))
+                            raise error.PySmiError(f'file {f} access error: {sys.exc_info()[1]}')
 
-                    raise error.PySmiReaderFileNotModifiedError('source MIB %s is older than needed' % f, reader=self)
+                    raise error.PySmiReaderFileNotModifiedError(f'source MIB {f} is older than needed', reader=self)
 
-        raise error.PySmiReaderFileNotFoundError('source MIB %s not found' % mibname, reader=self)
+        raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)

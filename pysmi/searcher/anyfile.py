@@ -7,11 +7,10 @@
 import os
 import sys
 import time
-
+from pysmi.searcher.base import AbstractSearcher
+from pysmi.compat import decode
 from pysmi import debug
 from pysmi import error
-from pysmi.compat import decode
-from pysmi.searcher.base import AbstractSearcher
 
 
 class AnyFileSearcher(AbstractSearcher):
@@ -28,7 +27,7 @@ class AnyFileSearcher(AbstractSearcher):
         self._path = os.path.normpath(decode(path))
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._path)
+        return f'{self.__class__.__name__}{{"{self._path}"}}'
 
     def fileExists(self, mibname, mtime, rebuild=False):
         if rebuild:
@@ -48,7 +47,7 @@ class AnyFileSearcher(AbstractSearcher):
                 fileTime = os.stat(f)[8]
 
             except OSError:
-                raise error.PySmiSearcherError('failure opening compiled file %s: %s' % (f, sys.exc_info()[1]),
+                raise error.PySmiSearcherError(f'failure opening compiled file {f}: {sys.exc_info()[1]}',
                                                searcher=self)
 
             debug.logger & debug.flagSearcher and debug.logger(
@@ -57,4 +56,4 @@ class AnyFileSearcher(AbstractSearcher):
             if fileTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        raise error.PySmiFileNotFoundError('no compiled file %s found' % mibname, searcher=self)
+        raise error.PySmiFileNotFoundError(f'no compiled file {mibname} found', searcher=self)

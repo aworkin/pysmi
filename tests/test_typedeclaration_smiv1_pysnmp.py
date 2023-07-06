@@ -58,13 +58,13 @@ END
 
     def protoTestSymbol(self, symbol, klass):
         self.assertTrue(
-            symbol in self.ctx, 'symbol %s not present' % symbol
+            symbol in self.ctx, f'symbol {symbol} not present'
         )
 
     def protoTestClass(self, symbol, klass):
         self.assertEqual(
             self.ctx[symbol].__bases__[0].__name__, klass,
-            'expected class %s, got %s at %s' % (klass, self.ctx[symbol].__bases__[0].__name__, symbol)
+            f'expected class {klass}, got {self.ctx[symbol].__bases__[0].__name__} at {symbol}'
         )
 
 

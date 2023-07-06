@@ -44,14 +44,10 @@ class HttpReader(AbstractReader):
                timeout (int): response timeout
                ssl (bool): access HTTPS web site
         """
-        self._url = '%s://%s:%d%s' % (ssl and 'https' or 'http',
-                                      host, port, decode(locationTemplate))
+        self._url = f'{ssl and "https" or "http"}://{host}:{port:d}{decode(locationTemplate)}'
 
         socket.setdefaulttimeout(timeout)
-        self._user_agent = 'pysmi-%s; python-%s.%s.%s; %s' % (
-            pysmi_version, sys.version_info[0], sys.version_info[1],
-            sys.version_info[2], sys.platform
-        )
+        self._user_agent = f'pysmi-{pysmi_version}; python-{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}; {sys.platform}'
 
     def __str__(self):
         return self._url
@@ -97,4 +93,4 @@ class HttpReader(AbstractReader):
 
                 return MibInfo(path=url, file=mibfile, name=mibalias, mtime=mtime), decode(response.read(self.maxMibSize))
 
-        raise error.PySmiReaderFileNotFoundError('source MIB %s not found' % mibname, reader=self)
+        raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)

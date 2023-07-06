@@ -28,7 +28,7 @@ class SmiV2Parser(AbstractParser):
                 os.makedirs(tempdir)
             except OSError:
                 if sys.exc_info()[1].errno != 17:
-                    raise error.PySmiError('Failed to create cache directory %s: %s' % (tempdir, sys.exc_info()[1]))
+                    raise error.PySmiError(f'Failed to create cache directory {tempdir}: {sys.exc_info()[1]}')
 
         self.lexer = self.defaultLexer(tempdir=tempdir)
 
@@ -1144,7 +1144,7 @@ class SmiV2Parser(AbstractParser):
     # Error rule for syntax errors
     def p_error(self, p):
         if p:
-            raise error.PySmiParserError("Bad grammar near token type %s, value %s" % (p.type, p.value),
+            raise error.PySmiParserError(f"Bad grammar near token type {p.type}, value {p.value}",
                                          lineno=p.lineno)
 
 
@@ -1441,7 +1441,7 @@ def parserFactory(**grammarOptions):
     for option in grammarOptions:
         if grammarOptions[option]:
             if option not in relaxedGrammar:
-                raise error.PySmiError('Unknown parser relaxation option: %s' % option)
+                raise error.PySmiError(f'Unknown parser relaxation option: {option}')
 
             for func in relaxedGrammar[option]:
                 classAttr[func.__name__] = func

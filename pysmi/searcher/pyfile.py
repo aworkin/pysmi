@@ -5,10 +5,9 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import struct
 import sys
 import time
-
+import struct
 try:
     import importlib
 
@@ -48,7 +47,7 @@ class PyFileSearcher(AbstractSearcher):
         self._path = os.path.normpath(decode(path))
 
     def __str__(self):
-        return '%s{"%s"}' % (self.__class__.__name__, self._path)
+        return f'{self.__class__.__name__}{{"{self._path}"}}'
 
     def fileExists(self, mibname, mtime, rebuild=False):
         if rebuild:
@@ -71,7 +70,7 @@ class PyFileSearcher(AbstractSearcher):
                 fp.close()
 
             except IOError:
-                raise error.PySmiSearcherError('failure opening compiled file %s: %s' % (f, sys.exc_info()[1]),
+                raise error.PySmiSearcherError(f'failure opening compiled file {f}: {sys.exc_info()[1]}',
                                                searcher=self)
             if pyData[:4] == PY_MAGIC_NUMBER:
                 pyData = pyData[4:]
@@ -82,7 +81,7 @@ class PyFileSearcher(AbstractSearcher):
                     raise error.PySmiFileNotModifiedError()
 
                 else:
-                    raise error.PySmiFileNotFoundError('older file %s exists' % mibname, searcher=self)
+                    raise error.PySmiFileNotFoundError(f'older file {mibname} exists', searcher=self)
 
             else:
                 debug.logger & debug.flagSearcher and debug.logger('bad magic in %s' % f)
@@ -99,7 +98,7 @@ class PyFileSearcher(AbstractSearcher):
                 pyTime = os.stat(f)[8]
 
             except OSError:
-                raise error.PySmiSearcherError('failure opening compiled file %s: %s' % (f, sys.exc_info()[1]),
+                raise error.PySmiSearcherError(f'failure opening compiled file {f}: {sys.exc_info()[1]}',
                                                searcher=self)
 
             debug.logger & debug.flagSearcher and debug.logger(
@@ -108,4 +107,4 @@ class PyFileSearcher(AbstractSearcher):
             if pyTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        raise error.PySmiFileNotFoundError('no compiled file %s found' % mibname, searcher=self)
+        raise error.PySmiFileNotFoundError(f'no compiled file {mibname} found', searcher=self)

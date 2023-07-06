@@ -4,8 +4,8 @@
 # Copyright (c) 2015-2020, Ilya Etingof <etingof@gmail.com>
 # License: http://snmplabs.com/pysmi/license.html
 #
-import os
 import sys
+import os
 import time
 
 try:
@@ -108,7 +108,7 @@ class MibCompiler:
         self._sources.extend(sources)
 
         debug.logger & debug.flagCompiler and debug.logger(
-            'current MIB source(s): %s' % ', '.join([str(x) for x in self._sources]))
+            f'current MIB source(s): {", ".join([str(x) for x in self._sources])}')
 
         return self
 
@@ -259,7 +259,7 @@ class MibCompiler:
                     exc_class, exc, tb = sys.exc_info()
                     exc.source = source
                     exc.mibname = mibname
-                    exc.msg += ' at MIB %s' % mibname
+                    exc.msg += f' at MIB {mibname}'
 
                     debug.logger & debug.flagCompiler and debug.logger('%serror %s from %s' % (
                         options.get('ignoreErrors') and 'ignoring ' or 'failing on ', exc, source))
@@ -269,7 +269,7 @@ class MibCompiler:
                     processed[mibname] = statusFailed.setOptions(error=exc)
 
             else:
-                exc = error.PySmiError('MIB source %s not found' % mibname)
+                exc = error.PySmiError(f'MIB source {mibname} not found')
                 exc.mibname = mibname
                 debug.logger & debug.flagCompiler and debug.logger('no %s found everywhere' % mibname)
 
@@ -311,7 +311,7 @@ class MibCompiler:
                     exc_class, exc, tb = sys.exc_info()
                     exc.searcher = searcher
                     exc.mibname = mibname
-                    exc.msg += ' at MIB %s' % mibname
+                    exc.msg += f' at MIB {mibname}'
                     debug.logger & debug.flagCompiler and debug.logger('error from %s: %s' % (searcher, exc))
                     continue
 
@@ -340,12 +340,13 @@ class MibCompiler:
 
             platform_info, user_info = self._get_system_info()
 
+            python_version = sys.version.split('\n')[0]
+
             comments = [
-                'ASN.1 source %s' % fileInfo.path,
-                'Produced by %s-%s at %s' % (packageName, packageVersion, time.asctime()),
-                'On host %s platform %s version %s by user %s' % (platform_info[1], platform_info[0],
-                                                                  platform_info[2], user_info[0]),
-                'Using Python version %s' % sys.version.split('\n')[0]
+                f'ASN.1 source {fileInfo.path}',
+                f'Produced by {packageName}-{packageVersion} at {time.asctime()}',
+                f'On host {platform_info[1]} platform {platform_info[0]} version {platform_info[2]} by user {user_info[0]}',
+                f'Using Python version {python_version}'
             ]
 
             try:
@@ -368,7 +369,7 @@ class MibCompiler:
                 exc_class, exc, tb = sys.exc_info()
                 exc.handler = self._codegen
                 exc.mibname = mibname
-                exc.msg += ' at MIB %s' % mibname
+                exc.msg += f' at MIB {mibname}'
 
                 debug.logger & debug.flagCompiler and debug.logger('error from %s: %s' % (self._codegen, exc))
 
@@ -439,7 +440,7 @@ class MibCompiler:
                     exc_class, exc, tb = sys.exc_info()
                     exc.searcher = searcher
                     exc.mibname = mibname
-                    exc.msg += ' at MIB %s' % mibname
+                    exc.msg += f' at MIB {mibname}'
 
                     debug.logger & debug.flagCompiler and debug.logger('error from %s: %s' % (searcher, exc))
 
@@ -516,7 +517,7 @@ class MibCompiler:
                 exc_class, exc, tb = sys.exc_info()
                 exc.handler = self._codegen
                 exc.mibname = mibname
-                exc.msg += ' at MIB %s' % mibname
+                exc.msg += f" at MIB {mibname}"
 
                 debug.logger & debug.flagCompiler and debug.logger('error %s from %s' % (exc, self._writer))
 
@@ -532,11 +533,12 @@ class MibCompiler:
     def buildIndex(self, processedMibs, **options):
         platform_info, user_info = self._get_system_info()
 
+        python_version = sys.version.split('\n')[0]
+
         comments = [
-            'Produced by %s-%s at %s' % (packageName, packageVersion, time.asctime()),
-            'On host %s platform %s version %s by user %s' % (platform_info[1], platform_info[0],
-                                                              platform_info[2], user_info[0]),
-            'Using Python version %s' % sys.version.split('\n')[0]
+            f'Produced by {packageName}-{packageVersion} at {time.asctime()}',
+            f'On host {platform_info[1]} platform {platform_info[0]} version {platform_info[2]} by user {user_info[0]}',
+            f'Using Python version {python_version}'
         ]
 
         try:
@@ -551,7 +553,7 @@ class MibCompiler:
             )
         except error.PySmiError:
             exc_class, exc, tb = sys.exc_info()
-            exc.msg += ' at MIB index %s' % self.indexFile
+            exc.msg += f' at MIB index {self.indexFile}'
 
             debug.logger & debug.flagCompiler and debug.logger('error %s when building %s' % (exc, self.indexFile))
 

@@ -48,10 +48,10 @@ class FtpReader(AbstractReader):
         self._user = user
         self._password = password
         if '@mib@' not in locationTemplate:
-            raise error.PySmiError('@mib@ placeholder not specified in location at %s' % self)
+            raise error.PySmiError(f'@mib@ placeholder not specified in location at {self}')
 
     def __str__(self):
-        return '%s{"ftp://%s%s"}' % (self.__class__.__name__, self._host, self._locationTemplate)
+        return f'{self.__class__.__name__}{{"ftp://{self._host}{self._locationTemplate}"}}'
 
     def getData(self, mibname, **options):
         if self._ssl:
@@ -64,14 +64,15 @@ class FtpReader(AbstractReader):
 
         except ftplib.all_errors:
             raise error.PySmiReaderFileNotFoundError(
-                'failed to connect to FTP server %s:%s: %s' % (self._host, self._port, sys.exc_info()[1]), reader=self)
+                f'failed to connect to FTP server {self._host}:{self._port}: {sys.exc_info()[1]}', reader=self)
 
         try:
             conn.login(self._user, self._password)
 
         except ftplib.all_errors:
             conn.close()
-            raise error.PySmiReaderFileNotFoundError('failed to log in to FTP server %s:%s as %s/%s: %s' % (self._host, self._port, self._user, self._password, sys.exc_info()[1]), reader=self)
+            raise error.PySmiReaderFileNotFoundError(
+                f'failed to log in to FTP server {self._host}:{self._port} as {self._user}/{self._password}: {sys.exc_info()[1]}', reader=self)
 
         mibname = decode(mibname)
 
@@ -89,7 +90,7 @@ class FtpReader(AbstractReader):
 
             try:
                 try:
-                    response = conn.sendcmd('MDTM %s' % location)
+                    response = conn.sendcmd(f'MDTM {location}')
 
                 except ftplib.all_errors:
                     debug.logger & debug.flagReader and debug.logger(
@@ -105,7 +106,7 @@ class FtpReader(AbstractReader):
 
                 debug.logger & debug.flagReader and debug.logger('fetching source MIB %s, mtime %s' % (location, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))))
 
-                conn.retrlines('RETR %s' % location, lambda x, y=data: y.append(x))
+                conn.retrlines(f'RETR {location}', lambda x, y=data: y.append(x))
 
             except ftplib.all_errors:
                 debug.logger & debug.flagReader and debug.logger(
@@ -118,8 +119,8 @@ class FtpReader(AbstractReader):
 
             conn.close()
 
-            return MibInfo(path='ftp://%s%s' % (self._host, location), file=mibfile, name=mibalias, mtime=mtime), data
+            return MibInfo(path=f'ftp://{self._host}{location}', file=mibfile, name=mibalias, mtime=mtime), data
 
         conn.close()
 
-        raise error.PySmiReaderFileNotFoundError('source MIB %s not found' % mibname, reader=self)
+        raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)

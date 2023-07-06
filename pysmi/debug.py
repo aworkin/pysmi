@@ -5,9 +5,8 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import logging
-
-from pysmi import __version__
 from pysmi import error
+from pysmi import __version__
 
 flagNone = 0x0000
 flagSearcher = 0x0001
@@ -95,7 +94,7 @@ class Debug:
             else:
                 self._printer = Printer()
 
-        self('running pysmi version %s' % __version__)
+        self(f'running pysmi version {__version__}')
 
         for flag in flags:
             inverse = flag and flag[0] in ('!', '~')
@@ -110,12 +109,12 @@ class Debug:
                     self._flags |= flagMap[flag]
 
             except KeyError:
-                raise error.PySmiError('bad debug flag %s' % flag)
+                raise error.PySmiError(f'bad debug flag {flag}')
 
-            self('debug category \'%s\' %s' % (flag, inverse and 'disabled' or 'enabled'))
+            self(f'debug category \'{flag}\' {inverse and "disabled" or "enabled"}')
 
     def __str__(self):
-        return 'logger %s, flags %x' % (self._printer, self._flags)
+        return f'logger {self._printer}, flags {self._flags:x}'
 
     def __call__(self, msg):
         self._printer(msg)
