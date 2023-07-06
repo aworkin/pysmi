@@ -76,8 +76,8 @@ class FileReader(AbstractReader):
                     [x.split()[:2] for x in f.readlines()]
                 )
                 f.close()
-                debug.logger & debug.flagReader and debug.logger(
-                    'loaded MIB index map from %s file, %s entries' % (indexFile, len(mibIndex)))
+                if debug.logger & debug.flagReader:
+                    debug.logger('loaded MIB index map from %s file, %s entries' % (indexFile, len(mibIndex)))
 
             except IOError:
                 pass
@@ -93,29 +93,30 @@ class FileReader(AbstractReader):
                 self._indexLoaded = True
 
             if mibname in self._mibIndex:
-                debug.logger & debug.flagReader and debug.logger(
-                    'found %s in MIB index: %s' % (mibname, self._mibIndex[mibname]))
+                if debug.logger & debug.flagReader:
+                    debug.logger('found %s in MIB index: %s' % (mibname, self._mibIndex[mibname]))
                 return [(mibname, self._mibIndex[mibname])]
 
         return super(FileReader, self).getMibVariants(mibname, **options)
 
     def getData(self, mibname, **options):
-        debug.logger & debug.flagReader and debug.logger(
-            '%slooking for MIB %s' % (self._recursive and 'recursively ' or '', mibname))
+        if debug.logger & debug.flagReader:
+            debug.logger('%slooking for MIB %s' % (self._recursive and 'recursively ' or '', mibname))
 
         for path in self.getSubdirs(self._path, self._recursive, self._ignoreErrors):
 
             for mibalias, mibfile in self.getMibVariants(mibname, **options):
                 f = os.path.join(decode(path), decode(mibfile))
 
-                debug.logger & debug.flagReader and debug.logger('trying MIB %s' % f)
+                if debug.logger & debug.flagReader:
+                    debug.logger('trying MIB %s' % f)
 
                 if os.path.exists(f) and os.path.isfile(f):
                     try:
                         mtime = os.stat(f)[8]
 
-                        debug.logger & debug.flagReader and debug.logger(
-                            'source MIB %s mtime is %s, fetching data...' % (
+                        if debug.logger & debug.flagReader:
+                            debug.logger('source MIB %s mtime is %s, fetching data...' % (
                                 f, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))))
 
                         fp = open(f, mode='rb')
@@ -128,8 +129,8 @@ class FileReader(AbstractReader):
                         return MibInfo(path=f'file://{f}', file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
                     except (OSError, IOError):
-                        debug.logger & debug.flagReader and debug.logger(
-                            'source file %s open failure: %s' % (f, sys.exc_info()[1]))
+                        if debug.logger & debug.flagReader:
+                            debug.logger('source file %s open failure: %s' % (f, sys.exc_info()[1]))
 
                         if not self._ignoreErrors:
                             raise error.PySmiError(f'file {f} access error: {sys.exc_info()[1]}')

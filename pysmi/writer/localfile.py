@@ -52,7 +52,8 @@ class FileWriter(AbstractWriter):
 
     def putData(self, mibname, data, comments=(), dryRun=False):
         if dryRun:
-            debug.logger & debug.flagWriter and debug.logger('dry run mode')
+            if debug.logger & debug.flagWriter:
+                debug.logger('dry run mode')
             return
 
         if not os.path.exists(self._path):
@@ -88,4 +89,5 @@ class FileWriter(AbstractWriter):
 
             raise error.PySmiWriterError(f'failure writing file {filename}: {exc[1]}', file=filename, writer=self)
 
-        debug.logger & debug.flagWriter and debug.logger('%s stored in %s' % (mibname, filename))
+        if debug.logger & debug.flagWriter:
+            debug.logger('%s stored in %s' % (mibname, filename))

@@ -65,8 +65,8 @@ class SmiV2Parser(AbstractParser):
         self.lexer.reset()
 
     def parse(self, data, **kwargs):
-        debug.logger & debug.flagParser and debug.logger(
-            'source MIB size is %s characters, first 50 characters are "%s..."' % (len(data), data[:50]))
+        if debug.logger & debug.flagParser:
+            debug.logger('source MIB size is %s characters, first 50 characters are "%s..."' % (len(data), data[:50]))
 
         ast = self.parser.parse(data, lexer=self.lexer.lexer)
 

@@ -60,7 +60,8 @@ class HttpReader(AbstractReader):
 
         mibname = decode(mibname)
 
-        debug.logger & debug.flagReader and debug.logger('looking for MIB %s' % mibname)
+        if debug.logger & debug.flagReader:
+            debug.logger('looking for MIB %s' % mibname)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
             if self.MIB_MAGIC in self._url:
@@ -68,28 +69,32 @@ class HttpReader(AbstractReader):
             else:
                 url = self._url + mibfile
 
-            debug.logger & debug.flagReader and debug.logger('trying to fetch MIB from %s' % url)
+            if debug.logger & debug.flagReader:
+                debug.logger('trying to fetch MIB from %s' % url)
 
             try:
                 req = Request(url, headers=headers)
                 response = urlopen(req)  # nosec
 
             except Exception:
-                debug.logger & debug.flagReader and debug.logger('failed to fetch MIB from %s: %s' % (url, sys.exc_info()[1]))
+                if debug.logger & debug.flagReader:
+                    debug.logger('failed to fetch MIB from %s: %s' % (url, sys.exc_info()[1]))
                 continue
 
-            debug.logger & debug.flagReader and debug.logger('HTTP response %s' % response.code)
+            if debug.logger & debug.flagReader:
+                debug.logger('HTTP response %s' % response.code)
 
             if response.code == 200:
                 try:
                     mtime = time.mktime(time.strptime(response.getheader('Last-Modified'), "%a, %d %b %Y %H:%M:%S %Z"))
 
                 except Exception:
-                    debug.logger & debug.flagReader and debug.logger('malformed HTTP headers: %s' % sys.exc_info()[1])
+                    if debug.logger & debug.flagReader:
+                        debug.logger('malformed HTTP headers: %s' % sys.exc_info()[1])
                     mtime = time.time()
 
-                debug.logger & debug.flagReader and debug.logger(
-                    'fetching source MIB %s, mtime %s' % (url, response.getheader('Last-Modified')))
+                if debug.logger & debug.flagReader:
+                    debug.logger('fetching source MIB %s, mtime %s' % (url, response.getheader('Last-Modified')))
 
                 return MibInfo(path=url, file=mibfile, name=mibalias, mtime=mtime), decode(response.read(self.maxMibSize))
 

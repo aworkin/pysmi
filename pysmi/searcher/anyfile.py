@@ -31,7 +31,8 @@ class AnyFileSearcher(AbstractSearcher):
 
     def fileExists(self, mibname, mtime, rebuild=False):
         if rebuild:
-            debug.logger & debug.flagSearcher and debug.logger('pretend %s is very old' % mibname)
+            if debug.logger & debug.flagSearcher:
+                debug.logger('pretend %s is very old' % mibname)
             return
 
         mibname = decode(mibname)
@@ -40,7 +41,8 @@ class AnyFileSearcher(AbstractSearcher):
         for sfx in self.exts:
             f = basename + sfx
             if not os.path.exists(f) or not os.path.isfile(f):
-                debug.logger & debug.flagSearcher and debug.logger('%s not present or not a file' % f)
+                if debug.logger & debug.flagSearcher:
+                    debug.logger('%s not present or not a file' % f)
                 continue
 
             try:
@@ -50,8 +52,8 @@ class AnyFileSearcher(AbstractSearcher):
                 raise error.PySmiSearcherError(f'failure opening compiled file {f}: {sys.exc_info()[1]}',
                                                searcher=self)
 
-            debug.logger & debug.flagSearcher and debug.logger(
-                'found %s, mtime %s' % (f, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(fileTime))))
+            if debug.logger & debug.flagSearcher:
+                debug.logger('found %s, mtime %s' % (f, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(fileTime))))
 
             if fileTime >= mtime:
                 raise error.PySmiFileNotModifiedError()

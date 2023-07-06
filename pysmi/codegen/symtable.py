@@ -618,8 +618,8 @@ class SymtableCodeGen(AbstractCodeGen):
         self._out['_symtable_cols'] = list(self._cols)
         self._out['_symtable_rows'] = list(self._rows)
 
-        debug.logger & debug.flagCodegen and debug.logger(
-            'canonical MIB name %s (%s), imported MIB(s) %s, Symbol table size %s symbols' % (
+        if debug.logger & debug.flagCodegen:
+            debug.logger('canonical MIB name %s (%s), imported MIB(s) %s, Symbol table size %s symbols' % (
                 self.moduleName[0], moduleOid, ','.join(importedModules) or '<none>', len(self._out)))
 
         return MibInfo(oid=None,

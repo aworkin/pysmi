@@ -52,8 +52,8 @@ class JsonCodeGen(IntermediateCodeGen):
             err = sys.exc_info()[1]
             raise error.PySmiCodegenError(f'Jinja template rendering error: {err}')
 
-        debug.logger & debug.flagCodegen and debug.logger(
-            'canonical MIB name %s (%s), imported MIB(s) %s, rendered from '
+        if debug.logger & debug.flagCodegen:
+            debug.logger('canonical MIB name %s (%s), imported MIB(s) %s, rendered from '
             '%s, JSON document size %d bytes' % (
                 mibInfo.name, mibInfo.identity,
                 ','.join(mibInfo.imported) or '<none>',
@@ -147,7 +147,7 @@ class JsonCodeGen(IntermediateCodeGen):
         if 'comments' in kwargs:
             outDict['meta']['comments'] = kwargs['comments']
 
-        debug.logger & debug.flagCodegen and debug.logger(
-            'OID->MIB index built, %s entries' % len(processed))
+        if debug.logger & debug.flagCodegen:
+            debug.logger('OID->MIB index built, %s entries' % len(processed))
 
         return json.dumps(order(outDict), indent=2)

@@ -52,7 +52,8 @@ class PyFileWriter(AbstractWriter):
 
     def putData(self, mibname, data, comments=(), dryRun=False):
         if dryRun:
-            debug.logger & debug.flagWriter and debug.logger('dry run mode')
+            if debug.logger & debug.flagWriter:
+                debug.logger('dry run mode')
             return
 
         if not os.path.exists(self._path):
@@ -84,7 +85,8 @@ class PyFileWriter(AbstractWriter):
 
             raise error.PySmiWriterError(f'failure writing file {pyfile}: {exc[1]}', file=pyfile, writer=self)
 
-        debug.logger & debug.flagWriter and debug.logger('created file %s' % pyfile)
+        if debug.logger & debug.flagWriter:
+            debug.logger('created file %s' % pyfile)
 
         if self.pyCompile:
             try:
@@ -99,7 +101,8 @@ class PyFileWriter(AbstractWriter):
 
                 raise error.PySmiWriterError(f'failure compiling {pyfile}: {sys.exc_info()[1]}', file=mibname, writer=self)
 
-        debug.logger & debug.flagWriter and debug.logger('%s stored' % mibname)
+        if debug.logger & debug.flagWriter:
+            debug.logger('%s stored' % mibname)
 
     def getData(self, filename):
         return ''

@@ -76,15 +76,16 @@ class FtpReader(AbstractReader):
 
         mibname = decode(mibname)
 
-        debug.logger & debug.flagReader and debug.logger('looking for MIB %s' % mibname)
+        if debug.logger & debug.flagReader:
+            debug.logger('looking for MIB %s' % mibname)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
             location = self._locationTemplate.replace('@mib@', mibfile)
 
             mtime = time.time()
 
-            debug.logger & debug.flagReader and debug.logger(
-                'trying to fetch MIB %s from %s:%s' % (location, self._host, self._port))
+            if debug.logger & debug.flagReader:
+                debug.logger('trying to fetch MIB %s from %s:%s' % (location, self._host, self._port))
 
             data = []
 
@@ -93,29 +94,31 @@ class FtpReader(AbstractReader):
                     response = conn.sendcmd(f'MDTM {location}')
 
                 except ftplib.all_errors:
-                    debug.logger & debug.flagReader and debug.logger(
-                        'server %s:%s does not support MDTM command, fetching file %s' % (
+                    if debug.logger & debug.flagReader:
+                        debug.logger('server %s:%s does not support MDTM command, fetching file %s' % (
                         self._host, self._port, location))
 
                 else:
-                    debug.logger & debug.flagReader and debug.logger(
-                        'server %s:%s MDTM response is %s' % (self._host, self._port, response))
+                    if debug.logger & debug.flagReader:
+                        debug.logger('server %s:%s MDTM response is %s' % (self._host, self._port, response))
 
                     if response[:3] == 213:
                         mtime = time.mktime(time.strptime(response[4:], "%Y%m%d%H%M%S"))
 
-                debug.logger & debug.flagReader and debug.logger('fetching source MIB %s, mtime %s' % (location, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))))
+                if debug.logger & debug.flagReader:
+                    debug.logger('fetching source MIB %s, mtime %s' % (location, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))))
 
                 conn.retrlines(f'RETR {location}', lambda x, y=data: y.append(x))
 
             except ftplib.all_errors:
-                debug.logger & debug.flagReader and debug.logger(
-                    'failed to fetch MIB %s from %s:%s: %s' % (location, self._host, self._port, sys.exc_info()[1]))
+                if debug.logger & debug.flagReader:
+                    debug.logger('failed to fetch MIB %s from %s:%s: %s' % (location, self._host, self._port, sys.exc_info()[1]))
                 continue
 
             data = decode('\n'.join(data))
 
-            debug.logger & debug.flagReader and debug.logger('fetched %s bytes in %s' % (len(data), location))
+            if debug.logger & debug.flagReader:
+                debug.logger('fetched %s bytes in %s' % (len(data), location))
 
             conn.close()
 

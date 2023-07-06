@@ -1007,8 +1007,8 @@ class IntermediateCodeGen(AbstractCodeGen):
         if 'comments' in kwargs:
             outDict['meta']['comments'] = kwargs['comments']
 
-        debug.logger & debug.flagCodegen and debug.logger(
-            'canonical MIB name %s (%s), imported MIB(s) %s' % (
+        if debug.logger & debug.flagCodegen:
+            debug.logger('canonical MIB name %s (%s), imported MIB(s) %s' % (
                 self.moduleName[0], moduleOid, ','.join(importedModules) or '<none>'))
 
         return MibInfo(oid=moduleOid,
