@@ -44,7 +44,7 @@ class HttpReader(AbstractReader):
                timeout (int): response timeout
                ssl (bool): access HTTPS web site
         """
-        self._url = f'{ssl and "https" or "http"}://{host}:{port:d}{decode(locationTemplate)}'
+        self._url = f'{"https" if ssl else "http"}://{host}:{port:d}{decode(locationTemplate)}'
 
         socket.setdefaulttimeout(timeout)
         self._user_agent = f'pysmi-{pysmi_version}; python-{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}; {sys.platform}'

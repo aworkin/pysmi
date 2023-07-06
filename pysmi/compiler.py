@@ -267,7 +267,7 @@ class MibCompiler:
 
                     if debug.logger & debug.flagCompiler:
                         debug.logger('%serror %s from %s' % (
-                        options.get('ignoreErrors') and 'ignoring ' or 'failing on ', exc, source))
+                            'ignoring ' if options.get('ignoreErrors') else 'failing on ', exc, source))
 
                     failedMibs[mibname] = exc
 

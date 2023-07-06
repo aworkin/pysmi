@@ -395,7 +395,7 @@ class SymtableCodeGen(AbstractCodeGen):
 
         elif self.isBinary(defval):  # binary
             binval = defval[1:-2]
-            hexval = binval and hex(int(binval, 2))[2:] or ''
+            hexval = hex(int(binval, 2))[2:] if binval else ''
             val = 'hexValue="' + hexval + '"'
 
         elif isinstance(defval, list):  # bits list
@@ -504,7 +504,7 @@ class SymtableCodeGen(AbstractCodeGen):
     def genRow(self, data, classmode=False):
         row = data[0]
         row = self.transOpers(row)
-        return row in self._rows and (('MibTableRow', ''), '') or self.genSimpleSyntax(data, classmode=classmode)
+        return (('MibTableRow', ''), '') if row in self._rows else self.genSimpleSyntax(data, classmode=classmode)
 
     # noinspection PyUnusedLocal
     def genSequence(self, data, classmode=False):
@@ -524,7 +524,7 @@ class SymtableCodeGen(AbstractCodeGen):
         if objType not in self.baseTypes:
             module = self._importMap.get(objType, self.moduleName[0])
 
-        subtype = len(data) == 2 and data[1] or ''
+        subtype = data[1] if len(data) == 2 else ''
 
         return (objType, module), subtype
 

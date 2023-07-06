@@ -101,7 +101,7 @@ class FileReader(AbstractReader):
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
-            debug.logger('%slooking for MIB %s' % (self._recursive and 'recursively ' or '', mibname))
+            debug.logger('%slooking for MIB %s' % ('recursively ' if self._recursive else '', mibname))
 
         for path in self.getSubdirs(self._path, self._recursive, self._ignoreErrors):
 

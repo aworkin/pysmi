@@ -406,7 +406,7 @@ class SmiV2Parser(AbstractParser):
     def p_VarPart(self, p):
         """VarPart : VARIABLES '{' VarTypes '}'
                    | empty"""
-        p[0] = p[1] and p[3] or []
+        p[0] = p[3] if p[1] else []
 
     def p_VarTypes(self, p):
         """VarTypes : VarTypes ',' VarType
@@ -804,7 +804,7 @@ class SmiV2Parser(AbstractParser):
     def p_NotificationObjectsPart(self, p):
         """NotificationObjectsPart : OBJECTS '{' Objects '}'
                                    | empty"""
-        p[0] = p[1] and p[3] or []
+        p[0] = p[3] if p[1] else []
 
     def p_ObjectGroupObjectsPart(self, p):
         """ObjectGroupObjectsPart : OBJECTS '{' Objects '}'"""
@@ -941,8 +941,8 @@ class SmiV2Parser(AbstractParser):
 
     def p_ComplianceModule(self, p):
         """ComplianceModule : MODULE ComplianceModuleName MandatoryPart CompliancePart"""
-        objects = p[3] and p[3][1] or []
-        objects += p[4] and p[4][1] or []
+        objects = p[3][1] if p[3] else []
+        objects += p[4][1] if p[4] else []
         p[0] = (p[2],  # ModuleName
                 objects)  # MandatoryPart + CompliancePart
 
@@ -982,9 +982,9 @@ class SmiV2Parser(AbstractParser):
                        | Compliance"""
         n = len(p)
         if n == 3:
-            p[0] = p[1] and p[2] and ('Compliances', p[1][1] + [p[2]]) or p[1]
+            p[0] = ('Compliances', p[1][1] + [p[2]]) if p[1] and p[2] else p[1]
         elif n == 2:
-            p[0] = p[1] and ('Compliances', [p[1]]) or None
+            p[0] = ('Compliances', [p[1]]) if p[1] else None
 
     def p_Compliance(self, p):
         """Compliance : ComplianceGroup
@@ -1244,7 +1244,7 @@ class SupportIndex:
 
         # libsmi: TODO: use the SYNTAX value of the correspondent
         #               OBJECT-TYPE invocation
-        p[0] = isinstance(p[1], tuple) and p[1][1][0] or p[1]
+        p[0] = p[1][1][0] if isinstance(p[1], tuple) else p[1]
 
     # for Index rule
     @staticmethod
@@ -1254,7 +1254,7 @@ class SupportIndex:
                      | IPADDRESS
                      | NETWORKADDRESS"""
         n = len(p)
-        indextype = n == 3 and p[1] + ' ' + p[2] or p[1]
+        indextype = p[1] + ' ' + p[2] if n == 3 else p[1]
         p[0] = indextype
 
 

@@ -138,7 +138,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     # noinspection PyMethodMayBeStatic
     def genLabel(self, symbol):
-        return '-' in symbol and symbol or ''
+        return symbol if '-' in symbol else ''
 
     def addToExports(self, symbol, moduleIdentity=0):
         self._seenSyms.add(symbol)
@@ -437,8 +437,8 @@ class IntermediateCodeGen(AbstractCodeGen):
         outDict['oid'] = oidStr
 
         if syntax[0]:
-            nodetype = syntax[0] == 'Bits' and 'scalar' or syntax[0]  # Bits hack
-            nodetype = name in self.symbolTable[self.moduleName[0]]['_symtable_cols'] and 'column' or nodetype
+            nodetype = 'scalar' if syntax[0] == 'Bits' else syntax[0]  # Bits hack
+            nodetype = 'column' if name in self.symbolTable[self.moduleName[0]]['_symtable_cols'] else nodetype
             outDict['nodetype'] = nodetype
 
         outDict['class'] = 'objecttype'
@@ -631,7 +631,7 @@ class IntermediateCodeGen(AbstractCodeGen):
                 )
 
             else:
-                hexval = binval and hex(int(binval, 2))[2:] or ''
+                hexval = hex(int(binval, 2))[2:] if binval else ''
                 outDict.update(value=hexval, format='hex')
 
         # quoted string
@@ -769,7 +769,7 @@ class IntermediateCodeGen(AbstractCodeGen):
     def genIntegerSubType(self, data):
         ranges = []
         for rng in data[0]:
-            vmin, vmax = len(rng) == 1 and (rng[0], rng[0]) or rng
+            vmin, vmax = (rng[0], rng[0]) if len(rng) == 1 else rng
             vmin, vmax = self.str2int(vmin), self.str2int(vmax)
             ran = OrderedDict()
             ran['min'] = vmin
@@ -785,7 +785,7 @@ class IntermediateCodeGen(AbstractCodeGen):
     def genOctetStringSubType(self, data):
         sizes = []
         for rng in data[0]:
-            vmin, vmax = len(rng) == 1 and (rng[0], rng[0]) or rng
+            vmin, vmax = (rng[0], rng[0]) if len(rng) == 1 else rng
             vmin, vmax = self.str2int(vmin), self.str2int(vmax)
 
             size = OrderedDict()
@@ -879,7 +879,7 @@ class IntermediateCodeGen(AbstractCodeGen):
         objType = self.SMI_TYPES.get(objType, objType)
         objType = self.transOpers(objType)
 
-        subtype = len(data) == 2 and data[1] or {}
+        subtype = data[1] if len(data) == 2 else {}
 
         outDict = OrderedDict()
         outDict['type'] = objType
@@ -989,7 +989,7 @@ class IntermediateCodeGen(AbstractCodeGen):
         self._complianceOids = []
         self.moduleName[0], moduleOid, imports, declarations = ast
 
-        outDict, importedModules = self.genImports(imports and imports or {})
+        outDict, importedModules = self.genImports(imports or {})
 
         for declr in declarations or []:
             if declr:

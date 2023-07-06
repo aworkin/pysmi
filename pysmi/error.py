@@ -17,7 +17,7 @@
 class PySmiError(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
-        self.msg = args and args[0] or ''
+        self.msg = args[0] if args else ''
         for k in kwargs:
             setattr(self, k, kwargs[k])
 

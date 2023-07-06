@@ -111,7 +111,7 @@ class Debug:
             except KeyError:
                 raise error.PySmiError(f'bad debug flag {flag}')
 
-            self(f'debug category \'{flag}\' {inverse and "disabled" or "enabled"}')
+            self(f'debug category \'{flag}\' {"disabled" if inverse else "enabled"}')
 
     def __str__(self):
         return f'logger {self._printer}, flags {self._flags:x}'
@@ -129,7 +129,7 @@ class Debug:
         return self._printer
 
     def getCurrentLogger(self):
-        return self._printer and self._printer.getCurrentLogger() or None
+        return self._printer.getCurrentLogger() if self._printer else None
 
 
 # This will yield false from bitwise and with a flag, and save
