@@ -5,9 +5,9 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
+import struct
 import sys
 import time
-import struct
 
 try:
     import importlib

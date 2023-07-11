@@ -7,11 +7,12 @@
 import sys
 import unittest
 
-from pysmi.parser.smi import parserFactory
-from pysmi.parser.dialect import smiV1Relaxed
+from pysnmp.smi.builder import MibBuilder
+
 from pysmi.codegen.pysnmp import PySnmpCodeGen
 from pysmi.codegen.symtable import SymtableCodeGen
-from pysnmp.smi.builder import MibBuilder
+from pysmi.parser.dialect import smiV1Relaxed
+from pysmi.parser.smi import parserFactory
 
 
 class TypeDeclarationTestCase(unittest.TestCase):
