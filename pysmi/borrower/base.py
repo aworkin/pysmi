@@ -10,17 +10,17 @@ from pysmi import debug
 
 class AbstractBorrower:
     genTexts = False
-    exts = ''
+    exts = ""
 
     def __init__(self, reader, genTexts=False):
         """Creates an instance of *Borrower* class.
 
-           Args:
-               reader: a *reader* object
+        Args:
+            reader: a *reader* object
 
-           Keyword Args:
-               genText: indicates whether this borrower should be looking
-                        for transformed MIBs that include human-oriented texts
+        Keyword Args:
+            genText: indicates whether this borrower should be looking
+                     for transformed MIBs that include human-oriented texts
         """
         if genTexts is not None:
             self.genTexts = genTexts
@@ -28,7 +28,7 @@ class AbstractBorrower:
         self._reader = reader
 
     def __str__(self):
-        return f'{self.__class__.__name__}{{{self._reader}, genTexts={self.genTexts}, exts={self.exts}}}'
+        return f"{self.__class__.__name__}{{{self._reader}, genTexts={self.genTexts}, exts={self.exts}}}"
 
     def setOptions(self, **kwargs):
         self._reader.setOptions(**kwargs)
@@ -39,16 +39,18 @@ class AbstractBorrower:
         return self
 
     def getData(self, mibname, **options):
-        if bool(options.get('genTexts')) != self.genTexts:
+        if bool(options.get("genTexts")) != self.genTexts:
             if debug.logger & debug.flagBorrower:
-                debug.logger('skipping incompatible borrower %s for file %s' % (self, mibname))
+                debug.logger(
+                    "skipping incompatible borrower %s for file %s" % (self, mibname)
+                )
             raise error.PySmiFileNotFoundError(mibname=mibname, reader=self._reader)
 
         debug.logger & debug.flagBorrower and (
-            debug.logger('trying to borrow file %s from %s' % (mibname, self._reader))
+            debug.logger("trying to borrow file %s from %s" % (mibname, self._reader))
         )
 
-        if 'exts' not in options:
-            options['exts'] = self.exts
+        if "exts" not in options:
+            options["exts"] = self.exts
 
         return self._reader.getData(mibname, **options)

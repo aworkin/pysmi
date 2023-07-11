@@ -11,7 +11,12 @@ import os
 import sys
 import getopt
 from pysmi.reader import getReadersFromUrls
-from pysmi.searcher import AnyFileSearcher, PyFileSearcher, PyPackageSearcher, StubSearcher
+from pysmi.searcher import (
+    AnyFileSearcher,
+    PyFileSearcher,
+    PyPackageSearcher,
+    StubSearcher,
+)
 from pysmi.borrower import AnyFileBorrower, PyFileBorrower
 from pysmi.writer import PyFileWriter, FileWriter, CallbackWriter
 from pysmi.parser import SmiV1CompatParser
@@ -37,7 +42,7 @@ mibBorrowers = []
 dstFormat = None
 dstTemplate = None
 dstDirectory = None
-cacheDirectory = ''
+cacheDirectory = ""
 nodepsFlag = False
 rebuildFlag = False
 dryrunFlag = False
@@ -85,154 +90,195 @@ Where:
 
 try:
     opts, inputMibs = getopt.getopt(
-        sys.argv[1:], 'hv',
-        ['help', 'version', 'quiet', 'debug=',
-         'mib-source=', 'mib-searcher=', 'mib-stub=', 'mib-borrower=',
-         'destination-format=', 'destination-template=',
-         'destination-directory=', 'cache-directory=', 'no-dependencies',
-         'no-python-compile', 'python-optimization-level=', 'ignore-errors',
-         'build-index', 'rebuild', 'dry-run', 'no-mib-writes',
-         'generate-mib-texts', 'disable-fuzzy-source', 'keep-texts-layout']
+        sys.argv[1:],
+        "hv",
+        [
+            "help",
+            "version",
+            "quiet",
+            "debug=",
+            "mib-source=",
+            "mib-searcher=",
+            "mib-stub=",
+            "mib-borrower=",
+            "destination-format=",
+            "destination-template=",
+            "destination-directory=",
+            "cache-directory=",
+            "no-dependencies",
+            "no-python-compile",
+            "python-optimization-level=",
+            "ignore-errors",
+            "build-index",
+            "rebuild",
+            "dry-run",
+            "no-mib-writes",
+            "generate-mib-texts",
+            "disable-fuzzy-source",
+            "keep-texts-layout",
+        ],
     )
 
 except getopt.GetoptError:
     if verboseFlag:
-        sys.stderr.write(f'ERROR: {sys.exc_info()[1]}\r\n{helpMessage}\r\n')
+        sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n{helpMessage}\r\n")
 
     sys.exit(EX_USAGE)
 
 for opt in opts:
-    if opt[0] == '-h' or opt[0] == '--help':
-        sys.stderr.write(f"""\
+    if opt[0] == "-h" or opt[0] == "--help":
+        sys.stderr.write(
+            f"""\
 Synopsis:
   SNMP SMI/MIB files conversion tool
 Documentation:
   http://snmplabs.com/pysmi
 {helpMessage}
-""")
+"""
+        )
         sys.exit(EX_OK)
 
-    if opt[0] == '-v' or opt[0] == '--version':
+    if opt[0] == "-v" or opt[0] == "--version":
         from pysmi import __version__
 
-        sys.stderr.write(f"""\
+        sys.stderr.write(
+            f"""\
 SNMP SMI/MIB library version {__version__}, written by Ilya Etingof <etingof@gmail.com>
 Python interpreter: {sys.version}
 Software documentation and support at http://snmplabs.com/pysmi
 {helpMessage}
-""")
+"""
+        )
         sys.exit(EX_OK)
 
-    if opt[0] == '--quiet':
+    if opt[0] == "--quiet":
         verboseFlag = False
 
-    if opt[0] == '--debug':
-        debug.setLogger(debug.Debug(*opt[1].split(',')))
+    if opt[0] == "--debug":
+        debug.setLogger(debug.Debug(*opt[1].split(",")))
 
-    if opt[0] == '--mib-source':
+    if opt[0] == "--mib-source":
         mibSources.append(opt[1])
 
-    if opt[0] == '--mib-searcher':
+    if opt[0] == "--mib-searcher":
         mibSearchers.append(opt[1])
 
-    if opt[0] == '--mib-stub':
+    if opt[0] == "--mib-stub":
         mibStubs.append(opt[1])
 
-    if opt[0] == '--mib-borrower':
+    if opt[0] == "--mib-borrower":
         mibBorrowers.append((opt[1], genMibTextsFlag))
 
-    if opt[0] == '--destination-format':
+    if opt[0] == "--destination-format":
         dstFormat = opt[1]
 
-    if opt[0] == '--destination-template':
+    if opt[0] == "--destination-template":
         dstTemplate = opt[1]
 
-    if opt[0] == '--destination-directory':
+    if opt[0] == "--destination-directory":
         dstDirectory = opt[1]
 
-    if opt[0] == '--cache-directory':
+    if opt[0] == "--cache-directory":
         cacheDirectory = opt[1]
 
-    if opt[0] == '--no-dependencies':
+    if opt[0] == "--no-dependencies":
         nodepsFlag = True
 
-    if opt[0] == '--no-python-compile':
+    if opt[0] == "--no-python-compile":
         pyCompileFlag = False
 
-    if opt[0] == '--python-optimization-level':
+    if opt[0] == "--python-optimization-level":
         try:
             pyOptimizationLevel = int(opt[1])
 
         except ValueError:
-            sys.stderr.write(f'ERROR: known Python optimization levels: -1, 0, 1, 2\r\n{helpMessage}\r\n')
+            sys.stderr.write(
+                f"ERROR: known Python optimization levels: -1, 0, 1, 2\r\n{helpMessage}\r\n"
+            )
             sys.exit(EX_USAGE)
 
-    if opt[0] == '--ignore-errors':
+    if opt[0] == "--ignore-errors":
         ignoreErrorsFlag = True
 
-    if opt[0] == '--build-index':
+    if opt[0] == "--build-index":
         buildIndexFlag = True
 
-    if opt[0] == '--rebuild':
+    if opt[0] == "--rebuild":
         rebuildFlag = True
 
-    if opt[0] == '--dry-run':
+    if opt[0] == "--dry-run":
         dryrunFlag = True
 
-    if opt[0] == '--no-mib-writes':
+    if opt[0] == "--no-mib-writes":
         writeMibsFlag = False
 
-    if opt[0] == '--generate-mib-texts':
+    if opt[0] == "--generate-mib-texts":
         genMibTextsFlag = True
 
-    if opt[0] == '--disable-fuzzy-source':
+    if opt[0] == "--disable-fuzzy-source":
         doFuzzyMatchingFlag = False
 
-    if opt[0] == '--keep-texts-layout':
+    if opt[0] == "--keep-texts-layout":
         keepTextsLayout = True
 
 if not mibSources:
-    mibSources = ['file:///usr/share/snmp/mibs',
-                  'http://mibs.snmplabs.com/asn1/@mib@']
+    mibSources = ["file:///usr/share/snmp/mibs", "http://mibs.snmplabs.com/asn1/@mib@"]
 
 if inputMibs:
-    mibSources = sorted(
-        set([os.path.abspath(os.path.dirname(x))
-            for x in inputMibs
-            if os.path.sep in x])
-    ) + mibSources
+    mibSources = (
+        sorted(
+            set(
+                [
+                    os.path.abspath(os.path.dirname(x))
+                    for x in inputMibs
+                    if os.path.sep in x
+                ]
+            )
+        )
+        + mibSources
+    )
 
     inputMibs = [os.path.basename(os.path.splitext(x)[0]) for x in inputMibs]
 
 if not inputMibs:
-    sys.stderr.write(f'ERROR: MIB modules names not specified\r\n{helpMessage}\r\n')
+    sys.stderr.write(f"ERROR: MIB modules names not specified\r\n{helpMessage}\r\n")
     sys.exit(EX_USAGE)
 
 if not dstFormat:
-    dstFormat = 'pysnmp'
+    dstFormat = "pysnmp"
 
-if dstFormat == 'pysnmp':
+if dstFormat == "pysnmp":
     if not mibSearchers:
         mibSearchers = PySnmpCodeGen.defaultMibPackages
 
     if not mibStubs:
-        mibStubs = [x for x in PySnmpCodeGen.baseMibs if x not in PySnmpCodeGen.fakeMibs]
+        mibStubs = [
+            x for x in PySnmpCodeGen.baseMibs if x not in PySnmpCodeGen.fakeMibs
+        ]
 
     if not mibBorrowers:
-        mibBorrowers = [('http://mibs.snmplabs.com/pysnmp/notexts/@mib@', False),
-                        ('http://mibs.snmplabs.com/pysnmp/fulltexts/@mib@', True)]
+        mibBorrowers = [
+            ("http://mibs.snmplabs.com/pysnmp/notexts/@mib@", False),
+            ("http://mibs.snmplabs.com/pysnmp/fulltexts/@mib@", True),
+        ]
 
     if not dstDirectory:
         dstDirectory = os.path.expanduser("~")
-        if sys.platform[:3] == 'win':
-            dstDirectory = os.path.join(dstDirectory, 'PySNMP Configuration', 'mibs')
+        if sys.platform[:3] == "win":
+            dstDirectory = os.path.join(dstDirectory, "PySNMP Configuration", "mibs")
         else:
-            dstDirectory = os.path.join(dstDirectory, '.pysnmp', 'mibs')
+            dstDirectory = os.path.join(dstDirectory, ".pysnmp", "mibs")
 
     # Compiler infrastructure
 
-    borrowers = [PyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-                 for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))]
+    borrowers = [
+        PyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
+        for x in enumerate(
+            getReadersFromUrls(
+                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
+            )
+        )
+    ]
 
     searchers = [PyFileSearcher(dstDirectory)]
 
@@ -243,41 +289,55 @@ if dstFormat == 'pysnmp':
 
     codeGenerator = PySnmpCodeGen()
 
-    fileWriter = PyFileWriter(dstDirectory).setOptions(pyCompile=pyCompileFlag,
-                                                       pyOptimizationLevel=pyOptimizationLevel)
+    fileWriter = PyFileWriter(dstDirectory).setOptions(
+        pyCompile=pyCompileFlag, pyOptimizationLevel=pyOptimizationLevel
+    )
 
-elif dstFormat == 'json':
+elif dstFormat == "json":
     if not mibStubs:
         mibStubs = JsonCodeGen.baseMibs
 
     if not mibBorrowers:
-        mibBorrowers = [('http://mibs.snmplabs.com/json/notexts/@mib@', False),
-                        ('http://mibs.snmplabs.com/json/fulltexts/@mib@', True)]
+        mibBorrowers = [
+            ("http://mibs.snmplabs.com/json/notexts/@mib@", False),
+            ("http://mibs.snmplabs.com/json/fulltexts/@mib@", True),
+        ]
 
     if not dstDirectory:
-        dstDirectory = os.path.join('.')
+        dstDirectory = os.path.join(".")
 
     # Compiler infrastructure
 
-    borrowers = [AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1]).setOptions(exts=['.json'])
-                 for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))]
+    borrowers = [
+        AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1]).setOptions(exts=[".json"])
+        for x in enumerate(
+            getReadersFromUrls(
+                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
+            )
+        )
+    ]
 
-    searchers = [AnyFileSearcher(dstDirectory).setOptions(exts=['.json']), StubSearcher(*mibStubs)]
+    searchers = [
+        AnyFileSearcher(dstDirectory).setOptions(exts=[".json"]),
+        StubSearcher(*mibStubs),
+    ]
 
     codeGenerator = JsonCodeGen()
 
-    fileWriter = FileWriter(dstDirectory).setOptions(suffix='.json')
+    fileWriter = FileWriter(dstDirectory).setOptions(suffix=".json")
 
-elif dstFormat == 'null':
+elif dstFormat == "null":
     if not mibStubs:
         mibStubs = NullCodeGen.baseMibs
 
     if not mibBorrowers:
-        mibBorrowers = [('http://mibs.snmplabs.com/null/notexts/@mib@', False),
-                        ('http://mibs.snmplabs.com/null/fulltexts/@mib@', True)]
+        mibBorrowers = [
+            ("http://mibs.snmplabs.com/null/notexts/@mib@", False),
+            ("http://mibs.snmplabs.com/null/fulltexts/@mib@", True),
+        ]
 
     if not dstDirectory:
-        dstDirectory = ''
+        dstDirectory = ""
 
     # Compiler infrastructure
 
@@ -285,17 +345,26 @@ elif dstFormat == 'null':
 
     searchers = [StubSearcher(*mibStubs)]
 
-    borrowers = [AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-                 for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))]
+    borrowers = [
+        AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
+        for x in enumerate(
+            getReadersFromUrls(
+                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
+            )
+        )
+    ]
 
     fileWriter = CallbackWriter(lambda *x: None)
 
 else:
-    sys.stderr.write(f'ERROR: unknown destination format: {dstFormat}\r\n{helpMessage}\r\n')
+    sys.stderr.write(
+        f"ERROR: unknown destination format: {dstFormat}\r\n{helpMessage}\r\n"
+    )
     sys.exit(EX_USAGE)
 
 if verboseFlag:
-    sys.stderr.write(f"""Source MIB repositories: {', '.join(mibSources)}
+    sys.stderr.write(
+        f"""Source MIB repositories: {', '.join(mibSources)}
 Borrow missing/failed MIBs from: {', '.join([x[0] for x in mibBorrowers if x[1] == genMibTextsFlag])}
 Existing/compiled MIB locations: {', '.join(mibSearchers)}
 Compiled MIBs destination directory: {dstDirectory}
@@ -314,21 +383,18 @@ Generate OID->MIB index: {buildIndexFlag and 'yes' or 'no'}
 Generate texts in MIBs: {genMibTextsFlag and 'yes' or 'no'}
 Keep original texts layout: {keepTextsLayout and 'yes' or 'no'}
 Try various file names while searching for MIB module: {doFuzzyMatchingFlag and 'yes' or 'no'}
-""")
+"""
+    )
 
 # Initialize compiler infrastructure
 
 mibCompiler = MibCompiler(
-    SmiV1CompatParser(tempdir=cacheDirectory),
-    codeGenerator,
-    fileWriter
+    SmiV1CompatParser(tempdir=cacheDirectory), codeGenerator, fileWriter
 )
 
 try:
     mibCompiler.addSources(
-        *getReadersFromUrls(
-            *mibSources, **dict(fuzzyMatching=doFuzzyMatchingFlag)
-        )
+        *getReadersFromUrls(*mibSources, **dict(fuzzyMatching=doFuzzyMatchingFlag))
     )
 
     mibCompiler.addSearchers(*searchers)
@@ -336,39 +402,64 @@ try:
     mibCompiler.addBorrowers(*borrowers)
 
     processed = mibCompiler.compile(
-        *inputMibs, **dict(noDeps=nodepsFlag,
-                           rebuild=rebuildFlag,
-                           dryRun=dryrunFlag,
-                           dstTemplate=dstTemplate,
-                           genTexts=genMibTextsFlag,
-                           textFilter=keepTextsLayout and (lambda symbol, text: text) or None,
-                           writeMibs=writeMibsFlag,
-                           ignoreErrors=ignoreErrorsFlag)
+        *inputMibs,
+        **dict(
+            noDeps=nodepsFlag,
+            rebuild=rebuildFlag,
+            dryRun=dryrunFlag,
+            dstTemplate=dstTemplate,
+            genTexts=genMibTextsFlag,
+            textFilter=keepTextsLayout and (lambda symbol, text: text) or None,
+            writeMibs=writeMibsFlag,
+            ignoreErrors=ignoreErrorsFlag,
+        ),
     )
 
     if buildIndexFlag:
         mibCompiler.buildIndex(
-            processed,
-            dryRun=dryrunFlag,
-            ignoreErrors=ignoreErrorsFlag
+            processed, dryRun=dryrunFlag, ignoreErrors=ignoreErrorsFlag
         )
 
 except error.PySmiError:
-    sys.stderr.write(f'ERROR: {sys.exc_info()[1]}\r\n')
+    sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n")
     sys.exit(EX_SOFTWARE)
 
 else:
     if verboseFlag:
-        compiled_mibs = [f'{name}{name != status.alias and f" ({status.alias})" or ""}' for name, status in sorted(processed.items()) if status == 'compiled']
-        borrowed_mibs = [f'{name} ({status.path})' for name, status in sorted(processed.items()) if status == 'borrowed']
-        untouched_mibs = [name for name, status in sorted(processed.items()) if status == 'untouched']
-        missing_mibs = [name for name, status in sorted(processed.items()) if status == 'missing']
-        unprocessed_mibs = [name for name, status in sorted(processed.items()) if status == 'unprocessed']
-        failed_mibs = [f'{name} ({status.error})' for name, status in sorted(processed.items()) if status == 'failed']
+        compiled_mibs = [
+            f'{name}{name != status.alias and f" ({status.alias})" or ""}'
+            for name, status in sorted(processed.items())
+            if status == "compiled"
+        ]
+        borrowed_mibs = [
+            f"{name} ({status.path})"
+            for name, status in sorted(processed.items())
+            if status == "borrowed"
+        ]
+        untouched_mibs = [
+            name for name, status in sorted(processed.items()) if status == "untouched"
+        ]
+        missing_mibs = [
+            name for name, status in sorted(processed.items()) if status == "missing"
+        ]
+        unprocessed_mibs = [
+            name
+            for name, status in sorted(processed.items())
+            if status == "unprocessed"
+        ]
+        failed_mibs = [
+            f"{name} ({status.error})"
+            for name, status in sorted(processed.items())
+            if status == "failed"
+        ]
 
-        sys.stderr.write(f'{dryrunFlag and "Would be c" or "C"}reated/updated MIBs: {", ".join(compiled_mibs)}\r\n')
+        sys.stderr.write(
+            f'{dryrunFlag and "Would be c" or "C"}reated/updated MIBs: {", ".join(compiled_mibs)}\r\n'
+        )
 
-        sys.stderr.write(f'Pre-compiled MIBs {dryrunFlag and "Would be " or ""}borrowed: {", ".join(borrowed_mibs)}\r\n')
+        sys.stderr.write(
+            f'Pre-compiled MIBs {dryrunFlag and "Would be " or ""}borrowed: {", ".join(borrowed_mibs)}\r\n'
+        )
 
         sys.stderr.write(f'Up to date MIBs: {", ".join(untouched_mibs)}\r\n')
 
@@ -380,10 +471,10 @@ else:
 
     exitCode = EX_OK
 
-    if any(x for x in processed.values() if x == 'missing'):
+    if any(x for x in processed.values() if x == "missing"):
         exitCode = EX_MIB_MISSING
 
-    if any(x for x in processed.values() if x == 'failed'):
+    if any(x for x in processed.values() if x == "failed"):
         exitCode = EX_MIB_FAILED
 
     sys.exit(exitCode)

@@ -14,21 +14,23 @@ from pysmi import error
 from pysmi.lexer.smi import lexerFactory
 from pysmi.parser.base import AbstractParser
 
-YACC_VERSION = [int(x) for x in yacc.__version__.split('.')]
+YACC_VERSION = [int(x) for x in yacc.__version__.split(".")]
 
 
 # noinspection PyMethodMayBeStatic,PyIncorrectDocstring
 class SmiV2Parser(AbstractParser):
     defaultLexer = lexerFactory()
 
-    def __init__(self, startSym='mibFile', tempdir=''):
+    def __init__(self, startSym="mibFile", tempdir=""):
         if tempdir:
             tempdir = os.path.join(tempdir, startSym)
             try:
                 os.makedirs(tempdir)
             except OSError:
                 if sys.exc_info()[1].errno != 17:
-                    raise error.PySmiError(f'Failed to create cache directory {tempdir}: {sys.exc_info()[1]}')
+                    raise error.PySmiError(
+                        f"Failed to create cache directory {tempdir}: {sys.exc_info()[1]}"
+                    )
 
         self.lexer = self.defaultLexer(tempdir=tempdir)
 
@@ -36,11 +38,13 @@ class SmiV2Parser(AbstractParser):
         self.tokens = self.lexer.tokens
 
         if YACC_VERSION < [3, 0]:
-            self.parser = yacc.yacc(module=self,
-                                    start=startSym,
-                                    write_tables=bool(tempdir),
-                                    debug=False,
-                                    outputdir=tempdir)
+            self.parser = yacc.yacc(
+                module=self,
+                start=startSym,
+                write_tables=bool(tempdir),
+                debug=False,
+                outputdir=tempdir,
+            )
         else:
             if debug.logger & debug.flagParser:
                 logger = debug.logger.getCurrentLogger()
@@ -52,13 +56,15 @@ class SmiV2Parser(AbstractParser):
             else:
                 debuglogger = None
 
-            self.parser = yacc.yacc(module=self,
-                                    start=startSym,
-                                    write_tables=bool(tempdir),
-                                    debug=False,
-                                    outputdir=tempdir,
-                                    debuglog=debuglogger,
-                                    errorlog=logger)
+            self.parser = yacc.yacc(
+                module=self,
+                start=startSym,
+                write_tables=bool(tempdir),
+                debug=False,
+                outputdir=tempdir,
+                debuglog=debuglogger,
+                errorlog=logger,
+            )
 
     def reset(self):
         # Ply requires lexer reinitialization for (at least) resetting lineno
@@ -66,13 +72,16 @@ class SmiV2Parser(AbstractParser):
 
     def parse(self, data, **kwargs):
         if debug.logger & debug.flagParser:
-            debug.logger('source MIB size is %s characters, first 50 characters are "%s..."' % (len(data), data[:50]))
+            debug.logger(
+                'source MIB size is %s characters, first 50 characters are "%s..."'
+                % (len(data), data[:50])
+            )
 
         ast = self.parser.parse(data, lexer=self.lexer.lexer)
 
         self.reset()
 
-        if ast and ast[0] == 'mibFile' and ast[1]:  # mibfile is not empty
+        if ast and ast[0] == "mibFile" and ast[1]:  # mibfile is not empty
             return ast[1]
         else:
             return []
@@ -83,12 +92,12 @@ class SmiV2Parser(AbstractParser):
 
     def p_mibFile(self, p):
         """mibFile : modules
-                   | empty"""
-        p[0] = ('mibFile', p[1])
+        | empty"""
+        p[0] = ("mibFile", p[1])
 
     def p_modules(self, p):
         """modules : modules module
-                   | module"""
+        | module"""
         n = len(p)
         if n == 3:
             p[0] = p[1] + [p[2]]
@@ -97,21 +106,23 @@ class SmiV2Parser(AbstractParser):
 
     def p_module(self, p):
         """module : moduleName moduleOid DEFINITIONS COLON_COLON_EQUAL BEGIN exportsClause linkagePart declarationPart END"""
-        p[0] = (p[1],  # name
-                p[2],  # oid
-                p[7],  # linkage (imports)
-                p[8])  # declaration
+        p[0] = (
+            p[1],  # name
+            p[2],  # oid
+            p[7],  # linkage (imports)
+            p[8],
+        )  # declaration
 
     def p_moduleOid(self, p):
         """moduleOid : '{' objectIdentifier '}'
-                     | empty"""
+        | empty"""
         n = len(p)
         if n == 4:
             p[0] = p[2]
 
     def p_linkagePart(self, p):
         """linkagePart : linkageClause
-                       | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
@@ -121,11 +132,11 @@ class SmiV2Parser(AbstractParser):
 
     def p_exportsClause(self, p):
         """exportsClause : EXPORTS
-                         | empty"""
+        | empty"""
 
     def p_importPart(self, p):
         """importPart : imports
-                      | empty"""
+        | empty"""
         # libsmi: TODO: ``IMPORTS ;'' allowed? refer ASN.1!
         if p[1]:
             importDict = {}
@@ -140,7 +151,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_imports(self, p):
         """imports : imports import
-                   | import"""
+        | import"""
         n = len(p)
         if n == 3:
             p[0] = p[1] + [p[2]]
@@ -151,12 +162,11 @@ class SmiV2Parser(AbstractParser):
         """import : importIdentifiers FROM moduleName"""
         # libsmi: TODO: multiple clauses with same moduleName allowed?
         # I guess so. refer ASN.1!
-        p[0] = (p[3],  # moduleName
-                p[1])  # ids
+        p[0] = (p[3], p[1])  # moduleName  # ids
 
     def p_importIdentifiers(self, p):
         """importIdentifiers : importIdentifiers ',' importIdentifier
-                             | importIdentifier"""
+        | importIdentifier"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -166,35 +176,35 @@ class SmiV2Parser(AbstractParser):
     # Note that some named types must not be imported, REF:RFC1902,590
     def p_importIdentifier(self, p):
         """importIdentifier : LOWERCASE_IDENTIFIER
-                            | UPPERCASE_IDENTIFIER
-                            | importedKeyword"""
+        | UPPERCASE_IDENTIFIER
+        | importedKeyword"""
         p[0] = p[1]
 
     def p_importedKeyword(self, p):
         """importedKeyword : importedSMIKeyword
-                           | BITS
-                           | INTEGER32
-                           | IPADDRESS
-                           | MANDATORY_GROUPS
-                           | MODULE_COMPLIANCE
-                           | MODULE_IDENTITY
-                           | OBJECT_GROUP
-                           | OBJECT_IDENTITY
-                           | OBJECT_TYPE
-                           | OPAQUE
-                           | TEXTUAL_CONVENTION
-                           | TIMETICKS
-                           | UNSIGNED32"""
+        | BITS
+        | INTEGER32
+        | IPADDRESS
+        | MANDATORY_GROUPS
+        | MODULE_COMPLIANCE
+        | MODULE_IDENTITY
+        | OBJECT_GROUP
+        | OBJECT_IDENTITY
+        | OBJECT_TYPE
+        | OPAQUE
+        | TEXTUAL_CONVENTION
+        | TIMETICKS
+        | UNSIGNED32"""
         p[0] = p[1]
 
     def p_importedSMIKeyword(self, p):
         """importedSMIKeyword : AGENT_CAPABILITIES
-                              | COUNTER32
-                              | COUNTER64
-                              | GAUGE32
-                              | NOTIFICATION_GROUP
-                              | NOTIFICATION_TYPE
-                              | TRAP_TYPE"""
+        | COUNTER32
+        | COUNTER64
+        | GAUGE32
+        | NOTIFICATION_GROUP
+        | NOTIFICATION_TYPE
+        | TRAP_TYPE"""
         p[0] = p[1]
 
     def p_moduleName(self, p):
@@ -203,13 +213,13 @@ class SmiV2Parser(AbstractParser):
 
     def p_declarationPart(self, p):
         """declarationPart : declarations
-                           | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_declarations(self, p):
         """declarations : declarations declaration
-                        | declaration"""
+        | declaration"""
         n = len(p)
         if n == 3:
             p[0] = p[1] + [p[2]]
@@ -218,17 +228,17 @@ class SmiV2Parser(AbstractParser):
 
     def p_declaration(self, p):
         """declaration : typeDeclaration
-                       | valueDeclaration
-                       | objectIdentityClause
-                       | objectTypeClause
-                       | trapTypeClause
-                       | notificationTypeClause
-                       | moduleIdentityClause
-                       | moduleComplianceClause
-                       | objectGroupClause
-                       | notificationGroupClause
-                       | agentCapabilitiesClause
-                       | macroClause"""
+        | valueDeclaration
+        | objectIdentityClause
+        | objectTypeClause
+        | trapTypeClause
+        | notificationTypeClause
+        | moduleIdentityClause
+        | moduleComplianceClause
+        | objectGroupClause
+        | notificationGroupClause
+        | agentCapabilitiesClause
+        | macroClause"""
         if p[1]:
             p[0] = p[1]
 
@@ -237,82 +247,83 @@ class SmiV2Parser(AbstractParser):
 
     def p_macroName(self, p):
         """macroName : MODULE_IDENTITY
-                     | OBJECT_TYPE
-                     | TRAP_TYPE
-                     | NOTIFICATION_TYPE
-                     | OBJECT_IDENTITY
-                     | TEXTUAL_CONVENTION
-                     | OBJECT_GROUP
-                     | NOTIFICATION_GROUP
-                     | MODULE_COMPLIANCE
-                     | AGENT_CAPABILITIES"""
+        | OBJECT_TYPE
+        | TRAP_TYPE
+        | NOTIFICATION_TYPE
+        | OBJECT_IDENTITY
+        | TEXTUAL_CONVENTION
+        | OBJECT_GROUP
+        | NOTIFICATION_GROUP
+        | MODULE_COMPLIANCE
+        | AGENT_CAPABILITIES"""
 
     def p_choiceClause(self, p):
-        """choiceClause : CHOICE """
+        """choiceClause : CHOICE"""
 
     # libsmi: The only ASN.1 value declarations are for OIDs, REF:RFC1902,491.
     def p_fuzzy_lowercase_identifier(self, p):
         """fuzzy_lowercase_identifier : LOWERCASE_IDENTIFIER
-                                      | UPPERCASE_IDENTIFIER"""
+        | UPPERCASE_IDENTIFIER"""
         p[0] = p[1]
 
     def p_valueDeclaration(self, p):
         """valueDeclaration : fuzzy_lowercase_identifier OBJECT IDENTIFIER COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('valueDeclaration', p[1],  # id
-                p[6])  # objectIdentifier
+        p[0] = ("valueDeclaration", p[1], p[6])  # id  # objectIdentifier
 
     def p_typeDeclaration(self, p):
         """typeDeclaration : typeName COLON_COLON_EQUAL typeDeclarationRHS"""
-        p[0] = ('typeDeclaration', p[1],  # name
-                p[3])  # declarationRHS
+        p[0] = ("typeDeclaration", p[1], p[3])  # name  # declarationRHS
 
     def p_typeName(self, p):
         """typeName : UPPERCASE_IDENTIFIER
-                    | typeSMI"""
+        | typeSMI"""
         p[0] = p[1]
 
     def p_typeSMI(self, p):
         """typeSMI : typeSMIandSPPI
-                   | typeSMIonly"""
+        | typeSMIonly"""
         p[0] = p[1]
 
     def p_typeSMIandSPPI(self, p):
         """typeSMIandSPPI : IPADDRESS
-                          | TIMETICKS
-                          | OPAQUE
-                          | INTEGER32
-                          | UNSIGNED32"""
+        | TIMETICKS
+        | OPAQUE
+        | INTEGER32
+        | UNSIGNED32"""
         p[0] = p[1]
 
     def p_typeSMIonly(self, p):
         """typeSMIonly : COUNTER32
-                       | GAUGE32
-                       | COUNTER64"""
+        | GAUGE32
+        | COUNTER64"""
         p[0] = p[1]
 
     def p_typeDeclarationRHS(self, p):
         """typeDeclarationRHS : Syntax
-                              | TEXTUAL_CONVENTION DisplayPart STATUS Status DESCRIPTION Text ReferPart SYNTAX Syntax
-                              | choiceClause"""
+        | TEXTUAL_CONVENTION DisplayPart STATUS Status DESCRIPTION Text ReferPart SYNTAX Syntax
+        | choiceClause"""
         if p[1]:
-            if p[1] == 'TEXTUAL-CONVENTION':
-                p[0] = ('typeDeclarationRHS', p[2],  # display
-                        p[4],  # status
-                        (p[5], p[6]),  # description
-                        p[7],  # reference
-                        p[9])  # syntax
+            if p[1] == "TEXTUAL-CONVENTION":
+                p[0] = (
+                    "typeDeclarationRHS",
+                    p[2],  # display
+                    p[4],  # status
+                    (p[5], p[6]),  # description
+                    p[7],  # reference
+                    p[9],
+                )  # syntax
             else:
-                p[0] = ('typeDeclarationRHS', p[1])
+                p[0] = ("typeDeclarationRHS", p[1])
                 # ignore the choiceClause
 
     def p_conceptualTable(self, p):
         """conceptualTable : SEQUENCE OF row"""
-        p[0] = ('conceptualTable', p[3])
+        p[0] = ("conceptualTable", p[3])
 
     def p_row(self, p):
         """row : UPPERCASE_IDENTIFIER"""
         # libsmi: TODO: this must be an entryType
-        p[0] = ('row', p[1])
+        p[0] = ("row", p[1])
 
     def p_entryType(self, p):
         """entryType : SEQUENCE '{' sequenceItems '}'"""
@@ -320,7 +331,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_sequenceItems(self, p):
         """sequenceItems : sequenceItems ',' sequenceItem
-                         | sequenceItem"""
+        | sequenceItem"""
         # libsmi: TODO: might this list be emtpy?
         n = len(p)
         if n == 4:
@@ -334,7 +345,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_Syntax(self, p):
         """Syntax : ObjectSyntax
-                  | BITS '{' NamedBits '}'"""
+        | BITS '{' NamedBits '}'"""
         # libsmi: TODO: standalone `BITS' ok? seen in RMON2-MIB
         # libsmi: -> no, it's only allowed in a SEQUENCE {...}
         n = len(p)
@@ -345,13 +356,13 @@ class SmiV2Parser(AbstractParser):
 
     def p_sequenceSyntax(self, p):
         """sequenceSyntax : BITS
-                          | UPPERCASE_IDENTIFIER anySubType
-                          | sequenceObjectSyntax"""
+        | UPPERCASE_IDENTIFIER anySubType
+        | sequenceObjectSyntax"""
         p[0] = p[1]  # no subtype or complex syntax supported
 
     def p_NamedBits(self, p):
         """NamedBits : NamedBits ',' NamedBit
-                     | NamedBit"""
+        | NamedBit"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -364,58 +375,67 @@ class SmiV2Parser(AbstractParser):
 
     def p_objectIdentityClause(self, p):
         """objectIdentityClause : LOWERCASE_IDENTIFIER OBJECT_IDENTITY STATUS Status DESCRIPTION Text ReferPart COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('objectIdentityClause', p[1],  # id
-                #  p[2], # OBJECT_IDENTITY
-                p[4],  # status
-                (p[5], p[6]),  # description
-                p[7],  # reference
-                p[10])  # objectIdentifier
+        p[0] = (
+            "objectIdentityClause",
+            p[1],  # id
+            #  p[2], # OBJECT_IDENTITY
+            p[4],  # status
+            (p[5], p[6]),  # description
+            p[7],  # reference
+            p[10],
+        )  # objectIdentifier
 
     def p_objectTypeClause(self, p):
         """objectTypeClause : LOWERCASE_IDENTIFIER OBJECT_TYPE SYNTAX Syntax UnitsPart MaxOrPIBAccessPart STATUS Status descriptionClause ReferPart IndexPart MibIndex DefValPart COLON_COLON_EQUAL '{' ObjectName '}'"""
-        p[0] = ('objectTypeClause', p[1],  # id
-                #  p[2], # OBJECT_TYPE
-                p[4],  # syntax
-                p[5],  # UnitsPart
-                p[6],  # MaxOrPIBAccessPart
-                p[8],  # status
-                p[9],  # descriptionClause
-                p[10],  # reference
-                p[11],  # augmentions
-                p[12],  # index
-                p[13],  # DefValPart
-                p[16])  # ObjectName
+        p[0] = (
+            "objectTypeClause",
+            p[1],  # id
+            #  p[2], # OBJECT_TYPE
+            p[4],  # syntax
+            p[5],  # UnitsPart
+            p[6],  # MaxOrPIBAccessPart
+            p[8],  # status
+            p[9],  # descriptionClause
+            p[10],  # reference
+            p[11],  # augmentions
+            p[12],  # index
+            p[13],  # DefValPart
+            p[16],
+        )  # ObjectName
 
     def p_descriptionClause(self, p):
         """descriptionClause : DESCRIPTION Text
-                             | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
     def p_trapTypeClause(self, p):
         """trapTypeClause : fuzzy_lowercase_identifier TRAP_TYPE ENTERPRISE objectIdentifier VarPart DescrPart ReferPart COLON_COLON_EQUAL NUMBER"""
         # libsmi: TODO: range of number?
-        p[0] = ('trapTypeClause', p[1],  # fuzzy_lowercase_identifier
-                #  p[2], # TRAP_TYPE
-                p[4],  # objectIdentifier
-                p[5],  # VarPart
-                p[6],  # description
-                p[7],  # reference
-                p[9])  # NUMBER
+        p[0] = (
+            "trapTypeClause",
+            p[1],  # fuzzy_lowercase_identifier
+            #  p[2], # TRAP_TYPE
+            p[4],  # objectIdentifier
+            p[5],  # VarPart
+            p[6],  # description
+            p[7],  # reference
+            p[9],
+        )  # NUMBER
 
     def p_VarPart(self, p):
         """VarPart : VARIABLES '{' VarTypes '}'
-                   | empty"""
+        | empty"""
         p[0] = p[3] if p[1] else []
 
     def p_VarTypes(self, p):
         """VarTypes : VarTypes ',' VarType
-                    | VarType"""
+        | VarType"""
         n = len(p)
         if n == 4:
-            p[0] = ('VarTypes', p[1][1] + [p[3]])
+            p[0] = ("VarTypes", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('VarTypes', [p[1]])
+            p[0] = ("VarTypes", [p[1]])
 
     def p_VarType(self, p):
         """VarType : ObjectName"""
@@ -423,49 +443,54 @@ class SmiV2Parser(AbstractParser):
 
     def p_DescrPart(self, p):
         """DescrPart : DESCRIPTION Text
-                     | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
     def p_MaxOrPIBAccessPart(self, p):
         """MaxOrPIBAccessPart : MaxAccessPart
-                              | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_MaxAccessPart(self, p):
         """MaxAccessPart : MAX_ACCESS Access
-                         | ACCESS Access"""
-        p[0] = ('MaxAccessPart', p[2])
+        | ACCESS Access"""
+        p[0] = ("MaxAccessPart", p[2])
 
     def p_notificationTypeClause(self, p):
         """notificationTypeClause : LOWERCASE_IDENTIFIER NOTIFICATION_TYPE NotificationObjectsPart STATUS Status DESCRIPTION Text ReferPart COLON_COLON_EQUAL '{' NotificationName '}'"""
-        p[0] = ('notificationTypeClause',
-                p[1],  # id
-                #  p[2], # NOTIFICATION_TYPE
-                p[3],  # NotificationObjectsPart
-                p[5],  # status
-                (p[6], p[7]),  # description
-                p[8],  # reference
-                p[11])  # NotificationName aka objectIdentifier
+        p[0] = (
+            "notificationTypeClause",
+            p[1],  # id
+            #  p[2], # NOTIFICATION_TYPE
+            p[3],  # NotificationObjectsPart
+            p[5],  # status
+            (p[6], p[7]),  # description
+            p[8],  # reference
+            p[11],
+        )  # NotificationName aka objectIdentifier
 
     def p_moduleIdentityClause(self, p):
         """moduleIdentityClause : LOWERCASE_IDENTIFIER MODULE_IDENTITY SubjectCategoriesPart LAST_UPDATED ExtUTCTime ORGANIZATION Text CONTACT_INFO Text DESCRIPTION Text RevisionPart COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('moduleIdentityClause', p[1],  # id
-                #  p[2], # MODULE_IDENTITY
-                # XXX  p[3], # SubjectCategoriesPart
-                (p[4], p[5]),  # last updated
-                (p[6], p[7]),  # organization
-                (p[8], p[9]),  # contact info
-                (p[10], p[11]),  # description
-                p[12],  # RevisionPart
-                p[15])  # objectIdentifier
+        p[0] = (
+            "moduleIdentityClause",
+            p[1],  # id
+            #  p[2], # MODULE_IDENTITY
+            # XXX  p[3], # SubjectCategoriesPart
+            (p[4], p[5]),  # last updated
+            (p[6], p[7]),  # organization
+            (p[8], p[9]),  # contact info
+            (p[10], p[11]),  # description
+            p[12],  # RevisionPart
+            p[15],
+        )  # objectIdentifier
 
     # Subject categories: RFC3159
 
     def p_SubjectCategoriesPart(self, p):
         """SubjectCategoriesPart : SUBJECT_CATEGORIES '{' SubjectCategories '}'
-                                 | empty"""
+        | empty"""
         # if p[1]:
         #  p[0] = (p[1], p[3])
 
@@ -475,7 +500,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_CategoryIDs(self, p):
         """CategoryIDs : CategoryIDs ',' CategoryID
-                       | CategoryID"""
+        | CategoryID"""
         # n = len(p)
         # if n == 4:
         #  p[0] = ('CategoryIDs', p[1][1] + [p[3]])
@@ -484,7 +509,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_CategoryID(self, p):
         """CategoryID : LOWERCASE_IDENTIFIER '(' NUMBER ')'
-                      | LOWERCASE_IDENTIFIER"""
+        | LOWERCASE_IDENTIFIER"""
         # n = len(p)
         # if n == 2:
         #  p[0] = ('CategoryID', p[1])
@@ -495,11 +520,11 @@ class SmiV2Parser(AbstractParser):
 
     def p_ObjectSyntax(self, p):
         """ObjectSyntax : SimpleSyntax
-                        | conceptualTable
-                        | row
-                        | entryType
-                        | ApplicationSyntax
-                        | typeTag SimpleSyntax"""
+        | conceptualTable
+        | row
+        | entryType
+        | ApplicationSyntax
+        | typeTag SimpleSyntax"""
         n = len(p)
         if n == 2:
             p[0] = p[1]
@@ -508,11 +533,11 @@ class SmiV2Parser(AbstractParser):
 
     def p_typeTag(self, p):
         """typeTag : '[' APPLICATION NUMBER ']' IMPLICIT
-                   | '[' UNIVERSAL NUMBER ']' IMPLICIT"""
+        | '[' UNIVERSAL NUMBER ']' IMPLICIT"""
 
     def p_sequenceObjectSyntax(self, p):
         """sequenceObjectSyntax : sequenceSimpleSyntax
-                                | sequenceApplicationSyntax"""
+        | sequenceApplicationSyntax"""
         # libsmi: TO DO: add to this rule conceptualTable, row, entryType
         p[0] = p[1]
 
@@ -522,39 +547,39 @@ class SmiV2Parser(AbstractParser):
 
     def p_SimpleSyntax(self, p):
         """SimpleSyntax : INTEGER
-                        | INTEGER integerSubType
-                        | INTEGER enumSpec
-                        | INTEGER32
-                        | INTEGER32 integerSubType
-                        | UPPERCASE_IDENTIFIER enumSpec
-                        | UPPERCASE_IDENTIFIER integerSubType
-                        | OCTET STRING
-                        | OCTET STRING octetStringSubType
-                        | UPPERCASE_IDENTIFIER octetStringSubType
-                        | OBJECT IDENTIFIER anySubType"""
+        | INTEGER integerSubType
+        | INTEGER enumSpec
+        | INTEGER32
+        | INTEGER32 integerSubType
+        | UPPERCASE_IDENTIFIER enumSpec
+        | UPPERCASE_IDENTIFIER integerSubType
+        | OCTET STRING
+        | OCTET STRING octetStringSubType
+        | UPPERCASE_IDENTIFIER octetStringSubType
+        | OBJECT IDENTIFIER anySubType"""
         n = len(p)
         if n == 2:
-            p[0] = ('SimpleSyntax', p[1])
+            p[0] = ("SimpleSyntax", p[1])
 
         elif n == 3:
-            if p[1] == 'OCTET':
-                p[0] = ('SimpleSyntax', p[1] + ' ' + p[2])
+            if p[1] == "OCTET":
+                p[0] = ("SimpleSyntax", p[1] + " " + p[2])
             else:
-                p[0] = ('SimpleSyntax', p[1], p[2])
+                p[0] = ("SimpleSyntax", p[1], p[2])
 
         elif n == 4:
-            p[0] = ('SimpleSyntax', p[1] + ' ' + p[2], p[3])
+            p[0] = ("SimpleSyntax", p[1] + " " + p[2], p[3])
 
     def p_valueofSimpleSyntax(self, p):
         """valueofSimpleSyntax : NUMBER
-                               | NEGATIVENUMBER
-                               | NUMBER64
-                               | NEGATIVENUMBER64
-                               | HEX_STRING
-                               | BIN_STRING
-                               | LOWERCASE_IDENTIFIER
-                               | QUOTED_STRING
-                               | '{' objectIdentifier_defval '}'"""
+        | NEGATIVENUMBER
+        | NUMBER64
+        | NEGATIVENUMBER64
+        | HEX_STRING
+        | BIN_STRING
+        | LOWERCASE_IDENTIFIER
+        | QUOTED_STRING
+        | '{' objectIdentifier_defval '}'"""
         # libsmi for objectIdentifier_defval:
         # This is only for some MIBs with invalid numerical
         # OID notation for DEFVALs. We DO NOT parse them
@@ -568,43 +593,43 @@ class SmiV2Parser(AbstractParser):
 
     def p_sequenceSimpleSyntax(self, p):
         """sequenceSimpleSyntax : INTEGER anySubType
-                                | INTEGER32 anySubType
-                                | OCTET STRING anySubType
-                                | OBJECT IDENTIFIER anySubType"""
+        | INTEGER32 anySubType
+        | OCTET STRING anySubType
+        | OBJECT IDENTIFIER anySubType"""
         n = len(p)
         if n == 3:
             p[0] = p[1]  # XXX not supporting subtypes here
         elif n == 4:
-            p[0] = p[1] + ' ' + p[2]  # XXX not supporting subtypes here
+            p[0] = p[1] + " " + p[2]  # XXX not supporting subtypes here
 
     def p_ApplicationSyntax(self, p):
         """ApplicationSyntax : IPADDRESS anySubType
-                             | COUNTER32
-                             | COUNTER32 integerSubType
-                             | GAUGE32
-                             | GAUGE32 integerSubType
-                             | UNSIGNED32
-                             | UNSIGNED32 integerSubType
-                             | TIMETICKS anySubType
-                             | OPAQUE
-                             | OPAQUE octetStringSubType
-                             | COUNTER64
-                             | COUNTER64 integerSubType"""
+        | COUNTER32
+        | COUNTER32 integerSubType
+        | GAUGE32
+        | GAUGE32 integerSubType
+        | UNSIGNED32
+        | UNSIGNED32 integerSubType
+        | TIMETICKS anySubType
+        | OPAQUE
+        | OPAQUE octetStringSubType
+        | COUNTER64
+        | COUNTER64 integerSubType"""
         # COUNTER32 and COUNTER64 was with anySubType in libsmi
         n = len(p)
         if n == 2:
-            p[0] = ('ApplicationSyntax', p[1])
+            p[0] = ("ApplicationSyntax", p[1])
         elif n == 3:
-            p[0] = ('ApplicationSyntax', p[1], p[2])
+            p[0] = ("ApplicationSyntax", p[1], p[2])
 
     def p_sequenceApplicationSyntax(self, p):
         """sequenceApplicationSyntax : IPADDRESS anySubType
-                                     | COUNTER32 anySubType
-                                     | GAUGE32 anySubType
-                                     | UNSIGNED32 anySubType
-                                     | TIMETICKS anySubType
-                                     | OPAQUE
-                                     | COUNTER64 anySubType"""
+        | COUNTER32 anySubType
+        | GAUGE32 anySubType
+        | UNSIGNED32 anySubType
+        | TIMETICKS anySubType
+        | OPAQUE
+        | COUNTER64 anySubType"""
         n = len(p)
         if n == 2:
             p[0] = p[1]
@@ -613,23 +638,23 @@ class SmiV2Parser(AbstractParser):
 
     def p_anySubType(self, p):
         """anySubType : integerSubType
-                      | octetStringSubType
-                      | enumSpec
-                      | empty"""
+        | octetStringSubType
+        | enumSpec
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_integerSubType(self, p):
         """integerSubType : '(' ranges ')'"""
-        p[0] = ('integerSubType', p[2])
+        p[0] = ("integerSubType", p[2])
 
     def p_octetStringSubType(self, p):
         """octetStringSubType : '(' SIZE '(' ranges ')' ')'"""
-        p[0] = ('octetStringSubType', p[4])
+        p[0] = ("octetStringSubType", p[4])
 
     def p_ranges(self, p):
         """ranges : ranges '|' range
-                  | range"""
+        | range"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -638,7 +663,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_range(self, p):
         """range : value DOT_DOT value
-                 | value"""
+        | value"""
         n = len(p)
         if n == 2:
             p[0] = (p[1],)
@@ -647,20 +672,20 @@ class SmiV2Parser(AbstractParser):
 
     def p_value(self, p):
         """value : NEGATIVENUMBER
-                 | NUMBER
-                 | NEGATIVENUMBER64
-                 | NUMBER64
-                 | HEX_STRING
-                 | BIN_STRING"""
+        | NUMBER
+        | NEGATIVENUMBER64
+        | NUMBER64
+        | HEX_STRING
+        | BIN_STRING"""
         p[0] = p[1]
 
     def p_enumSpec(self, p):
         """enumSpec : '{' enumItems '}'"""
-        p[0] = ('enumSpec', p[2])
+        p[0] = ("enumSpec", p[2])
 
     def p_enumItems(self, p):
         """enumItems : enumItems ',' enumItem
-                     | enumItem"""
+        | enumItem"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -673,23 +698,23 @@ class SmiV2Parser(AbstractParser):
 
     def p_enumNumber(self, p):
         """enumNumber : NUMBER
-                      | NEGATIVENUMBER"""
+        | NEGATIVENUMBER"""
         # XXX              | LOWERCASE_IDENTIFIER"""
         p[0] = p[1]
 
     def p_Status(self, p):
         """Status : LOWERCASE_IDENTIFIER"""
-        p[0] = ('Status', p[1])
+        p[0] = ("Status", p[1])
 
     def p_DisplayPart(self, p):
         """DisplayPart : DISPLAY_HINT Text
-                       | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
     def p_UnitsPart(self, p):
         """UnitsPart : UNITS Text
-                     | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
@@ -699,19 +724,19 @@ class SmiV2Parser(AbstractParser):
 
     def p_IndexPart(self, p):
         """IndexPart : AUGMENTS '{' Entry '}'
-                     | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[3]
 
     def p_MibIndex(self, p):
         """MibIndex : INDEX '{' IndexTypes '}'
-                    | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[3])
 
     def p_IndexTypes(self, p):
         """IndexTypes : IndexTypes ',' IndexType
-                      | IndexType"""
+        | IndexType"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -720,7 +745,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_IndexType(self, p):
         """IndexType : IMPLIED Index
-                     | Index"""
+        | Index"""
         n = len(p)
         if n == 2:
             p[0] = (0, p[1])
@@ -739,13 +764,13 @@ class SmiV2Parser(AbstractParser):
 
     def p_DefValPart(self, p):
         """DefValPart : DEFVAL '{' Value '}'
-                      | empty"""
+        | empty"""
         if p[1] and p[3]:
             p[0] = (p[1], p[3])
 
     def p_Value(self, p):
         """Value : valueofObjectSyntax
-                 | '{' BitsValue '}'"""
+        | '{' BitsValue '}'"""
         n = len(p)
         if n == 2:
             p[0] = p[1]
@@ -754,18 +779,18 @@ class SmiV2Parser(AbstractParser):
 
     def p_BitsValue(self, p):
         """BitsValue : BitNames
-                     | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_BitNames(self, p):
         """BitNames : BitNames ',' LOWERCASE_IDENTIFIER
-                    | LOWERCASE_IDENTIFIER"""
+        | LOWERCASE_IDENTIFIER"""
         n = len(p)
         if n == 4:
-            p[0] = ('BitNames', p[1][1] + [p[3]])
+            p[0] = ("BitNames", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('BitNames', [p[1]])
+            p[0] = ("BitNames", [p[1]])
 
     def p_ObjectName(self, p):
         """ObjectName : objectIdentifier"""
@@ -777,33 +802,32 @@ class SmiV2Parser(AbstractParser):
 
     def p_ReferPart(self, p):
         """ReferPart : REFERENCE Text
-                     | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
     def p_RevisionPart(self, p):
         """RevisionPart : Revisions
-                        | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_Revisions(self, p):
         """Revisions : Revisions Revision
-                     | Revision"""
+        | Revision"""
         n = len(p)
         if n == 3:
-            p[0] = ('Revisions', p[1][1] + [p[2]])
+            p[0] = ("Revisions", p[1][1] + [p[2]])
         elif n == 2:
-            p[0] = ('Revisions', [p[1]])
+            p[0] = ("Revisions", [p[1]])
 
     def p_Revision(self, p):
         """Revision : REVISION ExtUTCTime DESCRIPTION Text"""
-        p[0] = (p[2],  # revision time
-                (p[3], p[4]))  # description
+        p[0] = (p[2], (p[3], p[4]))  # revision time  # description
 
     def p_NotificationObjectsPart(self, p):
         """NotificationObjectsPart : OBJECTS '{' Objects '}'
-                                   | empty"""
+        | empty"""
         p[0] = p[3] if p[1] else []
 
     def p_ObjectGroupObjectsPart(self, p):
@@ -812,12 +836,12 @@ class SmiV2Parser(AbstractParser):
 
     def p_Objects(self, p):
         """Objects : Objects ',' Object
-                   | Object"""
+        | Object"""
         n = len(p)
         if n == 4:
-            p[0] = ('Objects', p[1][1] + [p[3]])
+            p[0] = ("Objects", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('Objects', [p[1]])
+            p[0] = ("Objects", [p[1]])
 
     def p_Object(self, p):
         """Object : ObjectName"""
@@ -829,12 +853,12 @@ class SmiV2Parser(AbstractParser):
 
     def p_Notifications(self, p):
         """Notifications : Notifications ',' Notification
-                         | Notification"""
+        | Notification"""
         n = len(p)
         if n == 4:
-            p[0] = ('Notifications', p[1][1] + [p[3]])
+            p[0] = ("Notifications", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('Notifications', [p[1]])
+            p[0] = ("Notifications", [p[1]])
 
     def p_Notification(self, p):
         """Notification : NotificationName"""
@@ -850,11 +874,11 @@ class SmiV2Parser(AbstractParser):
 
     def p_objectIdentifier(self, p):
         """objectIdentifier : subidentifiers"""
-        p[0] = ('objectIdentifier', p[1])
+        p[0] = ("objectIdentifier", p[1])
 
     def p_subidentifiers(self, p):
         """subidentifiers : subidentifiers subidentifier
-                          | subidentifier"""
+        | subidentifier"""
         n = len(p)
         if n == 3:
             p[0] = p[1] + [p[2]]
@@ -863,8 +887,8 @@ class SmiV2Parser(AbstractParser):
 
     def p_subidentifier(self, p):
         """subidentifier : fuzzy_lowercase_identifier
-                         | NUMBER
-                         | LOWERCASE_IDENTIFIER '(' NUMBER ')'"""
+        | NUMBER
+        | LOWERCASE_IDENTIFIER '(' NUMBER ')'"""
         n = len(p)
         if n == 2:
             p[0] = p[1]
@@ -875,56 +899,62 @@ class SmiV2Parser(AbstractParser):
 
     def p_objectIdentifier_defval(self, p):
         """objectIdentifier_defval : subidentifiers_defval"""
-        p[0] = ('objectIdentifier_defval', p[1])
+        p[0] = ("objectIdentifier_defval", p[1])
 
     def p_subidentifiers_defval(self, p):
         """subidentifiers_defval : subidentifiers_defval subidentifier_defval
-                                 | subidentifier_defval"""
+        | subidentifier_defval"""
         n = len(p)
         if n == 3:
-            p[0] = ('subidentifiers_defval', p[1][1] + [p[2]])
+            p[0] = ("subidentifiers_defval", p[1][1] + [p[2]])
         elif n == 2:
-            p[0] = ('subidentifiers_defval', [p[1]])
+            p[0] = ("subidentifiers_defval", [p[1]])
 
     def p_subidentifier_defval(self, p):
         """subidentifier_defval : LOWERCASE_IDENTIFIER '(' NUMBER ')'
-                                | NUMBER"""
+        | NUMBER"""
         n = len(p)
         if n == 2:
-            p[0] = ('subidentifier_defval', p[1])
+            p[0] = ("subidentifier_defval", p[1])
         elif n == 5:
-            p[0] = ('subidentifier_defval', p[1], p[3])
+            p[0] = ("subidentifier_defval", p[1], p[3])
 
     def p_objectGroupClause(self, p):
         """objectGroupClause : LOWERCASE_IDENTIFIER OBJECT_GROUP ObjectGroupObjectsPart STATUS Status DESCRIPTION Text ReferPart COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('objectGroupClause',
-                p[1],  # id
-                p[3],  # objects
-                p[5],  # status
-                (p[6], p[7]),  # description
-                p[8],  # reference
-                p[11])  # objectIdentifier
+        p[0] = (
+            "objectGroupClause",
+            p[1],  # id
+            p[3],  # objects
+            p[5],  # status
+            (p[6], p[7]),  # description
+            p[8],  # reference
+            p[11],
+        )  # objectIdentifier
 
     def p_notificationGroupClause(self, p):
         """notificationGroupClause : LOWERCASE_IDENTIFIER NOTIFICATION_GROUP NotificationsPart STATUS Status DESCRIPTION Text ReferPart COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('notificationGroupClause',
-                p[1],  # id
-                p[3],  # notifications
-                p[5],  # status
-                (p[6], p[7]),  # description
-                p[8],  # reference
-                p[11])  # objectIdentifier
+        p[0] = (
+            "notificationGroupClause",
+            p[1],  # id
+            p[3],  # notifications
+            p[5],  # status
+            (p[6], p[7]),  # description
+            p[8],  # reference
+            p[11],
+        )  # objectIdentifier
 
     def p_moduleComplianceClause(self, p):
         """moduleComplianceClause : LOWERCASE_IDENTIFIER MODULE_COMPLIANCE STATUS Status DESCRIPTION Text ReferPart ComplianceModulePart COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('moduleComplianceClause',
-                p[1],  # id
-                #  p[2], # MODULE_COMPLIANCE
-                p[4],  # status
-                (p[5], p[6]),  # description
-                p[7],  # reference
-                p[8],  # ComplianceModules
-                p[11])  # objectIdentifier
+        p[0] = (
+            "moduleComplianceClause",
+            p[1],  # id
+            #  p[2], # MODULE_COMPLIANCE
+            p[4],  # status
+            (p[5], p[6]),  # description
+            p[7],  # reference
+            p[8],  # ComplianceModules
+            p[11],
+        )  # objectIdentifier
 
     def p_ComplianceModulePart(self, p):
         """ComplianceModulePart : ComplianceModules"""
@@ -932,40 +962,39 @@ class SmiV2Parser(AbstractParser):
 
     def p_ComplianceModules(self, p):
         """ComplianceModules : ComplianceModules ComplianceModule
-                             | ComplianceModule"""
+        | ComplianceModule"""
         n = len(p)
         if n == 3:
-            p[0] = ('ComplianceModules', p[1][1] + [p[2]])
+            p[0] = ("ComplianceModules", p[1][1] + [p[2]])
         elif n == 2:
-            p[0] = ('ComplianceModules', [p[1]])
+            p[0] = ("ComplianceModules", [p[1]])
 
     def p_ComplianceModule(self, p):
         """ComplianceModule : MODULE ComplianceModuleName MandatoryPart CompliancePart"""
         objects = p[3][1] if p[3] else []
         objects += p[4][1] if p[4] else []
-        p[0] = (p[2],  # ModuleName
-                objects)  # MandatoryPart + CompliancePart
+        p[0] = (p[2], objects)  # ModuleName  # MandatoryPart + CompliancePart
 
     def p_ComplianceModuleName(self, p):
         """ComplianceModuleName : UPPERCASE_IDENTIFIER
-                                | empty"""
+        | empty"""
         # XXX                   | UPPERCASE_IDENTIFIER objectIdentifier
         p[0] = p[1]
 
     def p_MandatoryPart(self, p):
         """MandatoryPart : MANDATORY_GROUPS '{' MandatoryGroups '}'
-                         | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[3]
 
     def p_MandatoryGroups(self, p):
         """MandatoryGroups : MandatoryGroups ',' MandatoryGroup
-                           | MandatoryGroup"""
+        | MandatoryGroup"""
         n = len(p)
         if n == 4:
-            p[0] = ('MandatoryGroups', p[1][1] + [p[3]])
+            p[0] = ("MandatoryGroups", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('MandatoryGroups', [p[1]])
+            p[0] = ("MandatoryGroups", [p[1]])
 
     def p_MandatoryGroup(self, p):
         """MandatoryGroup : objectIdentifier"""
@@ -973,22 +1002,22 @@ class SmiV2Parser(AbstractParser):
 
     def p_CompliancePart(self, p):
         """CompliancePart : Compliances
-                          | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[1]
 
     def p_Compliances(self, p):
         """Compliances : Compliances Compliance
-                       | Compliance"""
+        | Compliance"""
         n = len(p)
         if n == 3:
-            p[0] = ('Compliances', p[1][1] + [p[2]]) if p[1] and p[2] else p[1]
+            p[0] = ("Compliances", p[1][1] + [p[2]]) if p[1] and p[2] else p[1]
         elif n == 2:
-            p[0] = ('Compliances', [p[1]]) if p[1] else None
+            p[0] = ("Compliances", [p[1]]) if p[1] else None
 
     def p_Compliance(self, p):
         """Compliance : ComplianceGroup
-                      | ComplianceObject"""
+        | ComplianceObject"""
         if p[1]:
             p[0] = p[1]
 
@@ -1009,46 +1038,49 @@ class SmiV2Parser(AbstractParser):
 
     def p_SyntaxPart(self, p):
         """SyntaxPart : SYNTAX Syntax
-                      | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[2]
 
     def p_WriteSyntaxPart(self, p):
         """WriteSyntaxPart : WRITE_SYNTAX WriteSyntax
-                           | empty"""
+        | empty"""
         if p[1]:
             p[0] = p[2]
 
     def p_WriteSyntax(self, p):
         """WriteSyntax : Syntax"""
-        p[0] = ('WriteSyntax', p[1])
+        p[0] = ("WriteSyntax", p[1])
 
     def p_AccessPart(self, p):
         """AccessPart : MIN_ACCESS Access
-                      | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[2])
 
     def p_agentCapabilitiesClause(self, p):
         """agentCapabilitiesClause : LOWERCASE_IDENTIFIER AGENT_CAPABILITIES PRODUCT_RELEASE Text STATUS Status DESCRIPTION Text ReferPart ModulePart_Capabilities COLON_COLON_EQUAL '{' objectIdentifier '}'"""
-        p[0] = ('agentCapabilitiesClause', p[1],  # id
-                #   p[2], # AGENT_CAPABILITIES
-                (p[3], p[4]),  # product release
-                p[6],  # status
-                (p[7], p[8]),  # description
-                p[9],  # reference
-                #   p[10], # module capabilities
-                p[13])  # objectIdentifier
+        p[0] = (
+            "agentCapabilitiesClause",
+            p[1],  # id
+            #   p[2], # AGENT_CAPABILITIES
+            (p[3], p[4]),  # product release
+            p[6],  # status
+            (p[7], p[8]),  # description
+            p[9],  # reference
+            #   p[10], # module capabilities
+            p[13],
+        )  # objectIdentifier
 
     def p_ModulePart_Capabilities(self, p):
         """ModulePart_Capabilities : Modules_Capabilities
-                                   | empty"""
+        | empty"""
         # if p[1]:
         #  p[0] = p[1]
 
     def p_Modules_Capabilities(self, p):
         """Modules_Capabilities : Modules_Capabilities Module_Capabilities
-                                | Module_Capabilities"""
+        | Module_Capabilities"""
         # n = len(p)
         # if n == 3:
         #  p[0] = ('Modules_Capabilities', p[1][1] + [p[2]])
@@ -1063,7 +1095,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_CapabilitiesGroups(self, p):
         """CapabilitiesGroups : CapabilitiesGroups ',' CapabilitiesGroup
-                              | CapabilitiesGroup"""
+        | CapabilitiesGroup"""
         # n = len(p)
         # if n == 4:
         #  p[0] = ('CapabilitiesGroups', p[1][1] + [p[3]])
@@ -1076,7 +1108,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_ModuleName_Capabilities(self, p):
         """ModuleName_Capabilities : UPPERCASE_IDENTIFIER objectIdentifier
-                                   | UPPERCASE_IDENTIFIER"""
+        | UPPERCASE_IDENTIFIER"""
         # n = len(p)
         # if n == 2:
         #  p[0] = ('ModuleName_Capabilities', p[1])
@@ -1085,13 +1117,13 @@ class SmiV2Parser(AbstractParser):
 
     def p_VariationPart(self, p):
         """VariationPart : Variations
-                         | empty"""
+        | empty"""
         # if p[1]:
         #  p[0] = p[1]
 
     def p_Variations(self, p):
         """Variations : Variations Variation
-                      | Variation"""
+        | Variation"""
         # n = len(p)
         # if n == 3:
         #  p[0] = ('Variations', p[1][1] + [p[2]])
@@ -1111,7 +1143,7 @@ class SmiV2Parser(AbstractParser):
 
     def p_VariationAccessPart(self, p):
         """VariationAccessPart : ACCESS VariationAccess
-                               | empty"""
+        | empty"""
         # if p[1]:
         #  p[0] = (p[1], p[2])
 
@@ -1121,22 +1153,22 @@ class SmiV2Parser(AbstractParser):
 
     def p_CreationPart(self, p):
         """CreationPart : CREATION_REQUIRES '{' Cells '}'
-                        | empty"""
+        | empty"""
         if p[1]:
             p[0] = (p[1], p[3])
 
     def p_Cells(self, p):
         """Cells : Cells ',' Cell
-                 | Cell"""
+        | Cell"""
         n = len(p)
         if n == 4:
-            p[0] = ('Cells', p[1][1] + [p[3]])
+            p[0] = ("Cells", p[1][1] + [p[3]])
         elif n == 2:
-            p[0] = ('Cells', [p[1]])
+            p[0] = ("Cells", [p[1]])
 
     def p_Cell(self, p):
         """Cell : ObjectName"""
-        p[0] = ('Cell', p[1])
+        p[0] = ("Cell", p[1])
 
     def p_empty(self, p):
         """empty :"""
@@ -1144,8 +1176,10 @@ class SmiV2Parser(AbstractParser):
     # Error rule for syntax errors
     def p_error(self, p):
         if p:
-            raise error.PySmiParserError(f"Bad grammar near token type {p.type}, value {p.value}",
-                                         lineno=p.lineno)
+            raise error.PySmiParserError(
+                f"Bad grammar near token type {p.type}, value {p.value}",
+                lineno=p.lineno,
+            )
 
 
 #
@@ -1161,72 +1195,73 @@ class SmiV2Parser(AbstractParser):
 # SMIv1 grammar
 #
 
+
 # noinspection PyIncorrectDocstring
 class SupportSmiV1Keywords:
     # NETWORKADDRESS added
     @staticmethod
     def p_importedKeyword(self, p):
         """importedKeyword : importedSMIKeyword
-                           | BITS
-                           | INTEGER32
-                           | IPADDRESS
-                           | NETWORKADDRESS
-                           | MANDATORY_GROUPS
-                           | MODULE_COMPLIANCE
-                           | MODULE_IDENTITY
-                           | OBJECT_GROUP
-                           | OBJECT_IDENTITY
-                           | OBJECT_TYPE
-                           | OPAQUE
-                           | TEXTUAL_CONVENTION
-                           | TIMETICKS
-                           | UNSIGNED32"""
+        | BITS
+        | INTEGER32
+        | IPADDRESS
+        | NETWORKADDRESS
+        | MANDATORY_GROUPS
+        | MODULE_COMPLIANCE
+        | MODULE_IDENTITY
+        | OBJECT_GROUP
+        | OBJECT_IDENTITY
+        | OBJECT_TYPE
+        | OPAQUE
+        | TEXTUAL_CONVENTION
+        | TIMETICKS
+        | UNSIGNED32"""
         p[0] = p[1]
 
     # NETWORKADDRESS added
     @staticmethod
     def p_typeSMIandSPPI(self, p):
         """typeSMIandSPPI : IPADDRESS
-                          | NETWORKADDRESS
-                          | TIMETICKS
-                          | OPAQUE
-                          | INTEGER32
-                          | UNSIGNED32"""
+        | NETWORKADDRESS
+        | TIMETICKS
+        | OPAQUE
+        | INTEGER32
+        | UNSIGNED32"""
         p[0] = p[1]
 
     # NETWORKADDRESS added
     @staticmethod
     def p_ApplicationSyntax(self, p):
         """ApplicationSyntax : IPADDRESS anySubType
-                             | NETWORKADDRESS anySubType
-                             | COUNTER32
-                             | COUNTER32 integerSubType
-                             | GAUGE32
-                             | GAUGE32 integerSubType
-                             | UNSIGNED32
-                             | UNSIGNED32 integerSubType
-                             | TIMETICKS anySubType
-                             | OPAQUE
-                             | OPAQUE octetStringSubType
-                             | COUNTER64
-                             | COUNTER64 integerSubType"""
+        | NETWORKADDRESS anySubType
+        | COUNTER32
+        | COUNTER32 integerSubType
+        | GAUGE32
+        | GAUGE32 integerSubType
+        | UNSIGNED32
+        | UNSIGNED32 integerSubType
+        | TIMETICKS anySubType
+        | OPAQUE
+        | OPAQUE octetStringSubType
+        | COUNTER64
+        | COUNTER64 integerSubType"""
         n = len(p)
         if n == 2:
-            p[0] = ('ApplicationSyntax', p[1])
+            p[0] = ("ApplicationSyntax", p[1])
         elif n == 3:
-            p[0] = ('ApplicationSyntax', p[1], p[2])
+            p[0] = ("ApplicationSyntax", p[1], p[2])
 
     # NETWORKADDRESS added for SEQUENCE syntax
     @staticmethod
     def p_sequenceApplicationSyntax(self, p):
         """sequenceApplicationSyntax : IPADDRESS anySubType
-                                     | NETWORKADDRESS anySubType
-                                     | COUNTER32 anySubType
-                                     | GAUGE32 anySubType
-                                     | UNSIGNED32 anySubType
-                                     | TIMETICKS anySubType
-                                     | OPAQUE
-                                     | COUNTER64 anySubType"""
+        | NETWORKADDRESS anySubType
+        | COUNTER32 anySubType
+        | GAUGE32 anySubType
+        | UNSIGNED32 anySubType
+        | TIMETICKS anySubType
+        | OPAQUE
+        | COUNTER64 anySubType"""
         n = len(p)
         if n == 2:
             p[0] = p[1]
@@ -1240,7 +1275,7 @@ class SupportIndex:
     @staticmethod
     def p_Index(self, p):
         """Index : ObjectName
-                 | typeSMIv1"""
+        | typeSMIv1"""
 
         # libsmi: TODO: use the SYNTAX value of the correspondent
         #               OBJECT-TYPE invocation
@@ -1250,11 +1285,11 @@ class SupportIndex:
     @staticmethod
     def p_typeSMIv1(self, p):
         """typeSMIv1 : INTEGER
-                     | OCTET STRING
-                     | IPADDRESS
-                     | NETWORKADDRESS"""
+        | OCTET STRING
+        | IPADDRESS
+        | NETWORKADDRESS"""
         n = len(p)
-        indextype = p[1] + ' ' + p[2] if n == 3 else p[1]
+        indextype = p[1] + " " + p[2] if n == 3 else p[1]
         p[0] = indextype
 
 
@@ -1262,14 +1297,15 @@ class SupportIndex:
 # Some changes in grammar to handle common mistakes in MIBs
 #
 
+
 # noinspection PyIncorrectDocstring
 class CommaInImport:
     # comma at the end of import list
     @staticmethod
     def p_importIdentifiers(self, p):
         """importIdentifiers : importIdentifiers ',' importIdentifier
-                             | importIdentifier
-                             | importIdentifiers ','"""
+        | importIdentifier
+        | importIdentifiers ','"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
@@ -1285,8 +1321,8 @@ class CommaInSequence:
     @staticmethod
     def p_sequenceItems(self, p):
         """sequenceItems : sequenceItems ',' sequenceItem
-                         | sequenceItem
-                         | sequenceItems ','"""
+        | sequenceItem
+        | sequenceItems ','"""
         # libsmi: TODO: might this list be emtpy?
         n = len(p)
         if n == 4:
@@ -1303,16 +1339,16 @@ class CommaAndSpaces:
     @staticmethod
     def p_enumItems(self, p):
         """enumItems : enumItems ',' enumItem
-                     | enumItem
-                     | enumItems enumItem
-                     | enumItems ','"""
+        | enumItem
+        | enumItems enumItem
+        | enumItems ','"""
         n = len(p)
         if n == 4:
             p[0] = p[1] + [p[3]]
         elif n == 2:
             p[0] = [p[1]]
         elif n == 3:  # typo case
-            if p[2] == ',':
+            if p[2] == ",":
                 p[0] = p[1]
             else:
                 p[0] = p[1] + [p[2]]
@@ -1324,7 +1360,7 @@ class UppercaseIdentifier:
     @staticmethod
     def p_enumItem(self, p):
         """enumItem : LOWERCASE_IDENTIFIER '(' enumNumber ')'
-                    | UPPERCASE_IDENTIFIER '(' enumNumber ')'"""
+        | UPPERCASE_IDENTIFIER '(' enumNumber ')'"""
         p[0] = (p[1], p[3])
 
 
@@ -1334,13 +1370,16 @@ class LowcaseIdentifier:
     @staticmethod
     def p_notificationTypeClause(self, p):
         """notificationTypeClause : fuzzy_lowercase_identifier NOTIFICATION_TYPE NotificationObjectsPart STATUS Status DESCRIPTION Text ReferPart COLON_COLON_EQUAL '{' NotificationName '}'"""  # some MIBs have uppercase and/or lowercase id
-        p[0] = ('notificationTypeClause', p[1],  # id
-                #  p[2], # NOTIFICATION_TYPE
-                p[3],  # NotificationObjectsPart
-                p[5],  # status
-                (p[6], p[7]),  # description
-                p[8],   # Reference
-                p[11])  # NotificationName aka objectIdentifier
+        p[0] = (
+            "notificationTypeClause",
+            p[1],  # id
+            #  p[2], # NOTIFICATION_TYPE
+            p[3],  # NotificationObjectsPart
+            p[5],  # status
+            (p[6], p[7]),  # description
+            p[8],  # Reference
+            p[11],
+        )  # NotificationName aka objectIdentifier
 
 
 # noinspection PyIncorrectDocstring,PyIncorrectDocstring
@@ -1350,18 +1389,21 @@ class CurlyBracesInEnterprises:
     def p_trapTypeClause(self, p):
         """trapTypeClause : fuzzy_lowercase_identifier TRAP_TYPE EnterprisePart VarPart DescrPart ReferPart COLON_COLON_EQUAL NUMBER"""
         # libsmi: TODO: range of number?
-        p[0] = ('trapTypeClause', p[1],  # fuzzy_lowercase_identifier
-                #  p[2], # TRAP_TYPE
-                p[3],  # EnterprisePart (objectIdentifier)
-                p[4],  # VarPart
-                p[5],  # description
-                p[6],  # reference
-                p[8])  # NUMBER
+        p[0] = (
+            "trapTypeClause",
+            p[1],  # fuzzy_lowercase_identifier
+            #  p[2], # TRAP_TYPE
+            p[3],  # EnterprisePart (objectIdentifier)
+            p[4],  # VarPart
+            p[5],  # description
+            p[6],  # reference
+            p[8],
+        )  # NUMBER
 
     @staticmethod
     def p_EnterprisePart(self, p):
         """EnterprisePart : ENTERPRISE objectIdentifier
-                          | ENTERPRISE '{' objectIdentifier '}'"""
+        | ENTERPRISE '{' objectIdentifier '}'"""
         n = len(p)
         if n == 3:
             p[0] = p[2]
@@ -1375,65 +1417,62 @@ class NoCells:
     @staticmethod
     def p_CreationPart(self, p):
         """CreationPart : CREATION_REQUIRES '{' Cells '}'
-                        | CREATION_REQUIRES '{' '}'
-                        | empty"""
+        | CREATION_REQUIRES '{' '}'
+        | empty"""
         n = len(p)
         if n == 5:
             p[0] = (p[1], p[3])
 
 
 relaxedGrammar = {
-    'supportSmiV1Keywords': [
+    "supportSmiV1Keywords": [
         SupportSmiV1Keywords.p_importedKeyword,
         SupportSmiV1Keywords.p_typeSMIandSPPI,
         SupportSmiV1Keywords.p_ApplicationSyntax,
-        SupportSmiV1Keywords.p_sequenceApplicationSyntax
+        SupportSmiV1Keywords.p_sequenceApplicationSyntax,
     ],
-    'supportIndex': [
-        SupportIndex.p_Index,
-        SupportIndex.p_typeSMIv1
-    ],
-    'commaAtTheEndOfImport': [CommaInImport.p_importIdentifiers],
-    'commaAtTheEndOfSequence': [CommaInSequence.p_sequenceItems],
-    'mixOfCommasAndSpaces': [CommaAndSpaces.p_enumItems],
-    'uppercaseIdentifier': [UppercaseIdentifier.p_enumItem],
-    'lowcaseIdentifier': [LowcaseIdentifier.p_notificationTypeClause],
-    'curlyBracesAroundEnterpriseInTrap': [
+    "supportIndex": [SupportIndex.p_Index, SupportIndex.p_typeSMIv1],
+    "commaAtTheEndOfImport": [CommaInImport.p_importIdentifiers],
+    "commaAtTheEndOfSequence": [CommaInSequence.p_sequenceItems],
+    "mixOfCommasAndSpaces": [CommaAndSpaces.p_enumItems],
+    "uppercaseIdentifier": [UppercaseIdentifier.p_enumItem],
+    "lowcaseIdentifier": [LowcaseIdentifier.p_notificationTypeClause],
+    "curlyBracesAroundEnterpriseInTrap": [
         CurlyBracesInEnterprises.p_trapTypeClause,
-        CurlyBracesInEnterprises.p_EnterprisePart
+        CurlyBracesInEnterprises.p_EnterprisePart,
     ],
-    'noCells': [NoCells.p_CreationPart]
+    "noCells": [NoCells.p_CreationPart],
 }
 
 
 def parserFactory(**grammarOptions):
     """Factory function producing custom specializations of base *SmiV2Parser*
-       class.
+    class.
 
-       Keyword Args:
-           grammarOptions: a list of (bool) typed optional keyword parameters
-                           enabling particular set of SMIv2 grammar relaxations.
+    Keyword Args:
+        grammarOptions: a list of (bool) typed optional keyword parameters
+                        enabling particular set of SMIv2 grammar relaxations.
 
-       Returns:
-           Specialized copy of *SmiV2Parser* class.
+    Returns:
+        Specialized copy of *SmiV2Parser* class.
 
-       Notes:
-           The following SMIv2 grammar relaxation parameters are defined:
+    Notes:
+        The following SMIv2 grammar relaxation parameters are defined:
 
-           * supportSmiV1Keywords - parses SMIv1 grammar
-           * supportIndex - tolerates ASN.1 types in INDEX clause
-           * commaAtTheEndOfImport - tolerates stray comma at the end of IMPORT section
-           * commaAtTheEndOfSequence - tolerates stray comma at the end of sequence of elements in MIB
-           * mixOfCommasAndSpaces - tolerate a mix of comma and spaces in MIB enumerations
-           * uppercaseIdentifier - tolerate uppercased MIB identifiers
-           * lowcaseIdentifier - tolerate lowercase MIB identifiers
-           * curlyBracesAroundEnterpriseInTrap - tolerate curly braces around enterprise ID in TRAP MACRO
-           * noCells - tolerate missing cells (XXX)
+        * supportSmiV1Keywords - parses SMIv1 grammar
+        * supportIndex - tolerates ASN.1 types in INDEX clause
+        * commaAtTheEndOfImport - tolerates stray comma at the end of IMPORT section
+        * commaAtTheEndOfSequence - tolerates stray comma at the end of sequence of elements in MIB
+        * mixOfCommasAndSpaces - tolerate a mix of comma and spaces in MIB enumerations
+        * uppercaseIdentifier - tolerate uppercased MIB identifiers
+        * lowcaseIdentifier - tolerate lowercase MIB identifiers
+        * curlyBracesAroundEnterpriseInTrap - tolerate curly braces around enterprise ID in TRAP MACRO
+        * noCells - tolerate missing cells (XXX)
 
-       Examples:
+    Examples:
 
-       >>> from pysmi.parser import smi
-       >>> SmiV1Parser = smi.parserFactory(supportSmiV1Keywords=True, supportIndex=True)
+    >>> from pysmi.parser import smi
+    >>> SmiV1Parser = smi.parserFactory(supportSmiV1Keywords=True, supportIndex=True)
 
     """
     classAttr = {}
@@ -1441,11 +1480,11 @@ def parserFactory(**grammarOptions):
     for option in grammarOptions:
         if grammarOptions[option]:
             if option not in relaxedGrammar:
-                raise error.PySmiError(f'Unknown parser relaxation option: {option}')
+                raise error.PySmiError(f"Unknown parser relaxation option: {option}")
 
             for func in relaxedGrammar[option]:
                 classAttr[func.__name__] = func
 
-    classAttr['defaultLexer'] = lexerFactory(**grammarOptions)
+    classAttr["defaultLexer"] = lexerFactory(**grammarOptions)
 
-    return type('SmiParser', (SmiV2Parser,), classAttr)
+    return type("SmiParser", (SmiV2Parser,), classAttr)

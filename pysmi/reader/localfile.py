@@ -21,18 +21,19 @@ class FileReader(AbstractReader):
     *FileReader* class instance tries to locate ASN.1 MIB files
     by name, fetch and return their contents to caller.
     """
+
     useIndexFile = True  # optional .index file mapping MIB to file name
-    indexFile = '.index'
+    indexFile = ".index"
 
     def __init__(self, path, recursive=True, ignoreErrors=True):
         """Create an instance of *FileReader* serving a directory.
 
-           Args:
-               path (str): directory to search MIB files
+        Args:
+            path (str): directory to search MIB files
 
-           Keyword Args:
-               recursive (bool): whether to include subdirectories
-               ignoreErrors (bool): ignore filesystem access errors
+        Keyword Args:
+            recursive (bool): whether to include subdirectories
+            ignoreErrors (bool): ignore filesystem access errors
         """
         self._path = os.path.normpath(path)
         self._recursive = recursive
@@ -57,7 +58,9 @@ class FileReader(AbstractReader):
                 return dirs
 
             else:
-                raise error.PySmiError(f'directory {path} access error: {sys.exc_info()[1]}')
+                raise error.PySmiError(
+                    f"directory {path} access error: {sys.exc_info()[1]}"
+                )
 
         for d in subdirs:
             d = os.path.join(decode(path), decode(d))
@@ -72,12 +75,13 @@ class FileReader(AbstractReader):
         if os.path.exists(indexFile):
             try:
                 f = open(indexFile)
-                mibIndex = dict(
-                    [x.split()[:2] for x in f.readlines()]
-                )
+                mibIndex = dict([x.split()[:2] for x in f.readlines()])
                 f.close()
                 if debug.logger & debug.flagReader:
-                    debug.logger('loaded MIB index map from %s file, %s entries' % (indexFile, len(mibIndex)))
+                    debug.logger(
+                        "loaded MIB index map from %s file, %s entries"
+                        % (indexFile, len(mibIndex))
+                    )
 
             except IOError:
                 pass
@@ -94,47 +98,69 @@ class FileReader(AbstractReader):
 
             if mibname in self._mibIndex:
                 if debug.logger & debug.flagReader:
-                    debug.logger('found %s in MIB index: %s' % (mibname, self._mibIndex[mibname]))
+                    debug.logger(
+                        "found %s in MIB index: %s" % (mibname, self._mibIndex[mibname])
+                    )
                 return [(mibname, self._mibIndex[mibname])]
 
         return super(FileReader, self).getMibVariants(mibname, **options)
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
-            debug.logger('%slooking for MIB %s' % ('recursively ' if self._recursive else '', mibname))
+            debug.logger(
+                "%slooking for MIB %s"
+                % ("recursively " if self._recursive else "", mibname)
+            )
 
         for path in self.getSubdirs(self._path, self._recursive, self._ignoreErrors):
-
             for mibalias, mibfile in self.getMibVariants(mibname, **options):
                 f = os.path.join(decode(path), decode(mibfile))
 
                 if debug.logger & debug.flagReader:
-                    debug.logger('trying MIB %s' % f)
+                    debug.logger("trying MIB %s" % f)
 
                 if os.path.exists(f) and os.path.isfile(f):
                     try:
                         mtime = os.stat(f)[8]
 
                         if debug.logger & debug.flagReader:
-                            debug.logger('source MIB %s mtime is %s, fetching data...' % (
-                                f, time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime))))
+                            debug.logger(
+                                "source MIB %s mtime is %s, fetching data..."
+                                % (
+                                    f,
+                                    time.strftime(
+                                        "%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)
+                                    ),
+                                )
+                            )
 
-                        fp = open(f, mode='rb')
+                        fp = open(f, mode="rb")
                         mibData = fp.read(self.maxMibSize)
                         fp.close()
 
                         if len(mibData) == self.maxMibSize:
-                            raise IOError(f'MIB {f} too large')
+                            raise IOError(f"MIB {f} too large")
 
-                        return MibInfo(path=f'file://{f}', file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
+                        return MibInfo(
+                            path=f"file://{f}", file=mibfile, name=mibalias, mtime=mtime
+                        ), decode(mibData)
 
                     except (OSError, IOError):
                         if debug.logger & debug.flagReader:
-                            debug.logger('source file %s open failure: %s' % (f, sys.exc_info()[1]))
+                            debug.logger(
+                                "source file %s open failure: %s"
+                                % (f, sys.exc_info()[1])
+                            )
 
                         if not self._ignoreErrors:
-                            raise error.PySmiError(f'file {f} access error: {sys.exc_info()[1]}')
+                            raise error.PySmiError(
+                                f"file {f} access error: {sys.exc_info()[1]}"
+                            )
 
-                    raise error.PySmiReaderFileNotModifiedError(f'source MIB {f} is older than needed', reader=self)
+                    raise error.PySmiReaderFileNotModifiedError(
+                        f"source MIB {f} is older than needed", reader=self
+                    )
 
-        raise error.PySmiReaderFileNotFoundError(f'source MIB {mibname} not found', reader=self)
+        raise error.PySmiReaderFileNotFoundError(
+            f"source MIB {mibname} not found", reader=self
+        )

@@ -17,23 +17,29 @@
 class PySmiError(Exception):
     def __init__(self, *args, **kwargs):
         Exception.__init__(self, *args)
-        self.msg = args[0] if args else ''
+        self.msg = args[0] if args else ""
         for k in kwargs:
             setattr(self, k, kwargs[k])
 
     def __repr__(self):
-        attrs = ', '.join([f'{k}={getattr(self, k)!r}' for k in dir(self) if k[0] != '_' and k != 'args'])
-        return f'{self.__class__.__name__}({attrs})'
+        attrs = ", ".join(
+            [
+                f"{k}={getattr(self, k)!r}"
+                for k in dir(self)
+                if k[0] != "_" and k != "args"
+            ]
+        )
+        return f"{self.__class__.__name__}({attrs})"
 
     def __str__(self):
         return self.msg
 
 
 class PySmiLexerError(PySmiError):
-    lineno = '?'
+    lineno = "?"
 
     def __str__(self):
-        return self.msg + f', line {self.lineno}'
+        return self.msg + f", line {self.lineno}"
 
 
 class PySmiParserError(PySmiLexerError):
