@@ -29,7 +29,7 @@ dstDirectory = ".pysnmp-mibs"
 
 mibCompiler = MibCompiler(SmiStarParser(), PySnmpCodeGen(), PyFileWriter(dstDirectory))
 
-# search for source MIBs at Web sites
+# search for source MIBs at websites
 mibCompiler.addSources(*[HttpReader(*x) for x in httpSources])
 
 # never recompile MIBs with MACROs
@@ -38,7 +38,7 @@ mibCompiler.addSearchers(StubSearcher(*PySnmpCodeGen.baseMibs))
 # check compiled/borrowed MIBs in our own productions
 mibCompiler.addSearchers(PyFileSearcher(dstDirectory))
 
-# search for compiled MIBs at Web sites if source is not available or broken
+# search for compiled MIBs at websites if source is not available or broken
 mibCompiler.addBorrowers(
     *[PyFileBorrower(HttpReader(*x)).setOptions(genTexts=False) for x in httpBorrowers]
 )

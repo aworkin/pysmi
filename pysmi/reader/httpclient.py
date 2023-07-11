@@ -19,7 +19,7 @@ from pysmi.reader.base import AbstractReader
 
 
 class HttpReader(AbstractReader):
-    """Fetch ASN.1 MIB text by name from a web site.
+    """Fetch ASN.1 MIB text by name from a website.
 
     *HttpReader* class instance tries to download ASN.1 MIB files
     by name and return their contents to caller.
@@ -43,7 +43,7 @@ class HttpReader(AbstractReader):
 
         Keyword Args:
             timeout (int): response timeout
-            ssl (bool): access HTTPS web site
+            ssl (bool): enable HTTPS
         """
         self._url = (
             f'{"https" if ssl else "http"}://{host}:{port:d}{decode(locationTemplate)}'

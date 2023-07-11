@@ -10,7 +10,7 @@ import os
 class AbstractReader:
     maxMibSize = 10000000  # MIBs can't be that large
     fuzzyMatching = True  # try different file names while searching for MIB
-    originalMatching = uppercaseMatching = lowcaseMatching = True
+    originalMatching = uppercaseMatching = lowercaseMatching = True
     exts = ["", os.path.extsep + "txt", os.path.extsep + "mib", os.path.extsep + "my"]
     exts.extend([x.upper() for x in exts if x])
 
@@ -28,7 +28,7 @@ class AbstractReader:
         if self.uppercaseMatching:
             filenames.append(mibname.upper())
 
-        if self.lowcaseMatching:
+        if self.lowercaseMatching:
             filenames.append(mibname.lower())
 
         if self.fuzzyMatching:

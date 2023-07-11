@@ -30,7 +30,7 @@ class MibStatus(str):
     The following *MibStatus* class instances are defined:
 
     * *compiled* - MIB is successfully transformed
-    * *untouched* - fresh transformed version of this MIB already exisits
+    * *untouched* - fresh transformed version of this MIB already exists
     * *failed* - MIB transformation failed. *error* attribute carries details.
     * *unprocessed* - MIB transformation required but waived for some reason
     * *missing* - ASN.1 MIB source can't be found

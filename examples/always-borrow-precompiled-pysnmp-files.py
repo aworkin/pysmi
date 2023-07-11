@@ -29,7 +29,7 @@ mibCompiler = MibCompiler(NullParser(), NullCodeGen(), PyFileWriter(dstDirectory
 # check compiled/borrowed MIBs in our own productions
 mibCompiler.addSearchers(PyFileSearcher(dstDirectory))
 
-# search for precompiled MIBs at Web sites
+# search for precompiled MIBs at websites
 mibCompiler.addBorrowers(*[PyFileBorrower(HttpReader(*x)) for x in httpBorrowers])
 
 # run MIB compilation

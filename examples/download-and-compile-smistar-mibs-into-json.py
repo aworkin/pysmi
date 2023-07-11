@@ -36,7 +36,7 @@ mibCompiler = MibCompiler(SmiStarParser(), JsonCodeGen(), CallbackWriter(printOu
 # search for source MIBs here
 mibCompiler.addSources(*[FileReader(x) for x in srcDirectories])
 
-# search for source MIBs at Web sites
+# search for source MIBs at websites
 mibCompiler.addSources(*[HttpReader(*x) for x in httpSources])
 
 # never recompile MIBs with MACROs
