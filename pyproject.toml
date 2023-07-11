@@ -1,0 +1,95 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "pysmi"
+dynamic = ["version"]
+description = "SNMP SMI/MIB Parser"
+readme = "README.md"
+requires-python = ">=3.8"
+license = "BSD-2-Clause"
+license-files = { paths = ["LICENSE.rst"] }
+authors = [
+    { name = "Ilya Etingof", email = "etingof@gmail.com" },
+]
+maintainers = [
+    { name = "Alexander Workin <alexander.workin@gmail.com>" },
+]
+classifiers = [
+    "Development Status :: 5 - Production/Stable",
+    "Environment :: Console",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Education",
+    "Intended Audience :: Information Technology",
+    "Intended Audience :: System Administrators",
+    "Intended Audience :: Telecommunications Industry",
+    "License :: OSI Approved :: BSD License",
+    "Natural Language :: English",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.8",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Topic :: Communications",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+    "Topic :: System :: Monitoring",
+    "Topic :: System :: Networking :: Monitoring",
+]
+dependencies = [
+    "jinja2>=2.10.1",
+    "ply",
+]
+
+[project.optional-dependencies]
+test = [
+    "pysnmp"
+]
+style = [
+    "ruff",
+    "black"
+]
+dev = [
+    "pysmi[test]",
+    "pysmi[style]"
+]
+
+[project.urls]
+Homepage = "https://github.com/aworkin/pysmi"
+
+[tool.hatch.version]
+path = "pysmi/__init__.py"
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "pysmi",
+    "scripts/mibdump.py",
+    "scripts/mibcopy.py"
+]
+
+[tool.hatch.envs.dev]
+features = ["dev"]
+
+[tool.hatch.envs.style]
+features = ["style"]
+
+[tool.hatch.envs.style.scripts]
+check = "ruff ."
+style = "black ."
+
+[tool.hatch.envs.test]
+features = ["test"]
+
+[tool.hatch.envs.test.scripts]
+run = "python -m unittest discover -s tests"
+
+[[tool.hatch.envs.test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.docs]
+detatched = true
+dependencies = ["Sphinx"]
+
+[tool.hatch.envs.docs.scripts]
+build = "sphinx-build -b html docs/source docs/html"
