@@ -59,11 +59,6 @@ include = [
     "scripts/mibcopy.py"
 ]
 
-[tool.hatch.envs.dev.scripts]
-check = "mypy ."
-lint = "ruff ."
-style = "black ."
-
 [tool.hatch.envs.test]
 dependencies = [
     "pysnmp"
@@ -74,10 +69,16 @@ python = ["3.8", "3.9", "3.10", "3.11"]
 
 [tool.hatch.envs.dev]
 template = "test"
-extra_dependencies = [
+extra-dependencies = [
+    "mypy",
     "ruff",
     "black"
 ]
+
+[tool.hatch.envs.dev.scripts]
+check = "mypy ."
+lint = "ruff ."
+style = "black ."
 
 [tool.hatch.envs.docs]
 detatched = true
