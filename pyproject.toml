@@ -1,5 +1,5 @@
 [build-system]
-requires = ["hatchling"]
+requires = ["hatchling", "hatch-vcs"]
 build-backend = "hatchling.build"
 
 [project]
@@ -42,24 +42,15 @@ dependencies = [
     "ply",
 ]
 
-[project.optional-dependencies]
-test = [
-    "pysnmp"
-]
-style = [
-    "ruff",
-    "black"
-]
-dev = [
-    "pysmi[test]",
-    "pysmi[style]"
-]
-
 [project.urls]
 Homepage = "https://github.com/aworkin/pysmi"
 
 [tool.hatch.version]
-path = "pysmi/__init__.py"
+source = "vcs"
+raw-options.local_scheme = "no-local-version"
+
+[tool.hatch.build.hooks.vcs]
+version-file = "pysmi/_version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
@@ -68,24 +59,25 @@ include = [
     "scripts/mibcopy.py"
 ]
 
-[tool.hatch.envs.dev]
-features = ["dev"]
-
-[tool.hatch.envs.style]
-features = ["style"]
-
-[tool.hatch.envs.style.scripts]
-check = "ruff ."
+[tool.hatch.envs.dev.scripts]
+check = "mypy ."
+lint = "ruff ."
 style = "black ."
 
 [tool.hatch.envs.test]
-features = ["test"]
-
-[tool.hatch.envs.test.scripts]
-run = "python -m unittest discover -s tests"
+dependencies = [
+    "pysnmp"
+]
 
 [[tool.hatch.envs.test.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11"]
+
+[tool.hatch.envs.dev]
+template = "test"
+extra_dependencies = [
+    "ruff",
+    "black"
+]
 
 [tool.hatch.envs.docs]
 detatched = true
