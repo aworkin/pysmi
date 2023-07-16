@@ -7,6 +7,7 @@
 import re
 
 import ply.lex as lex
+from ply.lex import TOKEN
 
 from pysmi import debug
 from pysmi import error
@@ -205,73 +206,72 @@ class SmiV2Lexer(AbstractLexer):
                 debuglog=debuglogger,
                 errorlog=logger,
             )
-
+    @TOKEN(r'\r\n|\n|\r')
     def t_newline(self, t):
-        r"\r\n|\n|\r"
         t.lexer.lineno += 1
 
     # Skipping MACRO
+    @TOKEN(r'MACRO')
     def t_MACRO(self, t):
-        r"MACRO"
         t.lexer.begin("macro")
         return t
 
+    @TOKEN(r'\r\n|\n|\r')
     def t_macro_newline(self, t):
-        r"\r\n|\n|\r"
         t.lexer.lineno += 1
 
+    @TOKEN(r'END')
     def t_macro_END(self, t):
-        r"END"
         t.lexer.begin("INITIAL")
         return t
 
+    @TOKEN(r'.+?(?=END)')
     def t_macro_body(self, t):
-        r".+?(?=END)"
         pass
 
     # Skipping EXPORTS
+    @TOKEN(r'EXPORTS')
     def t_EXPORTS(self, t):
-        r"EXPORTS"
         t.lexer.begin("exports")
         return t
 
+    @TOKEN(r'\r\n|\n|\r')
     def t_exports_newline(self, t):
-        r"\r\n|\n|\r"
         t.lexer.lineno += 1
 
+    @TOKEN(r';')
     def t_exports_end(self, t):
-        r";"
         t.lexer.begin("INITIAL")
 
+    @TOKEN(r'[^;]+')
     def t_exports_body(self, t):
-        r"[^;]+"
         pass
 
     # Skipping CHOICE
+    @TOKEN(r'CHOICE')
     def t_CHOICE(self, t):
-        r"CHOICE"
         t.lexer.begin("choice")
         return t
 
+    @TOKEN(r'\r\n|\n|\r')
     def t_choice_newline(self, t):
-        r"\r\n|\n|\r"
         t.lexer.lineno += 1
 
+    @TOKEN(r'\}')
     def t_choice_end(self, t):
-        r"\}"
         t.lexer.begin("INITIAL")
 
+    @TOKEN(r'[^\}]+')
     def t_choice_body(self, t):
-        r"[^\}]+"
         pass
 
     # Comment handling
+    @TOKEN(r'--')
     def t_begin_comment(self, t):
-        r"--"
         t.lexer.begin("comment")
 
+    @TOKEN(r'\r\n|\n|\r')
     def t_comment_newline(self, t):
-        r"\r\n|\n|\r"
         t.lexer.lineno += 1
         t.lexer.begin("INITIAL")
 
@@ -279,12 +279,12 @@ class SmiV2Lexer(AbstractLexer):
     #    r'--'
     #    t.lexer.begin('INITIAL')
 
+    @TOKEN(r'[^\r\n]+')
     def t_comment_body(self, t):
-        r"[^\r\n]+"
         pass
 
+    @TOKEN(r'[A-Z][-a-zA-z0-9]*')
     def t_UPPERCASE_IDENTIFIER(self, t):
-        r"[A-Z][-a-zA-z0-9]*"
         if t.value in self.forbidden_words:
             raise error.PySmiLexerError(f"{t.value} is forbidden", lineno=t.lineno)
 
@@ -297,16 +297,16 @@ class SmiV2Lexer(AbstractLexer):
 
         return t
 
+    @TOKEN(r'[0-9]*[a-z][-a-zA-z0-9]*')
     def t_LOWERCASE_IDENTIFIER(self, t):
-        r"[0-9]*[a-z][-a-zA-z0-9]*"
         if t.value[-1] == "-":
             raise error.PySmiLexerError(
                 f"Identifier should not end with '-': {t.value}", lineno=t.lineno
             )
         return t
 
+    @TOKEN(r'-?[0-9]+')
     def t_NUMBER(self, t):
-        r"-?[0-9]+"
         t.value = int(t.value)
         neg = 0
         if t.value < 0:
@@ -329,8 +329,8 @@ class SmiV2Lexer(AbstractLexer):
 
         return t
 
+    @TOKEN(r'\'[01]*\'[bB]')
     def t_BIN_STRING(self, t):
-        r"\'[01]*\'[bB]"
         value = t.value[1:-2]
         while value and value[0] == "0" and len(value) % 8:
             value = value[1:]
@@ -339,8 +339,8 @@ class SmiV2Lexer(AbstractLexer):
         #      raise error.PySmiLexerError("Number of 0s and 1s have to divide by 8 in binary string %s" % t.value, lineno=t.lineno)
         return t
 
+    @TOKEN(r'\'[0-9a-fA-F]*\'[hH]')
     def t_HEX_STRING(self, t):
-        r"\'[0-9a-fA-F]*\'[hH]"
         value = t.value[1:-2]
         while value and value[0] == "0" and len(value) % 2:
             value = value[1:]
@@ -349,8 +349,8 @@ class SmiV2Lexer(AbstractLexer):
         #      raise error.PySmiLexerError("Number of symbols have to be even in hex string %s" % t.value, lineno=t.lineno)
         return t
 
+    @TOKEN(r'\"[^\"]*\" ')
     def t_QUOTED_STRING(self, t):
-        r"\"[^\"]*\" "
         t.lexer.lineno += len(re.findall(r"\r\n|\n|\r", t.value))
         return t
 
