@@ -38,9 +38,7 @@ class NotificationGroupTestCase(unittest.TestCase):
     def setUp(self):
         ast = parserFactory()().parse(self.__class__.__doc__)[0]
         mibInfo, symtable = SymtableCodeGen().genCode(ast, {}, genTexts=True)
-        self.mibInfo, pycode = PySnmpCodeGen().genCode(
-            ast, {mibInfo.name: symtable}, genTexts=True
-        )
+        self.mibInfo, pycode = PySnmpCodeGen().genCode(ast, {mibInfo.name: symtable}, genTexts=True)
         codeobj = compile(pycode, "test", "exec")
 
         mibBuilder = MibBuilder()
@@ -54,9 +52,7 @@ class NotificationGroupTestCase(unittest.TestCase):
         self.assertTrue("testNotificationGroup" in self.ctx, "symbol not present")
 
     def testNotificationGroupName(self):
-        self.assertEqual(
-            self.ctx["testNotificationGroup"].getName(), (1, 3), "bad name"
-        )
+        self.assertEqual(self.ctx["testNotificationGroup"].getName(), (1, 3), "bad name")
 
     def testNotificationGroupDescription(self):
         self.assertEqual(

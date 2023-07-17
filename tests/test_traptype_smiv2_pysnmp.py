@@ -46,9 +46,7 @@ class TrapTypeTestCase(unittest.TestCase):
     def setUp(self):
         ast = parserFactory()().parse(self.__class__.__doc__)[0]
         mibInfo, symtable = SymtableCodeGen().genCode(ast, {}, genTexts=True)
-        self.mibInfo, pycode = PySnmpCodeGen().genCode(
-            ast, {mibInfo.name: symtable}, genTexts=True
-        )
+        self.mibInfo, pycode = PySnmpCodeGen().genCode(ast, {mibInfo.name: symtable}, genTexts=True)
         codeobj = compile(pycode, "test", "exec")
 
         mibBuilder = MibBuilder()
@@ -65,9 +63,7 @@ class TrapTypeTestCase(unittest.TestCase):
         self.assertEqual(self.ctx["testTrap"].getName(), (1, 3, 0, 1), "bad name")
 
     def testTrapTypeDescription(self):
-        self.assertEqual(
-            self.ctx["testTrap"].getDescription(), "Test trap\n", "bad DESCRIPTION"
-        )
+        self.assertEqual(self.ctx["testTrap"].getDescription(), "Test trap\n", "bad DESCRIPTION")
 
     def testTrapTypeClass(self):
         self.assertEqual(

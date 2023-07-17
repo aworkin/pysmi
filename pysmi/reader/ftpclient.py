@@ -54,14 +54,10 @@ class FtpReader(AbstractReader):
         self._user = user
         self._password = password
         if "@mib@" not in locationTemplate:
-            raise error.PySmiError(
-                f"@mib@ placeholder not specified in location at {self}"
-            )
+            raise error.PySmiError(f"@mib@ placeholder not specified in location at {self}")
 
     def __str__(self):
-        return (
-            f'{self.__class__.__name__}{{"ftp://{self._host}{self._locationTemplate}"}}'
-        )
+        return f'{self.__class__.__name__}{{"ftp://{self._host}{self._locationTemplate}"}}'
 
     def getData(self, mibname, **options):
         if self._ssl:
@@ -99,10 +95,7 @@ class FtpReader(AbstractReader):
             mtime = time.time()
 
             if debug.logger & debug.flagReader:
-                debug.logger(
-                    "trying to fetch MIB %s from %s:%s"
-                    % (location, self._host, self._port)
-                )
+                debug.logger("trying to fetch MIB %s from %s:%s" % (location, self._host, self._port))
 
             data = []
 
@@ -119,10 +112,7 @@ class FtpReader(AbstractReader):
 
                 else:
                     if debug.logger & debug.flagReader:
-                        debug.logger(
-                            "server %s:%s MDTM response is %s"
-                            % (self._host, self._port, response)
-                        )
+                        debug.logger("server %s:%s MDTM response is %s" % (self._host, self._port, response))
 
                     if response[:3] == 213:
                         mtime = time.mktime(time.strptime(response[4:], "%Y%m%d%H%M%S"))
@@ -132,9 +122,7 @@ class FtpReader(AbstractReader):
                         "fetching source MIB %s, mtime %s"
                         % (
                             location,
-                            time.strftime(
-                                "%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)
-                            ),
+                            time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)),
                         )
                     )
 
@@ -143,8 +131,7 @@ class FtpReader(AbstractReader):
             except ftplib.all_errors:
                 if debug.logger & debug.flagReader:
                     debug.logger(
-                        "failed to fetch MIB %s from %s:%s: %s"
-                        % (location, self._host, self._port, sys.exc_info()[1])
+                        "failed to fetch MIB %s from %s:%s: %s" % (location, self._host, self._port, sys.exc_info()[1])
                     )
                 continue
 
@@ -167,6 +154,4 @@ class FtpReader(AbstractReader):
 
         conn.close()
 
-        raise error.PySmiReaderFileNotFoundError(
-            f"source MIB {mibname} not found", reader=self
-        )
+        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)

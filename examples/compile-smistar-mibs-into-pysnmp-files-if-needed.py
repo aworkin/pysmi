@@ -40,9 +40,7 @@ mibCompiler.addSources(*[FileReader(x) for x in srcDirectories])
 # check compiled MIBs in our own productions
 mibCompiler.addSearchers(PyFileSearcher(dstDirectory))
 # ...and at default PySNMP MIBs packages
-mibCompiler.addSearchers(
-    *[PyPackageSearcher(x) for x in PySnmpCodeGen.defaultMibPackages]
-)
+mibCompiler.addSearchers(*[PyPackageSearcher(x) for x in PySnmpCodeGen.defaultMibPackages])
 
 # never recompile MIBs with MACROs
 mibCompiler.addSearchers(StubSearcher(*PySnmpCodeGen.baseMibs))

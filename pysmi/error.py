@@ -6,7 +6,7 @@
 #
 # Package exception model:
 # Here we subclass base Python exception overriding its constructor to
-# accomodate error message string as its first parameter and an open
+# accommodate error message string as its first parameter and an open
 # set of keyword arguments that become exception object attributes.
 # While exception object is bubbling up the call stack, intermediate
 # exception handlers may insert their own attributes into exception
@@ -22,13 +22,7 @@ class PySmiError(Exception):
             setattr(self, k, kwargs[k])
 
     def __repr__(self):
-        attrs = ", ".join(
-            [
-                f"{k}={getattr(self, k)!r}"
-                for k in dir(self)
-                if k[0] != "_" and k != "args"
-            ]
-        )
+        attrs = ", ".join([f"{k}={getattr(self, k)!r}" for k in dir(self) if k[0] != "_" and k != "args"])
         return f"{self.__class__.__name__}({attrs})"
 
     def __str__(self):

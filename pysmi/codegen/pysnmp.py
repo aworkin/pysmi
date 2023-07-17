@@ -119,9 +119,7 @@ class PySnmpCodeGen(IntermediateCodeGen):
         # Sort Managed Objects by OID
         objects = OrderedDict()
 
-        for symbol, definition in sorted(
-            context.items(), key=lambda x: x[1].get("oid", ())
-        ):
+        for symbol, definition in sorted(context.items(), key=lambda x: x[1].get("oid", ())):
             objects[symbol] = definition
 
         context = objects

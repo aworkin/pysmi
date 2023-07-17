@@ -8,3 +8,5 @@ from pysmi.searcher.anyfile import AnyFileSearcher
 from pysmi.searcher.pyfile import PyFileSearcher
 from pysmi.searcher.pypackage import PyPackageSearcher
 from pysmi.searcher.stub import StubSearcher
+
+__all__ = ["AnyFileSearcher", "PyFileSearcher", "PyPackageSearcher", "StubSearcher"]

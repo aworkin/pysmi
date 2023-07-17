@@ -189,17 +189,11 @@ class IntermediateCodeGen(AbstractCodeGen):
 
                 if module not in self.symbolTable:
                     # XXX do getname for possible future borrowed mibs
-                    raise error.PySmiSemanticError(
-                        f'no module "{module}" in symbolTable'
-                    )
+                    raise error.PySmiSemanticError(f'no module "{module}" in symbolTable')
 
                 if parent not in self.symbolTable[module]:
-                    raise error.PySmiSemanticError(
-                        f'no symbol "{parent}" in module "{module}"'
-                    )
-                numericOid += self.genNumericOid(
-                    self.symbolTable[module][parent]["oid"]
-                )
+                    raise error.PySmiSemanticError(f'no symbol "{parent}" in module "{module}"')
+                numericOid += self.genNumericOid(self.symbolTable[module][parent]["oid"])
 
             else:
                 numericOid += (part,)
@@ -211,13 +205,9 @@ class IntermediateCodeGen(AbstractCodeGen):
             raise error.PySmiSemanticError(f'no module "{module}" in symbolTable')
 
         if symName not in self.symbolTable[module]:
-            raise error.PySmiSemanticError(
-                f'no symbol "{symName}" in module "{module}"'
-            )
+            raise error.PySmiSemanticError(f'no symbol "{symName}" in module "{module}"')
 
-        symType, symSubtype = self.symbolTable[module][symName].get(
-            "syntax", (("", ""), "")
-        )
+        symType, symSubtype = self.symbolTable[module][symName].get("syntax", (("", ""), ""))
         if not symType[0]:
             raise error.PySmiSemanticError(f'unknown type for symbol "{symName}"')
 
@@ -488,11 +478,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         if syntax[0]:
             nodetype = "scalar" if syntax[0] == "Bits" else syntax[0]  # Bits hack
-            nodetype = (
-                "column"
-                if name in self.symbolTable[self.moduleName[0]]["_symtable_cols"]
-                else nodetype
-            )
+            nodetype = "column" if name in self.symbolTable[self.moduleName[0]]["_symtable_cols"] else nodetype
             outDict["nodetype"] = nodetype
 
         outDict["class"] = "objecttype"
@@ -623,10 +609,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         for complianceModule in data[0]:
             name = complianceModule[0] or self.moduleName[0]
-            compliances += [
-                {"object": self.transOpers(compl), "module": name}
-                for compl in complianceModule[1]
-            ]
+            compliances += [{"object": self.transOpers(compl), "module": name} for compl in complianceModule[1]]
 
         return compliances
 
@@ -700,28 +683,21 @@ class IntermediateCodeGen(AbstractCodeGen):
         else:
             # oid
             if defvalType[0][0] == "ObjectIdentifier" and (
-                defval in self.symbolTable[self.moduleName[0]]
-                or defval in self._importMap
+                defval in self.symbolTable[self.moduleName[0]] or defval in self._importMap
             ):
                 module = self._importMap.get(defval, self.moduleName[0])
 
                 try:
-                    val = str(
-                        self.genNumericOid(self.symbolTable[module][defval]["oid"])
-                    )
+                    val = str(self.genNumericOid(self.symbolTable[module][defval]["oid"]))
 
                     outDict.update(value=val, format="oid")
 
                 except Exception:
                     # or no module if it will be borrowed later
-                    raise error.PySmiSemanticError(
-                        f'no symbol "{defval}" in module "{module}"'
-                    )
+                    raise error.PySmiSemanticError(f'no symbol "{defval}" in module "{module}"')
 
             # enumeration
-            elif defvalType[0][0] in ("Integer32", "Integer") and isinstance(
-                defvalType[1], list
-            ):
+            elif defvalType[0][0] in ("Integer32", "Integer") and isinstance(defvalType[1], list):
                 # buggy MIB: DEFVAL { { ... } }
                 if isinstance(defval, list):
                     defval = [dv for dv in defval if dv in dict(defvalType[1])]
@@ -743,9 +719,7 @@ class IntermediateCodeGen(AbstractCodeGen):
                         defvalBits.append((bit, bitValue))
 
                     else:
-                        raise error.PySmiSemanticError(
-                            f'no such bit as "{bit}" for symbol "{objname}"'
-                        )
+                        raise error.PySmiSemanticError(f'no such bit as "{bit}" for symbol "{objname}"')
 
                 outDict.update(value=self.genBits([defvalBits])[1], format="bits")
 
@@ -858,9 +832,7 @@ class IntermediateCodeGen(AbstractCodeGen):
     # noinspection PyUnusedLocal
     def genObjects(self, data):
         if data[0]:
-            return [
-                self.transOpers(obj) for obj in data[0]
-            ]  # XXX self.transOpers or not??
+            return [self.transOpers(obj) for obj in data[0]]  # XXX self.transOpers or not??
         return []
 
     # noinspection PyMethodMayBeStatic,PyUnusedLocal
@@ -874,17 +846,13 @@ class IntermediateCodeGen(AbstractCodeGen):
             # elif lenTimeStr != 13:
             #  raise error.PySmiSemanticError("Invalid date %s" % t)
             try:
-                times.append(
-                    strftime("%Y-%m-%d %H:%M", strptime(timeStr, "%Y%m%d%H%MZ"))
-                )
+                times.append(strftime("%Y-%m-%d %H:%M", strptime(timeStr, "%Y%m%d%H%MZ")))
 
             except ValueError:
                 # XXX raise in strict mode
                 # raise error.PySmiSemanticError("Invalid date %s: %s" % (t, sys.exc_info()[1]))
                 timeStr = "197001010000Z"  # dummy date for dates with typos
-                times.append(
-                    strftime("%Y-%m-%d %H:%M", strptime(timeStr, "%Y%m%d%H%MZ"))
-                )
+                times.append(strftime("%Y-%m-%d %H:%M", strptime(timeStr, "%Y%m%d%H%MZ")))
 
         return times
 
@@ -911,9 +879,7 @@ class IntermediateCodeGen(AbstractCodeGen):
         row = self.transOpers(row)
 
         return (
-            row in self.symbolTable[self.moduleName[0]]["_symtable_rows"]
-            and ("row", "")
-            or self.genSimpleSyntax(data)
+            row in self.symbolTable[self.moduleName[0]]["_symtable_rows"] and ("row", "") or self.genSimpleSyntax(data)
         )
 
     # noinspection PyUnusedLocal
@@ -1024,9 +990,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     def genCode(self, ast, symbolTable, **kwargs):
         self.genRules["text"] = kwargs.get("genTexts", False)
-        self.textFilter = kwargs.get("textFilter") or (
-            lambda symbol, text: re.sub(r"\s+", " ", text)
-        )
+        self.textFilter = kwargs.get("textFilter") or (lambda symbol, text: re.sub(r"\s+", " ", text))
         self.symbolTable = symbolTable
         self._rows.clear()
         self._cols.clear()

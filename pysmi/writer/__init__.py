@@ -7,3 +7,5 @@
 from pysmi.writer.callback import CallbackWriter
 from pysmi.writer.localfile import FileWriter
 from pysmi.writer.pyfile import PyFileWriter
+
+__all__ = ["CallbackWriter", "FileWriter", "PyFileWriter"]

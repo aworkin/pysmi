@@ -96,14 +96,10 @@ class ZipReader(AbstractReader):
 
         except Exception:
             if debug.logger & debug.flagReader:
-                debug.logger(
-                    "ZIP file %s open failure: %s" % (self._name, sys.exc_info()[1])
-                )
+                debug.logger("ZIP file %s open failure: %s" % (self._name, sys.exc_info()[1]))
 
             if not ignoreErrors:
-                self._pendingError = error.PySmiError(
-                    f"file {self._name} access error: {sys.exc_info()[1]}"
-                )
+                self._pendingError = error.PySmiError(f"file {self._name} access error: {sys.exc_info()[1]}")
 
     def _readZipDirectory(self, fileObj):
         archive = zipfile.ZipFile(fileObj)
@@ -121,9 +117,7 @@ class ZipReader(AbstractReader):
             if member.filename.endswith(".zip") or member.filename.endswith(".ZIP"):
                 innerZipBlob = archive.read(member.filename)
 
-                innerMembers = self._readZipDirectory(
-                    FileLike(innerZipBlob, member.filename)
-                )
+                innerMembers = self._readZipDirectory(FileLike(innerZipBlob, member.filename))
 
                 for innerFilename, ref in innerMembers.items():
                     while innerFilename in members:
@@ -133,9 +127,7 @@ class ZipReader(AbstractReader):
                     members[innerFilename].extend(ref)
 
             else:
-                mtime = time.mktime(
-                    datetime.datetime(*member.date_time[:6]).timetuple()
-                )
+                mtime = time.mktime(datetime.datetime(*member.date_time[:6]).timetuple())
 
                 members[filename] = [[fileObj, member.filename, mtime]]
 
@@ -153,10 +145,7 @@ class ZipReader(AbstractReader):
 
             except Exception:
                 if debug.logger & debug.flagReader:
-                    debug.logger(
-                        "ZIP read component %s read error: %s"
-                        % (fileObj.name, sys.exc_info()[1])
-                    )
+                    debug.logger("ZIP read component %s read error: %s" % (fileObj.name, sys.exc_info()[1]))
                 return "", 0
 
         return dataObj, mtime
@@ -172,9 +161,7 @@ class ZipReader(AbstractReader):
             raise self._pendingError
 
         if not self._members:
-            raise error.PySmiReaderFileNotFoundError(
-                f"source MIB {mibname} not found", reader=self
-            )
+            raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
             if debug.logger & debug.flagReader:
@@ -212,6 +199,4 @@ class ZipReader(AbstractReader):
                 mtime=mtime,
             ), decode(mibData)
 
-        raise error.PySmiReaderFileNotFoundError(
-            f"source MIB {mibname} not found", reader=self
-        )
+        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)

@@ -64,6 +64,9 @@ dependencies = [
     "pysnmp"
 ]
 
+[tool.hatch.envs.test.scripts]
+test = "pytest tests"
+
 [[tool.hatch.envs.test.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11"]
 
@@ -86,3 +89,40 @@ dependencies = ["Sphinx"]
 
 [tool.hatch.envs.docs.scripts]
 build = "sphinx-build -b html docs/source docs/html"
+
+[tool.black]
+line-length = 120
+
+[tool.ruff]
+line-length = 120
+
+# Aspirational List
+select= [
+#  "A",
+  "B",
+#  "C",
+#  "DTZ",
+  "E",
+#  "EM",
+  "F",
+#  "FBT",
+#  "I",
+#  "ICN",
+#  "ISC",
+#  "N",
+#  "PLC",
+#  "PLE",
+#  "PLR",
+#  "PLW",
+#  "Q",
+#  "RUF",
+#  "S",
+#  "SIM",
+#  "T",
+#  "TID",
+#  "UP",
+#  "W",
+#  "YTT",
+]
+ignore = ["D100", "D101", "D102", "D103", "D104", "D106", "D107", "D412"]
+unfixable = ["F401"]

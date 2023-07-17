@@ -36,9 +36,7 @@ class ModuleIdentityTestCase(unittest.TestCase):
     def setUp(self):
         ast = parserFactory()().parse(self.__class__.__doc__)[0]
         mibInfo, symtable = SymtableCodeGen().genCode(ast, {}, genTexts=True)
-        self.mibInfo, pycode = PySnmpCodeGen().genCode(
-            ast, {mibInfo.name: symtable}, genTexts=True
-        )
+        self.mibInfo, pycode = PySnmpCodeGen().genCode(ast, {mibInfo.name: symtable}, genTexts=True)
         codeobj = compile(pycode, "test", "exec")
 
         mibBuilder = MibBuilder()
@@ -55,9 +53,7 @@ class ModuleIdentityTestCase(unittest.TestCase):
         self.assertEqual(self.ctx["testModule"].getName(), (1, 3), "bad name")
 
     def testModuleIdentityLastUpdated(self):
-        self.assertEqual(
-            self.ctx["testModule"].getLastUpdated(), "200001100000Z", "bad LAST-UPDATED"
-        )
+        self.assertEqual(self.ctx["testModule"].getLastUpdated(), "200001100000Z", "bad LAST-UPDATED")
 
     def testModuleIdentityOrganization(self):
         self.assertEqual(

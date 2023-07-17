@@ -192,9 +192,7 @@ Software documentation and support at http://snmplabs.com/pysmi
             pyOptimizationLevel = int(opt[1])
 
         except ValueError:
-            sys.stderr.write(
-                f"ERROR: known Python optimization levels: -1, 0, 1, 2\r\n{helpMessage}\r\n"
-            )
+            sys.stderr.write(f"ERROR: known Python optimization levels: -1, 0, 1, 2\r\n{helpMessage}\r\n")
             sys.exit(EX_USAGE)
 
     if opt[0] == "--ignore-errors":
@@ -225,18 +223,7 @@ if not mibSources:
     mibSources = ["file:///usr/share/snmp/mibs", "http://mibs.snmplabs.com/asn1/@mib@"]
 
 if inputMibs:
-    mibSources = (
-        sorted(
-            set(
-                [
-                    os.path.abspath(os.path.dirname(x))
-                    for x in inputMibs
-                    if os.path.sep in x
-                ]
-            )
-        )
-        + mibSources
-    )
+    mibSources = sorted(set([os.path.abspath(os.path.dirname(x)) for x in inputMibs if os.path.sep in x])) + mibSources
 
     inputMibs = [os.path.basename(os.path.splitext(x)[0]) for x in inputMibs]
 
@@ -252,9 +239,7 @@ if dstFormat == "pysnmp":
         mibSearchers = PySnmpCodeGen.defaultMibPackages
 
     if not mibStubs:
-        mibStubs = [
-            x for x in PySnmpCodeGen.baseMibs if x not in PySnmpCodeGen.fakeMibs
-        ]
+        mibStubs = [x for x in PySnmpCodeGen.baseMibs if x not in PySnmpCodeGen.fakeMibs]
 
     if not mibBorrowers:
         mibBorrowers = [
@@ -273,11 +258,7 @@ if dstFormat == "pysnmp":
 
     borrowers = [
         PyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-        for x in enumerate(
-            getReadersFromUrls(
-                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
-            )
-        )
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
     ]
 
     searchers = [PyFileSearcher(dstDirectory)]
@@ -289,9 +270,7 @@ if dstFormat == "pysnmp":
 
     codeGenerator = PySnmpCodeGen()
 
-    fileWriter = PyFileWriter(dstDirectory).setOptions(
-        pyCompile=pyCompileFlag, pyOptimizationLevel=pyOptimizationLevel
-    )
+    fileWriter = PyFileWriter(dstDirectory).setOptions(pyCompile=pyCompileFlag, pyOptimizationLevel=pyOptimizationLevel)
 
 elif dstFormat == "json":
     if not mibStubs:
@@ -310,11 +289,7 @@ elif dstFormat == "json":
 
     borrowers = [
         AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1]).setOptions(exts=[".json"])
-        for x in enumerate(
-            getReadersFromUrls(
-                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
-            )
-        )
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
     ]
 
     searchers = [
@@ -347,19 +322,13 @@ elif dstFormat == "null":
 
     borrowers = [
         AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-        for x in enumerate(
-            getReadersFromUrls(
-                *[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)
-            )
-        )
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
     ]
 
     fileWriter = CallbackWriter(lambda *x: None)
 
 else:
-    sys.stderr.write(
-        f"ERROR: unknown destination format: {dstFormat}\r\n{helpMessage}\r\n"
-    )
+    sys.stderr.write(f"ERROR: unknown destination format: {dstFormat}\r\n{helpMessage}\r\n")
     sys.exit(EX_USAGE)
 
 if verboseFlag:
@@ -388,14 +357,10 @@ Try various file names while searching for MIB module: {doFuzzyMatchingFlag and 
 
 # Initialize compiler infrastructure
 
-mibCompiler = MibCompiler(
-    SmiV1CompatParser(tempdir=cacheDirectory), codeGenerator, fileWriter
-)
+mibCompiler = MibCompiler(SmiV1CompatParser(tempdir=cacheDirectory), codeGenerator, fileWriter)
 
 try:
-    mibCompiler.addSources(
-        *getReadersFromUrls(*mibSources, **dict(fuzzyMatching=doFuzzyMatchingFlag))
-    )
+    mibCompiler.addSources(*getReadersFromUrls(*mibSources, **dict(fuzzyMatching=doFuzzyMatchingFlag)))
 
     mibCompiler.addSearchers(*searchers)
 
@@ -416,9 +381,7 @@ try:
     )
 
     if buildIndexFlag:
-        mibCompiler.buildIndex(
-            processed, dryRun=dryrunFlag, ignoreErrors=ignoreErrorsFlag
-        )
+        mibCompiler.buildIndex(processed, dryRun=dryrunFlag, ignoreErrors=ignoreErrorsFlag)
 
 except error.PySmiError:
     sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n")
@@ -432,30 +395,14 @@ else:
             if status == "compiled"
         ]
         borrowed_mibs = [
-            f"{name} ({status.path})"
-            for name, status in sorted(processed.items())
-            if status == "borrowed"
+            f"{name} ({status.path})" for name, status in sorted(processed.items()) if status == "borrowed"
         ]
-        untouched_mibs = [
-            name for name, status in sorted(processed.items()) if status == "untouched"
-        ]
-        missing_mibs = [
-            name for name, status in sorted(processed.items()) if status == "missing"
-        ]
-        unprocessed_mibs = [
-            name
-            for name, status in sorted(processed.items())
-            if status == "unprocessed"
-        ]
-        failed_mibs = [
-            f"{name} ({status.error})"
-            for name, status in sorted(processed.items())
-            if status == "failed"
-        ]
+        untouched_mibs = [name for name, status in sorted(processed.items()) if status == "untouched"]
+        missing_mibs = [name for name, status in sorted(processed.items()) if status == "missing"]
+        unprocessed_mibs = [name for name, status in sorted(processed.items()) if status == "unprocessed"]
+        failed_mibs = [f"{name} ({status.error})" for name, status in sorted(processed.items()) if status == "failed"]
 
-        sys.stderr.write(
-            f'{dryrunFlag and "Would be c" or "C"}reated/updated MIBs: {", ".join(compiled_mibs)}\r\n'
-        )
+        sys.stderr.write(f'{dryrunFlag and "Would be c" or "C"}reated/updated MIBs: {", ".join(compiled_mibs)}\r\n')
 
         sys.stderr.write(
             f'Pre-compiled MIBs {dryrunFlag and "Would be " or ""}borrowed: {", ".join(borrowed_mibs)}\r\n'

@@ -28,9 +28,7 @@ class SmiV2Parser(AbstractParser):
                 os.makedirs(tempdir)
             except OSError:
                 if sys.exc_info()[1].errno != 17:
-                    raise error.PySmiError(
-                        f"Failed to create cache directory {tempdir}: {sys.exc_info()[1]}"
-                    )
+                    raise error.PySmiError(f"Failed to create cache directory {tempdir}: {sys.exc_info()[1]}")
 
         self.lexer = self.defaultLexer(tempdir=tempdir)
 
@@ -72,10 +70,7 @@ class SmiV2Parser(AbstractParser):
 
     def parse(self, data, **kwargs):
         if debug.logger & debug.flagParser:
-            debug.logger(
-                'source MIB size is %s characters, first 50 characters are "%s..."'
-                % (len(data), data[:50])
-            )
+            debug.logger('source MIB size is %s characters, first 50 characters are "%s..."' % (len(data), data[:50]))
 
         ast = self.parser.parse(data, lexer=self.lexer.lexer)
 

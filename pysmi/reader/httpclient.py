@@ -45,9 +45,7 @@ class HttpReader(AbstractReader):
             timeout (int): response timeout
             ssl (bool): enable HTTPS
         """
-        self._url = (
-            f'{"https" if ssl else "http"}://{host}:{port:d}{decode(locationTemplate)}'
-        )
+        self._url = f'{"https" if ssl else "http"}://{host}:{port:d}{decode(locationTemplate)}'
 
         socket.setdefaulttimeout(timeout)
         self._user_agent = f"pysmi-{pysmi_version}; python-{sys.version_info[0]}.{sys.version_info[1]}.{sys.version_info[2]}; {sys.platform}"
@@ -78,9 +76,7 @@ class HttpReader(AbstractReader):
 
             except Exception:
                 if debug.logger & debug.flagReader:
-                    debug.logger(
-                        "failed to fetch MIB from %s: %s" % (url, sys.exc_info()[1])
-                    )
+                    debug.logger("failed to fetch MIB from %s: %s" % (url, sys.exc_info()[1]))
                 continue
 
             if debug.logger & debug.flagReader:
@@ -101,15 +97,10 @@ class HttpReader(AbstractReader):
                     mtime = time.time()
 
                 if debug.logger & debug.flagReader:
-                    debug.logger(
-                        "fetching source MIB %s, mtime %s"
-                        % (url, response.getheader("Last-Modified"))
-                    )
+                    debug.logger("fetching source MIB %s, mtime %s" % (url, response.getheader("Last-Modified")))
 
-                return MibInfo(
-                    path=url, file=mibfile, name=mibalias, mtime=mtime
-                ), decode(response.read(self.maxMibSize))
+                return MibInfo(path=url, file=mibfile, name=mibalias, mtime=mtime), decode(
+                    response.read(self.maxMibSize)
+                )
 
-        raise error.PySmiReaderFileNotFoundError(
-            f"source MIB {mibname} not found", reader=self
-        )
+        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)

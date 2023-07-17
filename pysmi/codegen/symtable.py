@@ -185,9 +185,7 @@ class SymtableCodeGen(AbstractCodeGen):
         return parentsExists
 
     def regSym(self, symbol, symProps, parents=()):
-        if (
-            symbol in self._out or symbol in self._postponedSyms
-        ):  # add to strict mode - or symbol in self._importMap:
+        if symbol in self._out or symbol in self._postponedSyms:  # add to strict mode - or symbol in self._importMap:
             raise error.PySmiSemanticError(f"Duplicate symbol found: {symbol}")
 
         if self.allParentsExists(parents):
@@ -535,11 +533,7 @@ class SymtableCodeGen(AbstractCodeGen):
     def genRow(self, data, classmode=False):
         row = data[0]
         row = self.transOpers(row)
-        return (
-            (("MibTableRow", ""), "")
-            if row in self._rows
-            else self.genSimpleSyntax(data, classmode=classmode)
-        )
+        return (("MibTableRow", ""), "") if row in self._rows else self.genSimpleSyntax(data, classmode=classmode)
 
     # noinspection PyUnusedLocal
     def genSequence(self, data, classmode=False):
@@ -639,14 +633,10 @@ class SymtableCodeGen(AbstractCodeGen):
             if declr:
                 clausetype = declr[0]
                 classmode = clausetype == "typeDeclaration"
-                self.handlersTable[declr[0]](
-                    self, self.prepData(declr[1:], classmode), classmode
-                )
+                self.handlersTable[declr[0]](self, self.prepData(declr[1:], classmode), classmode)
 
         if self._postponedSyms:
-            raise error.PySmiSemanticError(
-                f'Unknown parents for symbols: {", ".join(self._postponedSyms)}'
-            )
+            raise error.PySmiSemanticError(f'Unknown parents for symbols: {", ".join(self._postponedSyms)}')
 
         for sym in self._parentOids:
             if sym not in self._out and sym not in self._importMap:

@@ -60,15 +60,11 @@ class AnyFileSearcher(AbstractSearcher):
                     "found %s, mtime %s"
                     % (
                         f,
-                        time.strftime(
-                            "%a, %d %b %Y %H:%M:%S GMT", time.gmtime(fileTime)
-                        ),
+                        time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(fileTime)),
                     )
                 )
 
             if fileTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        raise error.PySmiFileNotFoundError(
-            f"no compiled file {mibname} found", searcher=self
-        )
+        raise error.PySmiFileNotFoundError(f"no compiled file {mibname} found", searcher=self)

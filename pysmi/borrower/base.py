@@ -41,9 +41,7 @@ class AbstractBorrower:
     def getData(self, mibname, **options):
         if bool(options.get("genTexts")) != self.genTexts:
             if debug.logger & debug.flagBorrower:
-                debug.logger(
-                    "skipping incompatible borrower %s for file %s" % (self, mibname)
-                )
+                debug.logger("skipping incompatible borrower %s for file %s" % (self, mibname))
             raise error.PySmiFileNotFoundError(mibname=mibname, reader=self._reader)
 
         debug.logger & debug.flagBorrower and (

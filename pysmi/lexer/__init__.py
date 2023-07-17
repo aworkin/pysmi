@@ -5,3 +5,5 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 from pysmi.lexer.smi import SmiV2Lexer
+
+__all__ = ["SmiV2Lexer"]

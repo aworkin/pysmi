@@ -42,9 +42,7 @@ class CallbackReader(AbstractReader):
         res = self._cbFun(mibname, self._cbCtx)
         if res:
             return (
-                MibInfo(
-                    path="file:///dev/stdin", file="", name=mibname, mtime=time.time()
-                ),
+                MibInfo(path="file:///dev/stdin", file="", name=mibname, mtime=time.time()),
                 res,
             )
 

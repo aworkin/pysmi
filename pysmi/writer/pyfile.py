@@ -85,18 +85,14 @@ class PyFileWriter(AbstractWriter):
             if tfile and os.access(tfile, os.F_OK):
                 os.unlink(tfile)
 
-            raise error.PySmiWriterError(
-                f"failure writing file {pyfile}: {exc[1]}", file=pyfile, writer=self
-            )
+            raise error.PySmiWriterError(f"failure writing file {pyfile}: {exc[1]}", file=pyfile, writer=self)
 
         if debug.logger & debug.flagWriter:
             debug.logger("created file %s" % pyfile)
 
         if self.pyCompile:
             try:
-                py_compile.compile(
-                    pyfile, doraise=True, optimize=self.pyOptimizationLevel
-                )
+                py_compile.compile(pyfile, doraise=True, optimize=self.pyOptimizationLevel)
 
             except (SyntaxError, py_compile.PyCompileError):
                 pass  # XXX

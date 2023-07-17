@@ -84,18 +84,14 @@ class PyFileSearcher(AbstractSearcher):
                         "found %s, mtime %s"
                         % (
                             f,
-                            time.strftime(
-                                "%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)
-                            ),
+                            time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)),
                         )
                     )
                 if pyTime >= mtime:
                     raise error.PySmiFileNotModifiedError()
 
                 else:
-                    raise error.PySmiFileNotFoundError(
-                        f"older file {mibname} exists", searcher=self
-                    )
+                    raise error.PySmiFileNotFoundError(f"older file {mibname} exists", searcher=self)
 
             else:
                 if debug.logger & debug.flagSearcher:
@@ -131,6 +127,4 @@ class PyFileSearcher(AbstractSearcher):
             if pyTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        raise error.PySmiFileNotFoundError(
-            f"no compiled file {mibname} found", searcher=self
-        )
+        raise error.PySmiFileNotFoundError(f"no compiled file {mibname} found", searcher=self)

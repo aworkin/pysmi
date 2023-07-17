@@ -52,9 +52,7 @@ class ValueDeclarationTestCase(unittest.TestCase):
     def setUp(self):
         ast = parserFactory()().parse(self.__class__.__doc__)[0]
         mibInfo, symtable = SymtableCodeGen().genCode(ast, {}, genTexts=True)
-        self.mibInfo, pycode = PySnmpCodeGen().genCode(
-            ast, {mibInfo.name: symtable}, genTexts=True
-        )
+        self.mibInfo, pycode = PySnmpCodeGen().genCode(ast, {mibInfo.name: symtable}, genTexts=True)
         codeobj = compile(pycode, "test", "exec")
 
         mibBuilder = MibBuilder()
@@ -66,9 +64,7 @@ class ValueDeclarationTestCase(unittest.TestCase):
 
     def testValueDeclarationSymbol(self):
         self.assertTrue(
-            "testValue1" in self.ctx
-            and "testValue2" in self.ctx
-            and "testValue3" in self.ctx,
+            "testValue1" in self.ctx and "testValue2" in self.ctx and "testValue3" in self.ctx,
             "symbol not present",
         )
 

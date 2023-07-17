@@ -129,17 +129,13 @@ if not mibSources:
     mibSources = ["file:///usr/share/snmp/mibs", "http://mibs.snmplabs.com/asn1/@mib@"]
 
 if len(inputMibs) < 2:
-    sys.stderr.write(
-        f"ERROR: MIB source and/or destination arguments not given\r\n{helpMessage}\r\n"
-    )
+    sys.stderr.write(f"ERROR: MIB source and/or destination arguments not given\r\n{helpMessage}\r\n")
     sys.exit(EX_USAGE)
 
 dstDirectory = inputMibs.pop()
 
 if os.path.exists(dstDirectory) and not os.path.isdir(dstDirectory):
-    sys.stderr.write(
-        f"ERROR: given destination is not a directory\r\n{helpMessage}\r\n"
-    )
+    sys.stderr.write(f"ERROR: given destination is not a directory\r\n{helpMessage}\r\n")
     sys.exit(EX_USAGE)
 
 try:
@@ -181,22 +177,18 @@ def getMibRevision(mibDir, mibFile):
         sys.exit(EX_SOFTWARE)
 
     for canonicalMibName in processed:
-        if processed[canonicalMibName] == "compiled" and processed[
-            canonicalMibName
-        ].path == "file://" + os.path.join(mibDir, mibFile):
+        if processed[canonicalMibName] == "compiled" and processed[canonicalMibName].path == "file://" + os.path.join(
+            mibDir, mibFile
+        ):
             try:
-                revision = datetime.strptime(
-                    processed[canonicalMibName].revision, "%Y-%m-%d %H:%M"
-                )
+                revision = datetime.strptime(processed[canonicalMibName].revision, "%Y-%m-%d %H:%M")
 
             except Exception:
                 revision = datetime.fromtimestamp(0)
 
             return canonicalMibName, revision
 
-    raise error.PySmiError(
-        f'Can\'t read or parse MIB "{os.path.join(mibDir, mibFile)}"'
-    )
+    raise error.PySmiError(f'Can\'t read or parse MIB "{os.path.join(mibDir, mibFile)}"')
 
 
 def shortenPath(path, maxLength=45):
@@ -239,14 +231,10 @@ for srcDirectory in inputMibs:
 
         except error.PySmiError as ex:
             if verboseFlag:
-                sys.stderr.write(
-                    f'Failed to read source MIB "{os.path.join(srcDirectory, mibFile)}": {ex}\r\n'
-                )
+                sys.stderr.write(f'Failed to read source MIB "{os.path.join(srcDirectory, mibFile)}": {ex}\r\n')
 
             if not quietFlag:
-                sys.stderr.write(
-                    f"FAILED {shortenPath(os.path.join(srcDirectory, mibFile))}\r\n"
-                )
+                sys.stderr.write(f"FAILED {shortenPath(os.path.join(srcDirectory, mibFile))}\r\n")
 
             mibsFailed += 1
 
@@ -276,9 +264,7 @@ for srcDirectory in inputMibs:
                     f'revision as the source MIB "{os.path.join(srcDirectory, mibFile)}"\r\n'
                 )
             if not quietFlag:
-                sys.stderr.write(
-                    f"NOT COPIED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n"
-                )
+                sys.stderr.write(f"NOT COPIED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n")
 
             continue
 
@@ -291,9 +277,7 @@ for srcDirectory in inputMibs:
             )
 
         try:
-            shutil.copy(
-                os.path.join(srcDirectory, mibFile), os.path.join(dstDirectory, mibName)
-            )
+            shutil.copy(os.path.join(srcDirectory, mibFile), os.path.join(dstDirectory, mibName))
 
         except Exception as ex:
             if verboseFlag:
@@ -303,23 +287,17 @@ for srcDirectory in inputMibs:
                 )
 
             if not quietFlag:
-                sys.stderr.write(
-                    f"FAILED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n"
-                )
+                sys.stderr.write(f"FAILED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n")
 
             mibsFailed += 1
 
         else:
             if not quietFlag:
-                sys.stderr.write(
-                    f"COPIED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n"
-                )
+                sys.stderr.write(f"COPIED {shortenPath(os.path.join(srcDirectory, mibFile))} ({mibName})\r\n")
 
             mibsCopied += 1
 
 if not quietFlag:
-    sys.stderr.write(
-        f"MIBs seen: {mibsSeen:d}, copied: {mibsCopied:d}, failed: {mibsFailed:d}\r\n"
-    )
+    sys.stderr.write(f"MIBs seen: {mibsSeen:d}, copied: {mibsCopied:d}, failed: {mibsFailed:d}\r\n")
 
 sys.exit(EX_OK)

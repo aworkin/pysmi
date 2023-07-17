@@ -185,9 +185,7 @@ class SmiV2Lexer(AbstractLexer):
 
     def reset(self):
         if LEX_VERSION < [3, 0]:
-            self.lexer = lex.lex(
-                module=self, reflags=re.DOTALL, outputdir=self._tempdir, debug=False
-            )
+            self.lexer = lex.lex(module=self, reflags=re.DOTALL, outputdir=self._tempdir, debug=False)
         else:
             if debug.logger & debug.flagLexer:
                 logger = debug.logger.getCurrentLogger()
@@ -290,9 +288,7 @@ class SmiV2Lexer(AbstractLexer):
             raise error.PySmiLexerError(f"{t.value} is forbidden", lineno=t.lineno)
 
         if t.value[-1] == "-":
-            raise error.PySmiLexerError(
-                f"Identifier should not end with '-': {t.value}", lineno=t.lineno
-            )
+            raise error.PySmiLexerError(f"Identifier should not end with '-': {t.value}", lineno=t.lineno)
 
         t.type = self.reserved.get(t.value, "UPPERCASE_IDENTIFIER")
 
@@ -301,9 +297,7 @@ class SmiV2Lexer(AbstractLexer):
     @TOKEN(r"[0-9]*[a-z][-a-zA-z0-9]*")
     def t_LOWERCASE_IDENTIFIER(self, t):
         if t.value[-1] == "-":
-            raise error.PySmiLexerError(
-                f"Identifier should not end with '-': {t.value}", lineno=t.lineno
-            )
+            raise error.PySmiLexerError(f"Identifier should not end with '-': {t.value}", lineno=t.lineno)
         return t
 
     @TOKEN(r"-?[0-9]+")

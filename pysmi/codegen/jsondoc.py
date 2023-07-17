@@ -145,9 +145,7 @@ class JsonCodeGen(IntermediateCodeGen):
                 unique_prefixes = {}
                 for oid in sorted(modData, key=lambda x: x.count(".")):
                     for oid_prefix, modules in unique_prefixes.items():
-                        if oid.startswith(oid_prefix) and set(modules).issuperset(
-                            modData[oid]
-                        ):
+                        if oid.startswith(oid_prefix) and set(modules).issuperset(modData[oid]):
                             break
                     else:
                         unique_prefixes[oid] = modData[oid]
