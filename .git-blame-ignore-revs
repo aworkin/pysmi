@@ -1,2 +1,5 @@
 # Migrate code style to Black
 b3fa7378e49546758b84d1dc4143e8d9383ff54a
+
+# Change code style line length to 120 characters
+030ab492882774aa6ab9a1676564a998c3ca0ac1
