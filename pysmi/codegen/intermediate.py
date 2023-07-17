@@ -148,7 +148,6 @@ class IntermediateCodeGen(AbstractCodeGen):
     def addToExports(self, symbol, moduleIdentity=0):
         self._seenSyms.add(symbol)
 
-    # noinspection PyUnusedLocal
     def regSym(
         self,
         symbol,
@@ -226,11 +225,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     # Clause generation functions
 
-    # noinspection PyUnusedLocal
     def genAgentCapabilities(self, data):
         name, productRelease, status, description, reference, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -256,11 +254,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genModuleIdentity(self, data):
         name, lastUpdated, organization, contactInfo, description, revisions, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -289,11 +286,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genModuleCompliance(self, data):
         name, status, description, reference, compliances, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -319,11 +315,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genNotificationGroup(self, data):
         name, objects, status, description, reference, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -354,11 +349,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genNotificationType(self, data):
         name, objects, status, description, reference, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -389,11 +383,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genObjectGroup(self, data):
         name, objects, status, description, reference, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -421,11 +414,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genObjectIdentity(self, data):
         name, status, description, reference, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -448,7 +440,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genObjectType(self, data):
         (
             name,
@@ -464,7 +455,7 @@ class IntermediateCodeGen(AbstractCodeGen):
             oid,
         ) = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -516,11 +507,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genTrapType(self, data):
         name, enterprise, variables, description, reference, value = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         enterpriseStr, parentOid = enterprise
@@ -549,7 +539,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genTypeDeclaration(self, data):
         name, declaration = data
 
@@ -566,11 +555,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return outDict
 
-    # noinspection PyUnusedLocal
     def genValueDeclaration(self, data):
         name, oid = data
 
-        label = self.genLabel(name)
+        label = self.genLabel(name)  # noqa: F841
         name = self.transOpers(name)
 
         oidStr, parentOid = oid
@@ -603,7 +591,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return "scalar", outDict
 
-    # noinspection PyUnusedLocal
     def genCompliances(self, data):
         compliances = []
 
@@ -613,7 +600,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return compliances
 
-    # noinspection PyUnusedLocal
     def genConceptualTable(self, data):
         row = data[0]
 
@@ -628,11 +614,9 @@ class IntermediateCodeGen(AbstractCodeGen):
         text = data[0]
         return self.textFilter("contact-info", text)
 
-    # noinspection PyUnusedLocal
     def genDisplayHint(self, data):
         return data[0]
 
-    # noinspection PyUnusedLocal
     def genDefVal(self, data, objname=None):
         if not data:
             return {}
@@ -751,7 +735,6 @@ class IntermediateCodeGen(AbstractCodeGen):
         items = data[0]
         return {"enumeration": dict(items)}
 
-    # noinspection PyUnusedLocal
     def genTableIndex(self, data):
         def genFakeSyms(fakeidx, idxType):
             objType = self.SMI_TYPES.get(idxType, idxType)
@@ -809,7 +792,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return {"size": sizes}
 
-    # noinspection PyUnusedLocal
     def genOid(self, data):
         out = ()
         parent = ""
@@ -829,7 +811,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return ".".join([str(x) for x in self.genNumericOid(out)]), parent
 
-    # noinspection PyUnusedLocal
     def genObjects(self, data):
         if data[0]:
             return [self.transOpers(obj) for obj in data[0]]  # XXX self.transOpers or not??
@@ -864,7 +845,6 @@ class IntermediateCodeGen(AbstractCodeGen):
     def genOrganization(self, data):
         return self.textFilter("organization", data[0])
 
-    # noinspection PyUnusedLocal
     def genRevisions(self, data):
         revisions = []
         for x in data[0]:
@@ -882,7 +862,6 @@ class IntermediateCodeGen(AbstractCodeGen):
             row in self.symbolTable[self.moduleName[0]]["_symtable_rows"] and ("row", "") or self.genSimpleSyntax(data)
         )
 
-    # noinspection PyUnusedLocal
     def genSequence(self, data):
         cols = data[0]
         self._cols.update(cols)
@@ -904,7 +883,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return "scalar", outDict
 
-    # noinspection PyUnusedLocal
     def genTypeDeclarationRHS(self, data):
         if len(data) == 1:
             parentType, attrs = data[0]
