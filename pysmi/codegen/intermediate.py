@@ -573,7 +573,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     # Subparts generation functions
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
     def genBitNames(self, data):
         names = data[0]
         return names
@@ -609,7 +609,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return "table", ""
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def genContactInfo(self, data):
         text = data[0]
         return self.textFilter("contact-info", text)
@@ -716,11 +715,9 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return {"default": outDict}
 
-    # noinspection PyMethodMayBeStatic
     def genDescription(self, data):
         return self.textFilter("description", data[0])
 
-    # noinspection PyMethodMayBeStatic
     def genReference(self, data):
         return self.textFilter("reference", data[0])
 
@@ -775,7 +772,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return {"range": ranges}
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
     def genMaxAccess(self, data):
         return data[0]
 
@@ -816,7 +813,7 @@ class IntermediateCodeGen(AbstractCodeGen):
             return [self.transOpers(obj) for obj in data[0]]  # XXX self.transOpers or not??
         return []
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
     def genTime(self, data):
         times = []
         for timeStr in data:
@@ -837,11 +834,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return times
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
+    # noinspection PyMethodMayBeStatic
     def genLastUpdated(self, data):
         return data[0]
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def genOrganization(self, data):
         return self.textFilter("organization", data[0])
 
@@ -912,7 +908,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return parentType, outDict
 
-    # noinspection PyMethodMayBeStatic,PyUnusedLocal
     def genUnits(self, data):
         text = data[0]
         return self.textFilter("units", text)
