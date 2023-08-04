@@ -81,7 +81,7 @@ class PyFileWriter(AbstractWriter):
             os.close(fd)
             os.rename(tfile, pyfile)
 
-        except (OSError, IOError, UnicodeEncodeError):
+        except (OSError, UnicodeEncodeError):
             exc = sys.exc_info()
             if tfile and os.access(tfile, os.F_OK):
                 os.unlink(tfile)

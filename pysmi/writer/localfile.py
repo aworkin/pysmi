@@ -46,7 +46,7 @@ class FileWriter(AbstractWriter):
             f.close()
             return data
 
-        except (OSError, IOError, UnicodeEncodeError):
+        except (OSError, UnicodeEncodeError):
             if f:
                 f.close()
             return ""
@@ -81,7 +81,7 @@ class FileWriter(AbstractWriter):
             os.close(fd)
             os.rename(tfile, filename)
 
-        except (OSError, IOError, UnicodeEncodeError):
+        except (OSError, UnicodeEncodeError):
             exc = sys.exc_info()
             if tfile:
                 try:

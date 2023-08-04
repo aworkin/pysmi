@@ -189,7 +189,7 @@ class ZipReader(AbstractReader):
                 )
 
             if len(mibData) == self.maxMibSize:
-                raise IOError(f"MIB {self._name}/{mibfile} too large")
+                raise OSError(f"MIB {self._name}/{mibfile} too large")
 
             return MibInfo(
                 path=f"zip://{self._name}/{mibfile}",

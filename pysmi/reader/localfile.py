@@ -78,7 +78,7 @@ class FileReader(AbstractReader):
                 if debug.logger & debug.flagReader:
                     debug.logger(f"loaded MIB index map from {indexFile} file, {len(mibIndex)} entries")
 
-            except IOError:
+            except OSError:
                 pass
 
         return mibIndex
@@ -94,7 +94,7 @@ class FileReader(AbstractReader):
                     debug.logger(f"found {mibname} in MIB index: {self._mibIndex[mibname]}")
                 return [(mibname, self._mibIndex[mibname])]
 
-        return super(FileReader, self).getMibVariants(mibname, **options)
+        return super().getMibVariants(mibname, **options)
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
@@ -124,11 +124,11 @@ class FileReader(AbstractReader):
                         fp.close()
 
                         if len(mibData) == self.maxMibSize:
-                            raise IOError(f"MIB {f} too large")
+                            raise OSError(f"MIB {f} too large")
 
                         return MibInfo(path=f"file://{f}", file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
-                    except (OSError, IOError):
+                    except OSError:
                         if debug.logger & debug.flagReader:
                             debug.logger(f"source file {f} open failure: {sys.exc_info()[1]}")
 

@@ -71,7 +71,7 @@ class PyFileSearcher(AbstractSearcher):
                 pyData = fp.read(8)
                 fp.close()
 
-            except IOError:
+            except OSError:
                 raise error.PySmiSearcherError(
                     f"failure opening compiled file {f}: {sys.exc_info()[1]}",
                     searcher=self,
