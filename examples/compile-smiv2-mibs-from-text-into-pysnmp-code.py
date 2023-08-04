@@ -8,7 +8,7 @@ results to another user callback function for storing.
 
 Here we expect to deal only with SMIv2-valid MIBs.
 
-We use noDeps flag to prevent MIB compiler from attemping
+We use noDeps flag to prevent MIB compiler from attempting
 to compile IMPORT'ed MIBs as well.
 """  #
 import sys
@@ -28,7 +28,7 @@ srcDir = "/usr/share/snmp/mibs/"  # we will read MIBs from here
 mibCompiler = MibCompiler(
     SmiV2Parser(),
     PySnmpCodeGen(),
-    # out own callback function stores results in its own way
+    # our own callback function stores results in its own way
     CallbackWriter(lambda m, d, c: sys.stdout.write(d)),
 )
 
