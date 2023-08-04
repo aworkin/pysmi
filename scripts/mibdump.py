@@ -130,7 +130,7 @@ except getopt.GetoptError as err:
     sys.exit(EX_USAGE)
 
 for opt in opts:
-    if opt[0] == "-h" or opt[0] == "--help":
+    if opt[0] in {"-h", "--help"}:
         sys.stderr.write(
             f"""\
 Synopsis:
@@ -142,7 +142,7 @@ Documentation:
         )
         sys.exit(EX_OK)
 
-    if opt[0] == "-v" or opt[0] == "--version":
+    if opt[0] in {"-v", "--version"}:
         from pysmi import __version__
 
         sys.stderr.write(
