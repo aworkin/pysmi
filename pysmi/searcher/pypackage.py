@@ -16,8 +16,8 @@ try:
         SOURCE_SUFFIXES = importlib.machinery.SOURCE_SUFFIXES
         BYTECODE_SUFFIXES = importlib.machinery.BYTECODE_SUFFIXES
 
-    except Exception:
-        raise ImportError()
+    except Exception as err:
+        raise ImportError() from err
 
 except ImportError:
     import imp
@@ -95,9 +95,9 @@ class PyPackageSearcher(AbstractSearcher):
                 msg = f"{self._package} is neither importable nor a file"
                 raise error.PySmiFileNotFoundError(msg, searcher=self)
 
-        except ImportError:
+        except ImportError as err:
             msg = f"{self._package} is not importable, trying as a path"
-            raise error.PySmiFileNotFoundError(msg, searcher=self)
+            raise error.PySmiFileNotFoundError(msg, searcher=self) from err
 
         for pySfx in BYTECODE_SUFFIXES:
             f = os.path.join(self._package, mibname.upper()) + pySfx

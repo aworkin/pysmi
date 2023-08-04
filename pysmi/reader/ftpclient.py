@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import ftplib  # nosec
-import sys
 import time
 
 from pysmi import debug
@@ -66,23 +65,23 @@ class FtpReader(AbstractReader):
         try:
             conn.connect(self._host, self._port, self._timeout)
 
-        except ftplib.all_errors:
-            msg = f"failed to connect to FTP server {self._host}:{self._port}: {sys.exc_info()[1]}"
+        except ftplib.all_errors as err:
+            msg = f"failed to connect to FTP server {self._host}:{self._port}: {err}"
             raise error.PySmiReaderFileNotFoundError(
                 msg,
                 reader=self,
-            )
+            ) from err
 
         try:
             conn.login(self._user, self._password)
 
-        except ftplib.all_errors:
+        except ftplib.all_errors as err:
             conn.close()
-            msg = f"failed to log in to FTP server {self._host}:{self._port} as {self._user}/{self._password}: {sys.exc_info()[1]}"
+            msg = f"failed to log in to FTP server {self._host}:{self._port} as {self._user}/{self._password}: {err}"
             raise error.PySmiReaderFileNotFoundError(
                 msg,
                 reader=self,
-            )
+            ) from err
 
         mibname = decode(mibname)
 
@@ -126,9 +125,9 @@ class FtpReader(AbstractReader):
 
                 conn.retrlines(f"RETR {location}", lambda x, y=data: y.append(x))
 
-            except ftplib.all_errors:
+            except ftplib.all_errors as err:
                 if debug.logger & debug.flagReader:
-                    debug.logger(f"failed to fetch MIB {location} from {self._host}:{self._port}: {sys.exc_info()[1]}")
+                    debug.logger(f"failed to fetch MIB {location} from {self._host}:{self._port}: {err}")
                 continue
 
             data = decode("\n".join(data))

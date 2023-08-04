@@ -6,7 +6,6 @@
 #
 import os
 import struct
-import sys
 import time
 
 try:
@@ -17,8 +16,8 @@ try:
         SOURCE_SUFFIXES = importlib.machinery.SOURCE_SUFFIXES
         BYTECODE_SUFFIXES = importlib.machinery.BYTECODE_SUFFIXES
 
-    except Exception:
-        raise ImportError()
+    except Exception as err:
+        raise ImportError() from err
 
 except ImportError:
     import imp
@@ -70,12 +69,12 @@ class PyFileSearcher(AbstractSearcher):
                 with open(f, "rb") as fp:
                     pyData = fp.read(8)
 
-            except OSError:
-                msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"
+            except OSError as err:
+                msg = f"failure opening compiled file {f}: {err}"
                 raise error.PySmiSearcherError(
                     msg,
                     searcher=self,
-                )
+                ) from err
             if pyData[:4] == PY_MAGIC_NUMBER:
                 pyData = pyData[4:]
                 pyTime = struct.unpack("<L", pyData[:4])[0]
@@ -109,12 +108,12 @@ class PyFileSearcher(AbstractSearcher):
             try:
                 pyTime = os.stat(f)[8]
 
-            except OSError:
-                msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"
+            except OSError as err:
+                msg = f"failure opening compiled file {f}: {err}"
                 raise error.PySmiSearcherError(
                     msg,
                     searcher=self,
-                )
+                ) from err
 
             if debug.logger & debug.flagSearcher:
                 debug.logger(

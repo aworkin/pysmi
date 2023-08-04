@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 import time
 
 from pysmi import debug
@@ -53,13 +52,13 @@ class FileReader(AbstractReader):
         try:
             subdirs = os.listdir(path)
 
-        except OSError:
+        except OSError as err:
             if ignoreErrors:
                 return dirs
 
             else:
-                msg = f"directory {path} access error: {sys.exc_info()[1]}"
-                raise error.PySmiError(msg)
+                msg = f"directory {path} access error: {err}"
+                raise error.PySmiError(msg) from err
 
         for d in subdirs:
             d = os.path.join(decode(path), decode(d))
@@ -128,13 +127,13 @@ class FileReader(AbstractReader):
 
                         return MibInfo(path=f"file://{f}", file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
-                    except OSError:
+                    except OSError as err:
                         if debug.logger & debug.flagReader:
-                            debug.logger(f"source file {f} open failure: {sys.exc_info()[1]}")
+                            debug.logger(f"source file {f} open failure: {err}")
 
                         if not self._ignoreErrors:
-                            msg = f"file {f} access error: {sys.exc_info()[1]}"
-                            raise error.PySmiError(msg)
+                            msg = f"file {f} access error: {err}"
+                            raise error.PySmiError(msg) from err
 
                     msg = f"source MIB {f} is older than needed"
                     raise error.PySmiReaderFileNotModifiedError(msg, reader=self)

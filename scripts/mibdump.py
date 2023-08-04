@@ -123,9 +123,9 @@ try:
         ],
     )
 
-except getopt.GetoptError:
+except getopt.GetoptError as err:
     if verboseFlag:
-        sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n{helpMessage}\r\n")
+        sys.stderr.write(f"ERROR: {err}\r\n{helpMessage}\r\n")
 
     sys.exit(EX_USAGE)
 
@@ -387,8 +387,8 @@ try:
     if buildIndexFlag:
         mibCompiler.buildIndex(processed, dryRun=dryrunFlag, ignoreErrors=ignoreErrorsFlag)
 
-except error.PySmiError:
-    sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n")
+except error.PySmiError as err:
+    sys.stderr.write(f"ERROR: {err}\r\n")
     sys.exit(EX_SOFTWARE)
 
 else:

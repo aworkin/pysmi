@@ -6,7 +6,6 @@
 #
 import os
 import py_compile
-import sys
 import tempfile
 
 try:
@@ -15,8 +14,8 @@ try:
     try:
         SOURCE_SUFFIXES = importlib.machinery.SOURCE_SUFFIXES
 
-    except Exception:
-        raise ImportError()
+    except Exception as err:
+        raise ImportError() from err
 
 except ImportError:
     import imp
@@ -61,12 +60,12 @@ class PyFileWriter(AbstractWriter):
             try:
                 os.makedirs(self._path)
 
-            except OSError:
-                msg = f"failure creating destination directory {self._path}: {sys.exc_info()[1]}"
+            except OSError as err:
+                msg = f"failure creating destination directory {self._path}: {err}"
                 raise error.PySmiWriterError(
                     msg,
                     writer=self,
-                )
+                ) from err
 
         if comments:
             data = "#\n" + "".join([f"# {x}\n" for x in comments]) + "#\n" + data
@@ -82,13 +81,12 @@ class PyFileWriter(AbstractWriter):
             os.close(fd)
             os.rename(tfile, pyfile)
 
-        except (OSError, UnicodeEncodeError):
-            exc = sys.exc_info()
+        except (OSError, UnicodeEncodeError) as err:
             if tfile and os.access(tfile, os.F_OK):
                 os.unlink(tfile)
 
-            msg = f"failure writing file {pyfile}: {exc[1]}"
-            raise error.PySmiWriterError(msg, file=pyfile, writer=self)
+            msg = f"failure writing file {pyfile}: {err}"
+            raise error.PySmiWriterError(msg, file=pyfile, writer=self) from err
 
         if debug.logger & debug.flagWriter:
             debug.logger("created file %s" % pyfile)
@@ -100,16 +98,16 @@ class PyFileWriter(AbstractWriter):
             except (SyntaxError, py_compile.PyCompileError):
                 pass  # XXX
 
-            except Exception:
+            except Exception as err:
                 if pyfile and os.access(pyfile, os.F_OK):
                     os.unlink(pyfile)
 
-                msg = f"failure compiling {pyfile}: {sys.exc_info()[1]}"
+                msg = f"failure compiling {pyfile}: {err}"
                 raise error.PySmiWriterError(
                     msg,
                     file=mibname,
                     writer=self,
-                )
+                ) from err
 
         if debug.logger & debug.flagWriter:
             debug.logger("%s stored" % mibname)

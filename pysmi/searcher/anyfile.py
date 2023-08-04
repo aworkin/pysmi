@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 import time
 
 from pysmi import debug
@@ -49,12 +48,12 @@ class AnyFileSearcher(AbstractSearcher):
             try:
                 fileTime = os.stat(f)[8]
 
-            except OSError:
-                msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"
+            except OSError as err:
+                msg = f"failure opening compiled file {f}: {err}"
                 raise error.PySmiSearcherError(
                     msg,
                     searcher=self,
-                )
+                ) from err
 
             if debug.logger & debug.flagSearcher:
                 debug.logger(

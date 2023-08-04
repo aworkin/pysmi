@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 import tempfile
 from contextlib import suppress
 
@@ -59,12 +58,12 @@ class FileWriter(AbstractWriter):
             try:
                 os.makedirs(self._path)
 
-            except OSError:
-                msg = f"failure creating destination directory {self._path}: {sys.exc_info()[1]}"
+            except OSError as err:
+                msg = f"failure creating destination directory {self._path}: {err}"
                 raise error.PySmiWriterError(
                     msg,
                     writer=self,
-                )
+                ) from err
 
         if comments:
             comment_lines = [f"# {x}\n" for x in comments]
@@ -80,14 +79,13 @@ class FileWriter(AbstractWriter):
             os.close(fd)
             os.rename(tfile, filename)
 
-        except (OSError, UnicodeEncodeError):
-            exc = sys.exc_info()
+        except (OSError, UnicodeEncodeError) as err:
             if tfile:
                 with suppress(OSError):
                     os.unlink(tfile)
 
-            msg = f"failure writing file {filename}: {exc[1]}"
-            raise error.PySmiWriterError(msg, file=filename, writer=self)
+            msg = f"failure writing file {filename}: {err}"
+            raise error.PySmiWriterError(msg, file=filename, writer=self) from err
 
         if debug.logger & debug.flagWriter:
             debug.logger(f"{mibname} stored in {filename}")

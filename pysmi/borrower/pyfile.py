@@ -10,8 +10,8 @@ try:
     try:
         SOURCE_SUFFIXES = importlib.machinery.SOURCE_SUFFIXES
 
-    except Exception:
-        raise ImportError()
+    except Exception as err:
+        raise ImportError() from err
 
 except ImportError:
     import imp

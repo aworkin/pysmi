@@ -172,8 +172,8 @@ def getMibRevision(mibDir, mibFile):
             },
         )
 
-    except error.PySmiError:
-        sys.stderr.write(f"ERROR: {sys.exc_info()[1]}\r\n")
+    except error.PySmiError as err:
+        sys.stderr.write(f"ERROR: {err}\r\n")
         sys.exit(EX_SOFTWARE)
 
     for canonicalMibName in processed:

@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 
 from ply import yacc
 
@@ -25,10 +24,10 @@ class SmiV2Parser(AbstractParser):
             tempdir = os.path.join(tempdir, startSym)
             try:
                 os.makedirs(tempdir)
-            except OSError:
-                if sys.exc_info()[1].errno != 17:
-                    msg = f"Failed to create cache directory {tempdir}: {sys.exc_info()[1]}"
-                    raise error.PySmiError(msg)
+            except OSError as err:
+                if err.errno != 17:
+                    msg = f"Failed to create cache directory {tempdir}: {err}"
+                    raise error.PySmiError(msg) from err
 
         self.lexer = self.defaultLexer(tempdir=tempdir)
 

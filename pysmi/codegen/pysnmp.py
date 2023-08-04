@@ -5,7 +5,6 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 from collections import OrderedDict
 
 import jinja2
@@ -146,10 +145,9 @@ class PySnmpCodeGen(IntermediateCodeGen):
             tmpl = env.get_template(dstTemplate or self.TEMPLATE_NAME)
             text = tmpl.render(mib=context)
 
-        except jinja2.exceptions.TemplateError:
-            err = sys.exc_info()[1]
+        except jinja2.exceptions.TemplateError as err:
             msg = f"Jinja template rendering error: {err}"
-            raise error.PySmiCodegenError(msg)
+            raise error.PySmiCodegenError(msg) from err
 
         if debug.logger & debug.flagCodegen:
             debug.logger(

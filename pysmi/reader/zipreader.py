@@ -6,7 +6,6 @@
 #
 import datetime
 import os
-import sys
 import time
 import zipfile
 
@@ -92,12 +91,12 @@ class ZipReader(AbstractReader):
             with open(path, "rb") as fp:
                 self._members = self._readZipDirectory(fileObj=fp)
 
-        except Exception:
+        except Exception as err:
             if debug.logger & debug.flagReader:
-                debug.logger(f"ZIP file {self._name} open failure: {sys.exc_info()[1]}")
+                debug.logger(f"ZIP file {self._name} open failure: {err}")
 
             if not ignoreErrors:
-                self._pendingError = error.PySmiError(f"file {self._name} access error: {sys.exc_info()[1]}")
+                self._pendingError = error.PySmiError(f"file {self._name} access error: {err}")
 
     def _readZipDirectory(self, fileObj):
         archive = zipfile.ZipFile(fileObj)
@@ -141,9 +140,9 @@ class ZipReader(AbstractReader):
             try:
                 dataObj = archive.read(filename)
 
-            except Exception:
+            except Exception as err:
                 if debug.logger & debug.flagReader:
-                    debug.logger(f"ZIP read component {fileObj.name} read error: {sys.exc_info()[1]}")
+                    debug.logger(f"ZIP read component {fileObj.name} read error: {err}")
                 return "", 0
 
         return dataObj, mtime

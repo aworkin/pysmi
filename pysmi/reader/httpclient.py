@@ -71,9 +71,9 @@ class HttpReader(AbstractReader):
                 req = Request(url, headers=headers)
                 response = urlopen(req)  # nosec
 
-            except Exception:
+            except Exception as err:
                 if debug.logger & debug.flagReader:
-                    debug.logger(f"failed to fetch MIB from {url}: {sys.exc_info()[1]}")
+                    debug.logger(f"failed to fetch MIB from {url}: {err}")
                 continue
 
             if debug.logger & debug.flagReader:
@@ -88,9 +88,9 @@ class HttpReader(AbstractReader):
                         )
                     )
 
-                except Exception:
+                except Exception as err:
                     if debug.logger & debug.flagReader:
-                        debug.logger("malformed HTTP headers: %s" % sys.exc_info()[1])
+                        debug.logger(f"malformed HTTP headers: {err}")
                     mtime = time.time()
 
                 if debug.logger & debug.flagReader:

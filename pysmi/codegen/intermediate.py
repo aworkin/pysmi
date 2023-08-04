@@ -680,10 +680,10 @@ class IntermediateCodeGen(AbstractCodeGen):
 
                     outDict.update(value=val, format="oid")
 
-                except Exception:
+                except Exception as err:
                     # or no module if it will be borrowed later
                     msg = f'no symbol "{defval}" in module "{module}"'
-                    raise error.PySmiSemanticError(msg)
+                    raise error.PySmiSemanticError(msg) from err
 
             # enumeration
             elif defvalType[0][0] in ("Integer32", "Integer") and isinstance(defvalType[1], list):

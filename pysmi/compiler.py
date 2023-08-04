@@ -262,24 +262,23 @@ class MibCompiler:
                         debug.logger(f"no {mibname} found at {source}")
                     continue
 
-                except error.PySmiError:
-                    exc_class, exc, tb = sys.exc_info()
-                    exc.source = source
-                    exc.mibname = mibname
-                    exc.msg += f" at MIB {mibname}"
+                except error.PySmiError as err:
+                    err.source = source
+                    err.mibname = mibname
+                    err.msg += f" at MIB {mibname}"
 
                     if debug.logger & debug.flagCompiler:
                         debug.logger(
                             "{}error {} from {}".format(
                                 "ignoring " if options.get("ignoreErrors") else "failing on ",
-                                exc,
+                                err,
                                 source,
                             )
                         )
 
-                    failedMibs[mibname] = exc
+                    failedMibs[mibname] = err
 
-                    processed[mibname] = statusFailed.setOptions(error=exc)
+                    processed[mibname] = statusFailed.setOptions(error=err)
 
             else:
                 exc = error.PySmiError(f"MIB source {mibname} not found")
@@ -322,13 +321,12 @@ class MibCompiler:
                     processed[mibname] = statusUntouched
                     break
 
-                except error.PySmiError:
-                    exc_class, exc, tb = sys.exc_info()
-                    exc.searcher = searcher
-                    exc.mibname = mibname
-                    exc.msg += f" at MIB {mibname}"
+                except error.PySmiError as err:
+                    err.searcher = searcher
+                    err.mibname = mibname
+                    err.msg += f" at MIB {mibname}"
                     if debug.logger & debug.flagCompiler:
-                        debug.logger(f"error from {searcher}: {exc}")
+                        debug.logger(f"error from {searcher}: {err}")
                     continue
 
             else:
@@ -382,18 +380,17 @@ class MibCompiler:
                 if debug.logger & debug.flagCompiler:
                     debug.logger(f"{mibname} read from {fileInfo.path} and compiled by {self._writer}")
 
-            except error.PySmiError:
-                exc_class, exc, tb = sys.exc_info()
-                exc.handler = self._codegen
-                exc.mibname = mibname
-                exc.msg += f" at MIB {mibname}"
+            except error.PySmiError as err:
+                err.handler = self._codegen
+                err.mibname = mibname
+                err.msg += f" at MIB {mibname}"
 
                 if debug.logger & debug.flagCompiler:
-                    debug.logger(f"error from {self._codegen}: {exc}")
+                    debug.logger(f"error from {self._codegen}: {err}")
 
-                processed[mibname] = statusFailed.setOptions(error=exc)
+                processed[mibname] = statusFailed.setOptions(error=err)
 
-                failedMibs[mibname] = exc
+                failedMibs[mibname] = err
                 del parsedMibs[mibname]
 
         if debug.logger & debug.flagCompiler:
@@ -427,9 +424,9 @@ class MibCompiler:
                         debug.logger(f"{mibname} borrowed with {borrower}")
                     break
 
-                except error.PySmiError:
+                except error.PySmiError as err:
                     if debug.logger & debug.flagCompiler:
-                        debug.logger(f"error from {borrower}: {sys.exc_info()[1]}")
+                        debug.logger(f"error from {borrower}: {err}")
 
         if debug.logger & debug.flagCompiler:
             debug.logger(f"MIBs available for borrowing {len(borrowedMibs)}, MIBs failed {len(failedMibs)}")
@@ -460,14 +457,13 @@ class MibCompiler:
                     processed[mibname] = statusUntouched
                     break
 
-                except error.PySmiError:
-                    exc_class, exc, tb = sys.exc_info()
-                    exc.searcher = searcher
-                    exc.mibname = mibname
-                    exc.msg += f" at MIB {mibname}"
+                except error.PySmiError as err:
+                    err.searcher = searcher
+                    err.mibname = mibname
+                    err.msg += f" at MIB {mibname}"
 
                     if debug.logger & debug.flagCompiler:
-                        debug.logger(f"error from {searcher}: {exc}")
+                        debug.logger(f"error from {searcher}: {err}")
 
                     continue
             else:
@@ -540,17 +536,16 @@ class MibCompiler:
                         compliance=mibInfo.compliance,
                     )
 
-            except error.PySmiError:
-                exc_class, exc, tb = sys.exc_info()
-                exc.handler = self._codegen
-                exc.mibname = mibname
-                exc.msg += f" at MIB {mibname}"
+            except error.PySmiError as err:
+                err.handler = self._codegen
+                err.mibname = mibname
+                err.msg += f" at MIB {mibname}"
 
                 if debug.logger & debug.flagCompiler:
-                    debug.logger(f"error {exc} from {self._writer}")
+                    debug.logger(f"error {err} from {self._writer}")
 
-                processed[mibname] = statusFailed.setOptions(error=exc)
-                failedMibs[mibname] = exc
+                processed[mibname] = statusFailed.setOptions(error=err)
+                failedMibs[mibname] = err
                 del builtMibs[mibname]
 
         if debug.logger & debug.flagCompiler:
@@ -581,17 +576,12 @@ class MibCompiler:
                 ),
                 dryRun=options.get("dryRun"),
             )
-        except error.PySmiError:
-            exc_class, exc, tb = sys.exc_info()
-            exc.msg += f" at MIB index {self.indexFile}"
+        except error.PySmiError as err:
+            err.msg += f" at MIB index {self.indexFile}"
 
             if debug.logger & debug.flagCompiler:
-                debug.logger(f"error {exc} when building {self.indexFile}")
+                debug.logger(f"error {err} when building {self.indexFile}")
 
             if options.get("ignoreErrors"):
                 return
-
-            if hasattr(exc, "with_traceback"):
-                raise exc.with_traceback(tb)
-            else:
-                raise exc
+            raise
