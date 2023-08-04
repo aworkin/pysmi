@@ -59,33 +59,44 @@ include = [
   "scripts/mibcopy.py"
 ]
 
-[tool.hatch.envs.test]
+[tool.hatch.envs.default]
 dependencies = [
-  "pysnmp"
+  "pysnmp",
+  "pytest"
 ]
 
-[tool.hatch.envs.test.scripts]
-test = "pytest tests"
+[tool.hatch.envs.default.scripts]
+test = "pytest {args:tests}"
 
-[[tool.hatch.envs.test.matrix]]
+[[tool.hatch.envs.all.matrix]]
 python = ["3.8", "3.9", "3.10", "3.11"]
 
-[tool.hatch.envs.dev]
-template = "test"
-extra-dependencies = [
+[tool.hatch.envs.lint]
+detached = true
+dependencies = [
   "mypy",
   "ruff",
   "black"
 ]
 
-[tool.hatch.envs.dev.scripts]
-check = "mypy ."
-lint = "ruff ."
-lint-fix = "ruff --fix ."
-style = "black ."
+[tool.hatch.envs.lint.scripts]
+typing = "mypy --non-interactive {args:pysmi tests}"
+style = [
+  "ruff {args:.}",
+  "black --check --diff {args:.}"
+]
+style-fix = [
+  "black {args:.}",
+  "ruff --fix {args:.}"
+]
+format = "black {args:.}"
+all = [
+  "style",
+  "typing"
+]
 
 [tool.hatch.envs.docs]
-detatched = true
+detached = true
 dependencies = ["Sphinx"]
 
 [tool.hatch.envs.docs.scripts]
