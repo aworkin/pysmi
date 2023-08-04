@@ -7,7 +7,7 @@
 import os
 import sys
 
-import ply.yacc as yacc
+from ply import yacc
 
 from pysmi import debug
 from pysmi import error
