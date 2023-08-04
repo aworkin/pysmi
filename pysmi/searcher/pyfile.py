@@ -67,9 +67,8 @@ class PyFileSearcher(AbstractSearcher):
                 continue
 
             try:
-                fp = open(f, "rb")
-                pyData = fp.read(8)
-                fp.close()
+                with open(f, "rb") as fp:
+                    pyData = fp.read(8)
 
             except OSError:
                 msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"

@@ -92,7 +92,8 @@ class ZipReader(AbstractReader):
         self._pendingError = None
 
         try:
-            self._members = self._readZipDirectory(fileObj=open(path, "rb"))
+            with open(path, "rb") as fp:
+                self._members = self._readZipDirectory(fileObj=fp)
 
         except Exception:
             if debug.logger & debug.flagReader:

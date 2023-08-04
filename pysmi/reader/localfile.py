@@ -73,9 +73,8 @@ class FileReader(AbstractReader):
         mibIndex = {}
         if os.path.exists(indexFile):
             try:
-                f = open(indexFile)
-                mibIndex = dict([x.split()[:2] for x in f.readlines()])
-                f.close()
+                with open(indexFile) as f:
+                    mibIndex = dict([x.split()[:2] for x in f.readlines()])
                 if debug.logger & debug.flagReader:
                     debug.logger(f"loaded MIB index map from {indexFile} file, {len(mibIndex)} entries")
 
@@ -120,9 +119,8 @@ class FileReader(AbstractReader):
                                 )
                             )
 
-                        fp = open(f, mode="rb")
-                        mibData = fp.read(self.maxMibSize)
-                        fp.close()
+                        with open(f, mode="rb") as fp:
+                            mibData = fp.read(self.maxMibSize)
 
                         if len(mibData) == self.maxMibSize:
                             msg = f"MIB {f} too large"

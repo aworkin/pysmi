@@ -41,14 +41,11 @@ class FileWriter(AbstractWriter):
         f = None
 
         try:
-            f = open(filename)
-            data = f.read()
-            f.close()
+            with open(filename) as f:
+                data = f.read()
             return data
 
         except (OSError, UnicodeEncodeError):
-            if f:
-                f.close()
             return ""
 
     def putData(self, mibname, data, comments=(), dryRun=False):

@@ -12,6 +12,7 @@ We use noDeps flag to prevent MIB compiler from attempting
 to compile IMPORT'ed MIBs as well.
 """  #
 import sys
+from pathlib import Path
 
 from pysmi.codegen import PySnmpCodeGen
 from pysmi.compiler import MibCompiler
@@ -33,7 +34,7 @@ mibCompiler = MibCompiler(
 )
 
 # our own callback function serves as a MIB source here
-mibCompiler.addSources(CallbackReader(lambda m, c: open(srcDir + m + ".txt").read()))
+mibCompiler.addSources(CallbackReader(lambda m, c: (Path(srcDir) / f"{m}.txt").read_text()))
 
 # never recompile MIBs with MACROs
 mibCompiler.addSearchers(StubSearcher(*PySnmpCodeGen.baseMibs))
