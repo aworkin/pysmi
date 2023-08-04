@@ -57,8 +57,7 @@ class AnyFileSearcher(AbstractSearcher):
 
             if debug.logger & debug.flagSearcher:
                 debug.logger(
-                    "found %s, mtime %s"
-                    % (
+                    "found {}, mtime {}".format(
                         f,
                         time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(fileTime)),
                     )

@@ -95,7 +95,7 @@ class FtpReader(AbstractReader):
             mtime = time.time()
 
             if debug.logger & debug.flagReader:
-                debug.logger("trying to fetch MIB %s from %s:%s" % (location, self._host, self._port))
+                debug.logger(f"trying to fetch MIB {location} from {self._host}:{self._port}")
 
             data = []
 
@@ -106,21 +106,19 @@ class FtpReader(AbstractReader):
                 except ftplib.all_errors:
                     if debug.logger & debug.flagReader:
                         debug.logger(
-                            "server %s:%s does not support MDTM command, fetching file %s"
-                            % (self._host, self._port, location)
+                            f"server {self._host}:{self._port} does not support MDTM command, fetching file {location}"
                         )
 
                 else:
                     if debug.logger & debug.flagReader:
-                        debug.logger("server %s:%s MDTM response is %s" % (self._host, self._port, response))
+                        debug.logger(f"server {self._host}:{self._port} MDTM response is {response}")
 
                     if response[:3] == 213:
                         mtime = time.mktime(time.strptime(response[4:], "%Y%m%d%H%M%S"))
 
                 if debug.logger & debug.flagReader:
                     debug.logger(
-                        "fetching source MIB %s, mtime %s"
-                        % (
+                        "fetching source MIB {}, mtime {}".format(
                             location,
                             time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)),
                         )
@@ -131,14 +129,14 @@ class FtpReader(AbstractReader):
             except ftplib.all_errors:
                 if debug.logger & debug.flagReader:
                     debug.logger(
-                        "failed to fetch MIB %s from %s:%s: %s" % (location, self._host, self._port, sys.exc_info()[1])
+                        f"failed to fetch MIB {location} from {self._host}:{self._port}: {sys.exc_info()[1]}"
                     )
                 continue
 
             data = decode("\n".join(data))
 
             if debug.logger & debug.flagReader:
-                debug.logger("fetched %s bytes in %s" % (len(data), location))
+                debug.logger(f"fetched {len(data)} bytes in {location}")
 
             conn.close()
 

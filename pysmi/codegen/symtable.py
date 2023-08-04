@@ -617,8 +617,7 @@ class SymtableCodeGen(AbstractCodeGen):
 
         if debug.logger & debug.flagCodegen:
             debug.logger(
-                "canonical MIB name %s (%s), imported MIB(s) %s, Symbol table size %s symbols"
-                % (
+                "canonical MIB name {} ({}), imported MIB(s) {}, Symbol table size {} symbols".format(
                     self.moduleName[0],
                     moduleOid,
                     ",".join(importedModules) or "<none>",

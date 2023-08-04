@@ -990,8 +990,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         if debug.logger & debug.flagCodegen:
             debug.logger(
-                "canonical MIB name %s (%s), imported MIB(s) %s"
-                % (self.moduleName[0], moduleOid, ",".join(importedModules) or "<none>")
+                "canonical MIB name {} ({}), imported MIB(s) {}".format(self.moduleName[0], moduleOid, ",".join(importedModules) or "<none>")
             )
 
         return (

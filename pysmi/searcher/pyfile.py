@@ -81,8 +81,7 @@ class PyFileSearcher(AbstractSearcher):
                 pyTime = struct.unpack("<L", pyData[:4])[0]
                 if debug.logger & debug.flagSearcher:
                     debug.logger(
-                        "found %s, mtime %s"
-                        % (
+                        "found {}, mtime {}".format(
                             f,
                             time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)),
                         )
@@ -117,8 +116,7 @@ class PyFileSearcher(AbstractSearcher):
 
             if debug.logger & debug.flagSearcher:
                 debug.logger(
-                    "found %s, mtime %s"
-                    % (
+                    "found {}, mtime {}".format(
                         f,
                         time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)),
                     )

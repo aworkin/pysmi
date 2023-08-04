@@ -37,7 +37,7 @@ class CallbackReader(AbstractReader):
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
-            debug.logger("calling user callback %s for MIB %s" % (self._cbFun, mibname))
+            debug.logger(f"calling user callback {self._cbFun} for MIB {mibname}")
 
         res = self._cbFun(mibname, self._cbCtx)
         if res:

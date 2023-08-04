@@ -69,7 +69,7 @@ class SmiV2Parser(AbstractParser):
 
     def parse(self, data, **kwargs):
         if debug.logger & debug.flagParser:
-            debug.logger('source MIB size is %s characters, first 50 characters are "%s..."' % (len(data), data[:50]))
+            debug.logger(f'source MIB size is {len(data)} characters, first 50 characters are "{data[:50]}..."')
 
         ast = self.parser.parse(data, lexer=self.lexer.lexer)
 

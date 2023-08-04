@@ -96,7 +96,7 @@ class ZipReader(AbstractReader):
 
         except Exception:
             if debug.logger & debug.flagReader:
-                debug.logger("ZIP file %s open failure: %s" % (self._name, sys.exc_info()[1]))
+                debug.logger(f"ZIP file {self._name} open failure: {sys.exc_info()[1]}")
 
             if not ignoreErrors:
                 self._pendingError = error.PySmiError(f"file {self._name} access error: {sys.exc_info()[1]}")
@@ -145,7 +145,7 @@ class ZipReader(AbstractReader):
 
             except Exception:
                 if debug.logger & debug.flagReader:
-                    debug.logger("ZIP read component %s read error: %s" % (fileObj.name, sys.exc_info()[1]))
+                    debug.logger(f"ZIP read component {fileObj.name} read error: {sys.exc_info()[1]}")
                 return "", 0
 
         return dataObj, mtime
@@ -155,7 +155,7 @@ class ZipReader(AbstractReader):
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
-            debug.logger("looking for MIB %s at %s" % (mibname, self._name))
+            debug.logger(f"looking for MIB {mibname} at {self._name}")
 
         if self._pendingError:
             raise self._pendingError
@@ -180,8 +180,7 @@ class ZipReader(AbstractReader):
 
             if debug.logger & debug.flagReader:
                 debug.logger(
-                    "source MIB %s, mtime %s, read from %s/%s"
-                    % (
+                    "source MIB {}, mtime {}, read from {}/{}".format(
                         mibfile,
                         time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)),
                         self._name,

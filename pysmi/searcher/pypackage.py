@@ -84,7 +84,7 @@ class PyPackageSearcher(AbstractSearcher):
                 self.__loader = p.__loader__
                 self._package = self._package.replace(".", os.sep)
                 if debug.logger & debug.flagSearcher:
-                    debug.logger("%s is an importable egg at %s" % (self._package, os.path.split(p.__file__)[0]))
+                    debug.logger(f"{self._package} is an importable egg at {os.path.split(p.__file__)[0]}")
 
             elif hasattr(p, "__file__"):
                 if debug.logger & debug.flagSearcher:
@@ -102,7 +102,7 @@ class PyPackageSearcher(AbstractSearcher):
 
             if f not in self.__loader._files:
                 if debug.logger & debug.flagSearcher:
-                    debug.logger("%s is not in %s" % (f, self._package))
+                    debug.logger(f"{f} is not in {self._package}")
                 continue
 
             pyData = self.__loader.get_data(f)
@@ -111,8 +111,7 @@ class PyPackageSearcher(AbstractSearcher):
                 pyTime = struct.unpack("<L", pyData[:4])[0]
                 if debug.logger & debug.flagSearcher:
                     debug.logger(
-                        "found %s, mtime %s"
-                        % (
+                        "found {}, mtime {}".format(
                             f,
                             time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)),
                         )
@@ -132,15 +131,14 @@ class PyPackageSearcher(AbstractSearcher):
 
             if f not in self.__loader._files:
                 if debug.logger & debug.flagSearcher:
-                    debug.logger("%s is not in %s" % (f, self._package))
+                    debug.logger(f"{f} is not in {self._package}")
                 continue
 
             pyTime = self._parseDosTime(self.__loader._files[f][6], self.__loader._files[f][5])
 
             if debug.logger & debug.flagSearcher:
                 debug.logger(
-                    "found %s, mtime %s"
-                    % (
+                    "found {}, mtime {}".format(
                         f,
                         time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(pyTime)),
                     )

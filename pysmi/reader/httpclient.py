@@ -76,7 +76,7 @@ class HttpReader(AbstractReader):
 
             except Exception:
                 if debug.logger & debug.flagReader:
-                    debug.logger("failed to fetch MIB from %s: %s" % (url, sys.exc_info()[1]))
+                    debug.logger(f"failed to fetch MIB from {url}: {sys.exc_info()[1]}")
                 continue
 
             if debug.logger & debug.flagReader:
@@ -97,7 +97,7 @@ class HttpReader(AbstractReader):
                     mtime = time.time()
 
                 if debug.logger & debug.flagReader:
-                    debug.logger("fetching source MIB %s, mtime %s" % (url, response.getheader("Last-Modified")))
+                    debug.logger("fetching source MIB {}, mtime {}".format(url, response.getheader("Last-Modified")))
 
                 return MibInfo(path=url, file=mibfile, name=mibalias, mtime=mtime), decode(
                     response.read(self.maxMibSize)

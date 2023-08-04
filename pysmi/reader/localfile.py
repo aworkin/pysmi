@@ -76,7 +76,7 @@ class FileReader(AbstractReader):
                 mibIndex = dict([x.split()[:2] for x in f.readlines()])
                 f.close()
                 if debug.logger & debug.flagReader:
-                    debug.logger("loaded MIB index map from %s file, %s entries" % (indexFile, len(mibIndex)))
+                    debug.logger(f"loaded MIB index map from {indexFile} file, {len(mibIndex)} entries")
 
             except IOError:
                 pass
@@ -91,14 +91,14 @@ class FileReader(AbstractReader):
 
             if mibname in self._mibIndex:
                 if debug.logger & debug.flagReader:
-                    debug.logger("found %s in MIB index: %s" % (mibname, self._mibIndex[mibname]))
+                    debug.logger(f"found {mibname} in MIB index: {self._mibIndex[mibname]}")
                 return [(mibname, self._mibIndex[mibname])]
 
         return super(FileReader, self).getMibVariants(mibname, **options)
 
     def getData(self, mibname, **options):
         if debug.logger & debug.flagReader:
-            debug.logger("%slooking for MIB %s" % ("recursively " if self._recursive else "", mibname))
+            debug.logger("{}looking for MIB {}".format("recursively " if self._recursive else "", mibname))
 
         for path in self.getSubdirs(self._path, self._recursive, self._ignoreErrors):
             for mibalias, mibfile in self.getMibVariants(mibname, **options):
@@ -113,8 +113,7 @@ class FileReader(AbstractReader):
 
                         if debug.logger & debug.flagReader:
                             debug.logger(
-                                "source MIB %s mtime is %s, fetching data..."
-                                % (
+                                "source MIB {} mtime is {}, fetching data...".format(
                                     f,
                                     time.strftime("%a, %d %b %Y %H:%M:%S GMT", time.gmtime(mtime)),
                                 )
@@ -131,7 +130,7 @@ class FileReader(AbstractReader):
 
                     except (OSError, IOError):
                         if debug.logger & debug.flagReader:
-                            debug.logger("source file %s open failure: %s" % (f, sys.exc_info()[1]))
+                            debug.logger(f"source file {f} open failure: {sys.exc_info()[1]}")
 
                         if not self._ignoreErrors:
                             raise error.PySmiError(f"file {f} access error: {sys.exc_info()[1]}")

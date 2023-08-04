@@ -41,11 +41,11 @@ class AbstractBorrower:
     def getData(self, mibname, **options):
         if bool(options.get("genTexts")) != self.genTexts:
             if debug.logger & debug.flagBorrower:
-                debug.logger("skipping incompatible borrower %s for file %s" % (self, mibname))
+                debug.logger(f"skipping incompatible borrower {self} for file {mibname}")
             raise error.PySmiFileNotFoundError(mibname=mibname, reader=self._reader)
 
         debug.logger & debug.flagBorrower and (
-            debug.logger("trying to borrow file %s from %s" % (mibname, self._reader))
+            debug.logger(f"trying to borrow file {mibname} from {self._reader}")
         )
 
         if "exts" not in options:

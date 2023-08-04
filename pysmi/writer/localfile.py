@@ -93,4 +93,4 @@ class FileWriter(AbstractWriter):
             raise error.PySmiWriterError(f"failure writing file {filename}: {exc[1]}", file=filename, writer=self)
 
         if debug.logger & debug.flagWriter:
-            debug.logger("%s stored in %s" % (mibname, filename))
+            debug.logger(f"{mibname} stored in {filename}")
