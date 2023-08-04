@@ -7,18 +7,20 @@
 #
 # SNMP SMI/MIB copying tool
 #
-import os
-import sys
 import getopt
+import os
 import shutil
+import sys
 from datetime import datetime
-from pysmi.reader import FileReader, getReadersFromUrls
-from pysmi.writer import CallbackWriter
-from pysmi.parser import SmiV1CompatParser
-from pysmi.codegen import JsonCodeGen
-from pysmi.compiler import MibCompiler
+
 from pysmi import debug
 from pysmi import error
+from pysmi.codegen import JsonCodeGen
+from pysmi.compiler import MibCompiler
+from pysmi.parser import SmiV1CompatParser
+from pysmi.reader import FileReader
+from pysmi.reader import getReadersFromUrls
+from pysmi.writer import CallbackWriter
 
 # sysexits.h
 EX_OK = 0

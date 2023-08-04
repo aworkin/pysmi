@@ -27,10 +27,10 @@ except ImportError:
     SOURCE_SUFFIXES = [s[0] for s in imp.get_suffixes() if s[2] == imp.PY_SOURCE]
     BYTECODE_SUFFIXES = [s[0] for s in imp.get_suffixes() if s[2] == imp.PY_COMPILED]
 
-from pysmi.searcher.base import AbstractSearcher
-from pysmi.compat import decode
 from pysmi import debug
 from pysmi import error
+from pysmi.compat import decode
+from pysmi.searcher.base import AbstractSearcher
 
 
 class PyFileSearcher(AbstractSearcher):

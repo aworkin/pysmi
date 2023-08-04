@@ -14,10 +14,10 @@ except ImportError:
     getpwuid = lambda x: ["<unknown>"]  # noqa: E731
 from pysmi import __name__ as packageName
 from pysmi import __version__ as packageVersion
-from pysmi.mibinfo import MibInfo
-from pysmi.codegen.symtable import SymtableCodeGen
-from pysmi import error
 from pysmi import debug
+from pysmi import error
+from pysmi.codegen.symtable import SymtableCodeGen
+from pysmi.mibinfo import MibInfo
 
 
 class MibStatus(str):
