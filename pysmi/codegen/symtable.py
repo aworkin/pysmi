@@ -630,7 +630,7 @@ class SymtableCodeGen(AbstractCodeGen):
                 oid=None,
                 name=self.moduleName[0],
                 revision=self._moduleRevision,
-                imported=tuple([x for x in importedModules]),
+                imported=tuple(x for x in importedModules),
             ),
             self._out,
         )

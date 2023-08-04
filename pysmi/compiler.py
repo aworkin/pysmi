@@ -205,7 +205,7 @@ class MibCompiler:
         borrowedMibs = {}
         builtMibs = {}
         symbolTableMap = {}
-        mibsToParse = [x for x in mibnames]
+        mibsToParse = list(mibnames)
         canonicalMibNames = {}
 
         while mibsToParse:
