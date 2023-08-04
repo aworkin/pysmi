@@ -205,22 +205,22 @@ mibsSeen = mibsCopied = mibsFailed = 0
 
 mibsRevisions = {}
 
-for srcDirectory in inputMibs:
+for inputDirectory in inputMibs:
     if verboseFlag:
-        sys.stderr.write(f'Reading "{srcDirectory}"...\r\n')
+        sys.stderr.write(f'Reading "{inputDirectory}"...\r\n')
 
-    if os.path.isfile(srcDirectory):
+    if os.path.isfile(inputDirectory):
         mibFiles = [
             (
-                os.path.abspath(os.path.dirname(srcDirectory)),
-                os.path.basename(srcDirectory),
+                os.path.abspath(os.path.dirname(inputDirectory)),
+                os.path.basename(inputDirectory),
             )
         ]
 
     else:
         mibFiles = [
             (os.path.abspath(dirName), mibFile)
-            for dirName, _, mibFiles in os.walk(srcDirectory)
+            for dirName, _, mibFiles in os.walk(inputDirectory)
             for mibFile in mibFiles
         ]
 
