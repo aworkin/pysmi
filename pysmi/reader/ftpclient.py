@@ -131,9 +131,7 @@ class FtpReader(AbstractReader):
 
             except ftplib.all_errors:
                 if debug.logger & debug.flagReader:
-                    debug.logger(
-                        f"failed to fetch MIB {location} from {self._host}:{self._port}: {sys.exc_info()[1]}"
-                    )
+                    debug.logger(f"failed to fetch MIB {location} from {self._host}:{self._port}: {sys.exc_info()[1]}")
                 continue
 
             data = decode("\n".join(data))

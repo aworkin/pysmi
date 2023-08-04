@@ -72,7 +72,7 @@ class PyFileSearcher(AbstractSearcher):
                 fp.close()
 
             except OSError:
-                msg = f'failure opening compiled file {f}: {sys.exc_info()[1]}'
+                msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"
                 raise error.PySmiSearcherError(
                     msg,
                     searcher=self,
@@ -91,7 +91,7 @@ class PyFileSearcher(AbstractSearcher):
                     raise error.PySmiFileNotModifiedError()
 
                 else:
-                    msg = f'older file {mibname} exists'
+                    msg = f"older file {mibname} exists"
                     raise error.PySmiFileNotFoundError(msg, searcher=self)
 
             else:
@@ -111,7 +111,7 @@ class PyFileSearcher(AbstractSearcher):
                 pyTime = os.stat(f)[8]
 
             except OSError:
-                msg = f'failure opening compiled file {f}: {sys.exc_info()[1]}'
+                msg = f"failure opening compiled file {f}: {sys.exc_info()[1]}"
                 raise error.PySmiSearcherError(
                     msg,
                     searcher=self,
@@ -128,5 +128,5 @@ class PyFileSearcher(AbstractSearcher):
             if pyTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        msg = f'no compiled file {mibname} found'
+        msg = f"no compiled file {mibname} found"
         raise error.PySmiFileNotFoundError(msg, searcher=self)

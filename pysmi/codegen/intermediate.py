@@ -717,9 +717,7 @@ class IntermediateCodeGen(AbstractCodeGen):
 
             else:
                 msg = f'unknown type "{defvalType}" for defval "{defval}" of symbol "{objname}"'
-                raise error.PySmiSemanticError(
-                    msg
-                )
+                raise error.PySmiSemanticError(msg)
 
         return {"default": outDict}
 
@@ -1002,7 +1000,9 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         if debug.logger & debug.flagCodegen:
             debug.logger(
-                "canonical MIB name {} ({}), imported MIB(s) {}".format(self.moduleName[0], moduleOid, ",".join(importedModules) or "<none>")
+                "canonical MIB name {} ({}), imported MIB(s) {}".format(
+                    self.moduleName[0], moduleOid, ",".join(importedModules) or "<none>"
+                )
             )
 
         return (

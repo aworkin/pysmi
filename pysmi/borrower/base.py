@@ -44,9 +44,7 @@ class AbstractBorrower:
                 debug.logger(f"skipping incompatible borrower {self} for file {mibname}")
             raise error.PySmiFileNotFoundError(mibname=mibname, reader=self._reader)
 
-        debug.logger & debug.flagBorrower and (
-            debug.logger(f"trying to borrow file {mibname} from {self._reader}")
-        )
+        debug.logger & debug.flagBorrower and (debug.logger(f"trying to borrow file {mibname} from {self._reader}"))
 
         if "exts" not in options:
             options["exts"] = self.exts
