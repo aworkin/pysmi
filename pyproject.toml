@@ -11,35 +11,35 @@ requires-python = ">=3.8"
 license = "BSD-2-Clause"
 license-files = { paths = ["LICENSE.rst"] }
 authors = [
-    { name = "Ilya Etingof", email = "etingof@gmail.com" },
+  { name = "Ilya Etingof", email = "etingof@gmail.com" },
 ]
 maintainers = [
-    { name = "Alexander Workin <alexander.workin@gmail.com>" },
+  { name = "Alexander Workin <alexander.workin@gmail.com>" },
 ]
 classifiers = [
-    "Development Status :: 5 - Production/Stable",
-    "Environment :: Console",
-    "Intended Audience :: Developers",
-    "Intended Audience :: Education",
-    "Intended Audience :: Information Technology",
-    "Intended Audience :: System Administrators",
-    "Intended Audience :: Telecommunications Industry",
-    "License :: OSI Approved :: BSD License",
-    "Natural Language :: English",
-    "Operating System :: OS Independent",
-    "Programming Language :: Python :: 3",
-    "Programming Language :: Python :: 3.8",
-    "Programming Language :: Python :: 3.9",
-    "Programming Language :: Python :: 3.10",
-    "Programming Language :: Python :: 3.11",
-    "Topic :: Communications",
-    "Topic :: Software Development :: Libraries :: Python Modules",
-    "Topic :: System :: Monitoring",
-    "Topic :: System :: Networking :: Monitoring",
+  "Development Status :: 5 - Production/Stable",
+  "Environment :: Console",
+  "Intended Audience :: Developers",
+  "Intended Audience :: Education",
+  "Intended Audience :: Information Technology",
+  "Intended Audience :: System Administrators",
+  "Intended Audience :: Telecommunications Industry",
+  "License :: OSI Approved :: BSD License",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Topic :: Communications",
+  "Topic :: Software Development :: Libraries :: Python Modules",
+  "Topic :: System :: Monitoring",
+  "Topic :: System :: Networking :: Monitoring",
 ]
 dependencies = [
-    "jinja2>=2.10.1",
-    "ply",
+  "jinja2>=2.10.1",
+  "ply",
 ]
 
 [project.urls]
@@ -54,14 +54,14 @@ version-file = "pysmi/_version.py"
 
 [tool.hatch.build.targets.sdist]
 include = [
-    "pysmi",
-    "scripts/mibdump.py",
-    "scripts/mibcopy.py"
+  "pysmi",
+  "scripts/mibdump.py",
+  "scripts/mibcopy.py"
 ]
 
 [tool.hatch.envs.test]
 dependencies = [
-    "pysnmp"
+  "pysnmp"
 ]
 
 [tool.hatch.envs.test.scripts]
@@ -73,9 +73,9 @@ python = ["3.8", "3.9", "3.10", "3.11"]
 [tool.hatch.envs.dev]
 template = "test"
 extra-dependencies = [
-    "mypy",
-    "ruff",
-    "black"
+  "mypy",
+  "ruff",
+  "black"
 ]
 
 [tool.hatch.envs.dev.scripts]
@@ -98,32 +98,56 @@ line-length = 120
 line-length = 120
 
 # Aspirational List
-select= [
-#  "A",
+select = [
+  "A",
   "B",
-#  "C",
-#  "DTZ",
+  "C4",
+  "DTZ",
   "E",
-#  "EM",
+  "EM",
   "F",
-#  "FBT",
-#  "I",
-#  "ICN",
-#  "ISC",
-#  "N",
-#  "PLC",
-#  "PLE",
-#  "PLR",
-#  "PLW",
-#  "Q",
-#  "RUF",
-#  "S",
-#  "SIM",
-#  "T",
-#  "TID",
-#  "UP",
-#  "W",
-#  "YTT",
+  "FBT",
+  "I",
+  "ICN",
+  "ISC",
+  "N",
+  "PLC",
+  "PLE",
+  "PLR",
+  "PLW",
+  "Q",
+  "RUF",
+  "S",
+  "SIM",
+  "T",
+  "TID",
+  "UP",
+  "W",
+  "YTT",
 ]
-ignore = ["D100", "D101", "D102", "D103", "D104", "D106", "D107", "D412"]
-unfixable = ["F401"]
+ignore = [
+  # Allow non-abstract empty methods in abstract base classes
+  "B027",
+  # Allow boolean positional values in function calls, like `dict.get(... True)`
+  "FBT003",
+  # Ignore checks for possible passwords
+  "S105", "S106", "S107",
+  # Ignore complexity
+  "C901", "PLR0911", "PLR0912", "PLR0913", "PLR0915",
+  # Carryover from setup.py
+  "D100", "D101", "D102", "D103", "D104", "D106", "D107", "D412"
+]
+unfixable = [
+  # Don't touch unused imports
+  "F401",
+]
+
+[tool.ruff.isort]
+known-first-party = ["pysmi"]
+
+[tool.ruff.flake8-tidy-imports]
+ban-relative-imports = "all"
+
+[tool.ruff.per-file-ignores]
+# Tests can use magic values, assertions, and relative imports
+"tests/**/*" = ["PLR2004", "S101", "TID252"]
