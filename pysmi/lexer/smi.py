@@ -142,25 +142,23 @@ class SmiV2Lexer(AbstractLexer):
 
     # Token names required!
     tokens = list(
-        set(
-            [
-                "BIN_STRING",
-                "CHOICE",
-                "COLON_COLON_EQUAL",
-                "DOT_DOT",
-                "EXPORTS",
-                "HEX_STRING",
-                "LOWERCASE_IDENTIFIER",
-                "MACRO",
-                "NEGATIVENUMBER",
-                "NEGATIVENUMBER64",
-                "NUMBER",
-                "NUMBER64",
-                "QUOTED_STRING",
-                "UPPERCASE_IDENTIFIER",
-            ]
-            + list(reserved.values())
-        )
+        {
+            "BIN_STRING",
+            "CHOICE",
+            "COLON_COLON_EQUAL",
+            "DOT_DOT",
+            "EXPORTS",
+            "HEX_STRING",
+            "LOWERCASE_IDENTIFIER",
+            "MACRO",
+            "NEGATIVENUMBER",
+            "NEGATIVENUMBER64",
+            "NUMBER",
+            "NUMBER64",
+            "QUOTED_STRING",
+            "UPPERCASE_IDENTIFIER",
+            *reserved.values(),
+        }
     )
 
     states = (
