@@ -81,6 +81,7 @@ extra-dependencies = [
 [tool.hatch.envs.dev.scripts]
 check = "mypy ."
 lint = "ruff ."
+lint-fix = "ruff --fix ."
 style = "black ."
 
 [tool.hatch.envs.docs]
