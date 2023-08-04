@@ -11,7 +11,7 @@ import time
 try:
     from pwd import getpwuid
 except ImportError:
-    getpwuid = lambda x: ["<unknown>"]  # noqa: E731
+    getpwuid = lambda x: ["<unknown>"]
 from pysmi import __name__ as packageName
 from pysmi import __version__ as packageVersion
 from pysmi import debug
