@@ -62,10 +62,7 @@ class HttpReader(AbstractReader):
             debug.logger("looking for MIB %s" % mibname)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
-            if self.MIB_MAGIC in self._url:
-                url = self._url.replace(self.MIB_MAGIC, mibfile)
-            else:
-                url = self._url + mibfile
+            url = self._url.replace(self.MIB_MAGIC, mibfile) if self.MIB_MAGIC in self._url else self._url + mibfile
 
             if debug.logger & debug.flagReader:
                 debug.logger("trying to fetch MIB from %s" % url)

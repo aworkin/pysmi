@@ -44,15 +44,9 @@ class SmiV2Parser(AbstractParser):
                 outputdir=tempdir,
             )
         else:
-            if debug.logger & debug.flagParser:
-                logger = debug.logger.getCurrentLogger()
-            else:
-                logger = yacc.NullLogger()
+            logger = debug.logger.getCurrentLogger() if debug.logger & debug.flagParser else yacc.NullLogger()
 
-            if debug.logger & debug.flagGrammar:
-                debuglogger = debug.logger.getCurrentLogger()
-            else:
-                debuglogger = None
+            debuglogger = debug.logger.getCurrentLogger() if debug.logger & debug.flagGrammar else None
 
             self.parser = yacc.yacc(
                 module=self,

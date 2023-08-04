@@ -186,15 +186,9 @@ class SmiV2Lexer(AbstractLexer):
         if LEX_VERSION < [3, 0]:
             self.lexer = lex.lex(module=self, reflags=re.DOTALL, outputdir=self._tempdir, debug=False)
         else:
-            if debug.logger & debug.flagLexer:
-                logger = debug.logger.getCurrentLogger()
-            else:
-                logger = lex.NullLogger()
+            logger = debug.logger.getCurrentLogger() if debug.logger & debug.flagLexer else lex.NullLogger()
 
-            if debug.logger & debug.flagGrammar:
-                debuglogger = debug.logger.getCurrentLogger()
-            else:
-                debuglogger = None
+            debuglogger = debug.logger.getCurrentLogger() if debug.logger & debug.flagGrammar else None
 
             self.lexer = lex.lex(
                 module=self,

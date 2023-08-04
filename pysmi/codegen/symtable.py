@@ -418,10 +418,7 @@ class SymtableCodeGen(AbstractCodeGen):
             val = dorepr(defval[1:-1])
 
         else:  # symbol (oid as defval) or name for enumeration member
-            if defval in self._out or defval in self._importMap:
-                val = defval + ".getName()"
-            else:
-                val = dorepr(defval)
+            val = defval + ".getName()" if defval in self._out or defval in self._importMap else dorepr(defval)
 
         return val
 

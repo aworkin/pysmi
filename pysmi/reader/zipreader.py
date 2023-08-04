@@ -57,10 +57,7 @@ class FileLike:
             self.buf += self.null.join(self.buflist)
             self.buflist = []
 
-        if n < 0:
-            newpos = self.len
-        else:
-            newpos = min(self.pos + n, self.len)
+        newpos = self.len if n < 0 else min(self.pos + n, self.len)
 
         r = self.buf[self.pos : newpos]
 

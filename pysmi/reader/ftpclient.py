@@ -61,10 +61,7 @@ class FtpReader(AbstractReader):
         return f'{self.__class__.__name__}{{"ftp://{self._host}{self._locationTemplate}"}}'
 
     def getData(self, mibname, **options):
-        if self._ssl:
-            conn = ftplib.FTP_TLS()  # nosec
-        else:
-            conn = ftplib.FTP()  # nosec
+        conn = ftplib.FTP_TLS() if self._ssl else ftplib.FTP()
 
         try:
             conn.connect(self._host, self._port, self._timeout)
