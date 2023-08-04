@@ -17,7 +17,6 @@ from pysmi.parser.base import AbstractParser
 YACC_VERSION = [int(x) for x in yacc.__version__.split(".")]
 
 
-# noinspection PyMethodMayBeStatic,PyIncorrectDocstring
 class SmiV2Parser(AbstractParser):
     defaultLexer = lexerFactory()
 
@@ -1191,7 +1190,6 @@ class SmiV2Parser(AbstractParser):
 #
 
 
-# noinspection PyIncorrectDocstring
 class SupportSmiV1Keywords:
     # NETWORKADDRESS added
     @staticmethod
@@ -1264,7 +1262,6 @@ class SupportSmiV1Keywords:
             p[0] = p[1]  # XXX not supporting subtypes here
 
 
-# noinspection PyIncorrectDocstring
 class SupportIndex:
     # SMIv1 IndexTypes added
     @staticmethod
@@ -1293,7 +1290,6 @@ class SupportIndex:
 #
 
 
-# noinspection PyIncorrectDocstring
 class CommaInImport:
     # comma at the end of import list
     @staticmethod
@@ -1310,7 +1306,6 @@ class CommaInImport:
             p[0] = p[1]
 
 
-# noinspection PyIncorrectDocstring
 class CommaInSequence:
     # comma at the end of sequence list
     @staticmethod
@@ -1328,7 +1323,6 @@ class CommaInSequence:
             p[0] = p[1]
 
 
-# noinspection PyIncorrectDocstring
 class CommaAndSpaces:
     # common typos handled (mix of commas and spaces)
     @staticmethod
@@ -1349,7 +1343,6 @@ class CommaAndSpaces:
                 p[0] = p[1] + [p[2]]
 
 
-# noinspection PyIncorrectDocstring
 class UppercaseIdentifier:
     # common mistake - using UPPERCASE_IDENTIFIER
     @staticmethod
@@ -1359,7 +1352,6 @@ class UppercaseIdentifier:
         p[0] = (p[1], p[3])
 
 
-# noinspection PyIncorrectDocstring
 class LowcaseIdentifier:
     # common mistake - LOWERCASE_IDENTIFIER in symbol's name
     @staticmethod
@@ -1377,7 +1369,6 @@ class LowcaseIdentifier:
         )  # NotificationName aka objectIdentifier
 
 
-# noinspection PyIncorrectDocstring,PyIncorrectDocstring
 class CurlyBracesInEnterprises:
     # common mistake - curly brackets around enterprise symbol
     @staticmethod
@@ -1406,7 +1397,6 @@ class CurlyBracesInEnterprises:
             p[0] = p[3]
 
 
-# noinspection PyIncorrectDocstring
 class NoCells:
     # common mistake - no Cells
     @staticmethod

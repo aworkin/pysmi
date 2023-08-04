@@ -11,8 +11,7 @@ import time
 try:
     from pwd import getpwuid
 except ImportError:
-    # noinspection PyPep8
-    getpwuid = lambda x: ["<unknown>"]
+    getpwuid = lambda x: ["<unknown>"]  # noqa: E731
 from pysmi import __name__ as packageName
 from pysmi import __version__ as packageVersion
 from pysmi.mibinfo import MibInfo
@@ -172,7 +171,7 @@ class MibCompiler:
 
         return platform_info, user_info
 
-    def compile(self, *mibnames, **options):
+    def compile(self, *mibnames, **options):  # noqa A003
         """Transform requested and possibly referred MIBs.
 
         The *compile* method should be invoked when *MibCompiler* object

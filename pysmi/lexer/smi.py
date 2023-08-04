@@ -19,7 +19,6 @@ LEX_VERSION = [int(x) for x in lex.__version__.split(".")]
 
 
 # Do not overload single lexer methods - overload all or none of them!
-# noinspection PySingleQuotedDocstring,PyMethodMayBeStatic,PyIncorrectDocstring
 class SmiV2Lexer(AbstractLexer):
     reserved_words = [
         "ACCESS",

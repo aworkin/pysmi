@@ -141,7 +141,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return OrderedDict(imports=outDict), tuple(sorted(imports))
 
-    # noinspection PyMethodMayBeStatic
     def genLabel(self, symbol):
         return symbol if "-" in symbol else ""
 
@@ -573,7 +572,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     # Subparts generation functions
 
-    # noinspection PyMethodMayBeStatic
     def genBitNames(self, data):
         names = data[0]
         return names
@@ -721,7 +719,6 @@ class IntermediateCodeGen(AbstractCodeGen):
     def genReference(self, data):
         return self.textFilter("reference", data[0])
 
-    # noinspection PyMethodMayBeStatic
     def genStatus(self, data):
         return data[0]
 
@@ -772,7 +769,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return {"range": ranges}
 
-    # noinspection PyMethodMayBeStatic
     def genMaxAccess(self, data):
         return data[0]
 
@@ -813,7 +809,6 @@ class IntermediateCodeGen(AbstractCodeGen):
             return [self.transOpers(obj) for obj in data[0]]  # XXX self.transOpers or not??
         return []
 
-    # noinspection PyMethodMayBeStatic
     def genTime(self, data):
         times = []
         for timeStr in data:
@@ -834,7 +829,6 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         return times
 
-    # noinspection PyMethodMayBeStatic
     def genLastUpdated(self, data):
         return data[0]
 
