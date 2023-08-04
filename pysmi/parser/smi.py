@@ -35,7 +35,7 @@ class SmiV2Parser(AbstractParser):
         # tokens are required for parser
         self.tokens = self.lexer.tokens
 
-        if YACC_VERSION < [3, 0]:
+        if YACC_VERSION < [3, 0]:  # noqa: SIM300
             self.parser = yacc.yacc(
                 module=self,
                 start=startSym,
