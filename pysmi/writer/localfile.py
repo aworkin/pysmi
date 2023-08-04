@@ -7,6 +7,7 @@
 import os
 import sys
 import tempfile
+from contextlib import suppress
 
 from pysmi import debug
 from pysmi import error
@@ -82,11 +83,8 @@ class FileWriter(AbstractWriter):
         except (OSError, UnicodeEncodeError):
             exc = sys.exc_info()
             if tfile:
-                try:
+                with suppress(OSError):
                     os.unlink(tfile)
-
-                except OSError:
-                    pass
 
             msg = f"failure writing file {filename}: {exc[1]}"
             raise error.PySmiWriterError(msg, file=filename, writer=self)

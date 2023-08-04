@@ -11,6 +11,7 @@ import getopt
 import os
 import shutil
 import sys
+from contextlib import suppress
 from datetime import datetime
 
 from pysmi import debug
@@ -140,11 +141,8 @@ if os.path.exists(dstDirectory) and not os.path.isdir(dstDirectory):
     sys.stderr.write(f"ERROR: given destination is not a directory\r\n{helpMessage}\r\n")
     sys.exit(EX_USAGE)
 
-try:
+with suppress(OSError):
     os.makedirs(dstDirectory, mode=0o755)
-
-except OSError:
-    pass
 
 # Compiler infrastructure
 

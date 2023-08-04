@@ -8,6 +8,7 @@ import os
 import sys
 import tempfile
 import unittest
+from contextlib import suppress
 
 from pysmi.reader.zipreader import ZipReader
 
@@ -2746,11 +2747,8 @@ class ZipReaderTestCase(unittest.TestCase):
             pass
 
         if filename:
-            try:
+            with suppress(Exception):
                 os.remove(filename)
-
-            except Exception:
-                pass
 
     def testGetInnerZipData(self):
         filename = None
@@ -2770,11 +2768,8 @@ class ZipReaderTestCase(unittest.TestCase):
             pass
 
         if filename:
-            try:
+            with suppress(Exception):
                 os.remove(filename)
-
-            except Exception:
-                pass
 
 
 suite = unittest.TestLoader().loadTestsFromModule(sys.modules[__name__])
