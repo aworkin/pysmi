@@ -609,7 +609,7 @@ class ObjectTypeAurmentingMibTableTestCase(unittest.TestCase):
             augmentingRows = self.ctx["testEntry"]._augmentingRows
 
         self.assertEqual(
-            list(augmentingRows)[0],
+            next(iter(augmentingRows)),
             ("TEST-MIB", "testEntryExt"),
             "bad AUGMENTS table clause",
         )
