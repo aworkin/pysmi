@@ -103,9 +103,11 @@ dependencies = ["Sphinx"]
 build = "sphinx-build -b html docs/source docs/html"
 
 [tool.black]
+target-versions = ["py38", "py39", "py310", "py311"]
 line-length = 120
 
 [tool.ruff]
+target-version = "py38"
 line-length = 120
 
 # Aspirational List
@@ -155,6 +157,7 @@ unfixable = [
 
 [tool.ruff.isort]
 known-first-party = ["pysmi"]
+force-single-line = true
 
 [tool.ruff.flake8-tidy-imports]
 ban-relative-imports = "all"
