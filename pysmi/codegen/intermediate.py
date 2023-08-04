@@ -50,7 +50,8 @@ class IntermediateCodeGen(AbstractCodeGen):
         "ASN1",
         "ASN1-ENUMERATION",
         "ASN1-REFINEMENT",
-    ) + AbstractCodeGen.baseMibs
+        *AbstractCodeGen.baseMibs,
+    )
 
     baseTypes = ["Integer", "Integer32", "Bits", "ObjectIdentifier", "OctetString"]
 

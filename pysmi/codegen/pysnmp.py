@@ -76,7 +76,8 @@ class PySnmpCodeGen(IntermediateCodeGen):
         "SNMP-TARGET-MIB",
         "TRANSPORT-ADDRESS-MIB",
         "INET-ADDRESS-MIB",
-    ) + IntermediateCodeGen.baseMibs
+        *IntermediateCodeGen.baseMibs,
+    )
 
     def genCode(self, ast, symbolTable, **kwargs):
         mibInfo, context = IntermediateCodeGen.genCode(self, ast, symbolTable, **kwargs)

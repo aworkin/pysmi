@@ -325,7 +325,7 @@ class SymtableCodeGen(AbstractCodeGen):
 
                 fakeSymProps = {
                     "type": "fakeColumn",
-                    "oid": oid + (fakeIdx,),
+                    "oid": (*oid, fakeIdx),
                     "syntax": fakeSyntax,
                     "origName": fakeName,
                 }
@@ -341,7 +341,7 @@ class SymtableCodeGen(AbstractCodeGen):
 
         symProps = {
             "type": "NotificationType",
-            "oid": enterprise + (0, value),
+            "oid": (*enterprise, 0, value),
             "origName": origName,
         }
 
