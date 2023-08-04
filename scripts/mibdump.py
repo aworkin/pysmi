@@ -62,7 +62,7 @@ helpMessage = f"""\
 Usage: {sys.argv[0]} [--help]
       [--version]
       [--quiet]
-      [--debug=<{'|'.join([x for x in sorted(debug.flagMap)])}>]
+      [--debug=<{'|'.join(sorted(debug.flagMap))}>]
       [--mib-source=<URI>]
       [--mib-searcher=<PATH|PACKAGE>]
       [--mib-stub=<MIB-NAME>]
@@ -227,7 +227,7 @@ if not mibSources:
     mibSources = ["file:///usr/share/snmp/mibs", "http://mibs.snmplabs.com/asn1/@mib@"]
 
 if inputMibs:
-    mibSources = sorted(set([os.path.abspath(os.path.dirname(x)) for x in inputMibs if os.path.sep in x])) + mibSources
+    mibSources = sorted({os.path.abspath(os.path.dirname(x)) for x in inputMibs if os.path.sep in x}) + mibSources
 
     inputMibs = [os.path.basename(os.path.splitext(x)[0]) for x in inputMibs]
 
@@ -262,7 +262,7 @@ if dstFormat == "pysnmp":
 
     borrowers = [
         PyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **{"lowcaseMatching": False}))
     ]
 
     searchers = [PyFileSearcher(dstDirectory)]
@@ -293,7 +293,7 @@ elif dstFormat == "json":
 
     borrowers = [
         AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1]).setOptions(exts=[".json"])
-        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **{"lowcaseMatching": False}))
     ]
 
     searchers = [
@@ -326,7 +326,7 @@ elif dstFormat == "null":
 
     borrowers = [
         AnyFileBorrower(x[1], genTexts=mibBorrowers[x[0]][1])
-        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **dict(lowcaseMatching=False)))
+        for x in enumerate(getReadersFromUrls(*[m[0] for m in mibBorrowers], **{"lowcaseMatching": False}))
     ]
 
     fileWriter = CallbackWriter(lambda *x: None)
@@ -364,7 +364,7 @@ Try various file names while searching for MIB module: {doFuzzyMatchingFlag and 
 mibCompiler = MibCompiler(SmiV1CompatParser(tempdir=cacheDirectory), codeGenerator, fileWriter)
 
 try:
-    mibCompiler.addSources(*getReadersFromUrls(*mibSources, **dict(fuzzyMatching=doFuzzyMatchingFlag)))
+    mibCompiler.addSources(*getReadersFromUrls(*mibSources, **{"fuzzyMatching": doFuzzyMatchingFlag}))
 
     mibCompiler.addSearchers(*searchers)
 
@@ -372,16 +372,16 @@ try:
 
     processed = mibCompiler.compile(
         *inputMibs,
-        **dict(
-            noDeps=nodepsFlag,
-            rebuild=rebuildFlag,
-            dryRun=dryrunFlag,
-            dstTemplate=dstTemplate,
-            genTexts=genMibTextsFlag,
-            textFilter=keepTextsLayout and (lambda symbol, text: text) or None,
-            writeMibs=writeMibsFlag,
-            ignoreErrors=ignoreErrorsFlag,
-        ),
+        **{
+            "noDeps": nodepsFlag,
+            "rebuild": rebuildFlag,
+            "dryRun": dryrunFlag,
+            "dstTemplate": dstTemplate,
+            "genTexts": genMibTextsFlag,
+            "textFilter": keepTextsLayout and (lambda symbol, text: text) or None,
+            "writeMibs": writeMibsFlag,
+            "ignoreErrors": ignoreErrorsFlag,
+        },
     )
 
     if buildIndexFlag:

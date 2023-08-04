@@ -40,7 +40,7 @@ mibCompiler.addSources(*[FtpReader(*x) for x in ftpSources])
 mibCompiler.addSearchers(StubSearcher(*PySnmpCodeGen.baseMibs))
 
 # run non-recursive MIB compilation
-results = mibCompiler.compile(*inputMibs, **dict(noDeps=True))
+results = mibCompiler.compile(*inputMibs, **{"noDeps": True})
 
 result_message = ", ".join([f"{k}:{results[v]}" for k, v in results.items()])
 print(f"\n# Results: {result_message}")

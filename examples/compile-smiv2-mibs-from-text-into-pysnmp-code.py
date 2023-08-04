@@ -39,7 +39,7 @@ mibCompiler.addSources(CallbackReader(lambda m, c: open(srcDir + m + ".txt").rea
 mibCompiler.addSearchers(StubSearcher(*PySnmpCodeGen.baseMibs))
 
 # run non-recursive MIB compilation
-results = mibCompiler.compile(*inputMibs, **dict(noDeps=True))
+results = mibCompiler.compile(*inputMibs, **{"noDeps": True})
 
 result_message = ", ".join([f"{k}:{results[v]}" for k, v in results.items()])
 print(f"Results: {result_message}")

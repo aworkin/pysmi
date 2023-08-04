@@ -41,7 +41,7 @@ Usage: {sys.argv[0]} [--help]
       [--version]
       [--verbose]
       [--quiet]
-      [--debug=<{'|'.join([x for x in sorted(debug.flagMap)])}>]
+      [--debug=<{'|'.join(sorted(debug.flagMap))}>]
       [--mib-source=<URI>]
       [--cache-directory=<DIRECTORY>]
       [--ignore-errors]
@@ -166,12 +166,12 @@ def getMibRevision(mibDir, mibFile):
     try:
         processed = mibCompiler.compile(
             mibFile,
-            **dict(
-                noDeps=True,
-                rebuild=True,
-                fuzzyMatching=False,
-                ignoreErrors=ignoreErrorsFlag,
-            ),
+            **{
+                "noDeps": True,
+                "rebuild": True,
+                "fuzzyMatching": False,
+                "ignoreErrors": ignoreErrorsFlag,
+            },
         )
 
     except error.PySmiError:
