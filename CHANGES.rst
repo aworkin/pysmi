@@ -1,5 +1,21 @@
-Revision 0.4.0, XX-03-2020
---------------------------
+Changelog
+=========
+
+Unreleased
+----------
+
+- Migrated from ``setup.py`` to ``pyproject.toml``.
+
+- Migrated code style to ``Black``.
+
+- Migrated build backend to ``hatchling``.
+
+- Extensive minor changes aimed at preserving the original code logic while
+  bringing implementation into best practices.
+
+::
+
+    Changes below this point are part of the original ``pysmi`` project.
 
 - Introduced Jinja2 templates for code generation.
 
@@ -30,9 +46,6 @@ Revision 0.4.0, XX-03-2020
   building a functional skeleton of the Python module from a
   given ASN.1 MIB. The tapping points include SMI Managed Object
   read/readnext/write/create and destroy work flows.
-
-Revision 0.3.5, XX-03-2020
---------------------------
 
 - Added tox runner with a handful of basic jobs
 - Copyright notice extended to the year 2020
