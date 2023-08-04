@@ -54,7 +54,8 @@ class JsonCodeGen(IntermediateCodeGen):
 
         except jinja2.exceptions.TemplateError:
             err = sys.exc_info()[1]
-            raise error.PySmiCodegenError(f"Jinja template rendering error: {err}")
+            msg = f"Jinja template rendering error: {err}"
+            raise error.PySmiCodegenError(msg)
 
         if debug.logger & debug.flagCodegen:
             debug.logger(
@@ -85,7 +86,8 @@ class JsonCodeGen(IntermediateCodeGen):
                 outDict.update(json.loads(kwargs["old_index_data"]))
 
             except Exception:
-                raise error.PySmiCodegenError(f"Index load error: {sys.exc_info()[1]}")
+                msg = f"Index load error: {sys.exc_info()[1]}"
+                raise error.PySmiCodegenError(msg)
 
         def order(top):
             if isinstance(top, dict):

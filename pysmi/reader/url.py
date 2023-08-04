@@ -56,6 +56,7 @@ def getReadersFromUrls(*sourceUrls, **options):
             )
 
         else:
-            raise error.PySmiError(f"Unsupported URL scheme {sourceUrl}")
+            msg = f"Unsupported URL scheme {sourceUrl}"
+            raise error.PySmiError(msg)
 
     return readers

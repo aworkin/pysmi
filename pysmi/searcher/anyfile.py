@@ -50,8 +50,9 @@ class AnyFileSearcher(AbstractSearcher):
                 fileTime = os.stat(f)[8]
 
             except OSError:
+                msg = f'failure opening compiled file {f}: {sys.exc_info()[1]}'
                 raise error.PySmiSearcherError(
-                    f"failure opening compiled file {f}: {sys.exc_info()[1]}",
+                    msg,
                     searcher=self,
                 )
 
@@ -66,4 +67,5 @@ class AnyFileSearcher(AbstractSearcher):
             if fileTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
 
-        raise error.PySmiFileNotFoundError(f"no compiled file {mibname} found", searcher=self)
+        msg = f'no compiled file {mibname} found'
+        raise error.PySmiFileNotFoundError(msg, searcher=self)

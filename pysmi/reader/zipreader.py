@@ -161,7 +161,8 @@ class ZipReader(AbstractReader):
             raise self._pendingError
 
         if not self._members:
-            raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
+            msg = f"source MIB {mibname} not found"
+            raise error.PySmiReaderFileNotFoundError(msg, reader=self)
 
         for mibalias, mibfile in self.getMibVariants(mibname, **options):
             if debug.logger & debug.flagReader:
@@ -189,7 +190,8 @@ class ZipReader(AbstractReader):
                 )
 
             if len(mibData) == self.maxMibSize:
-                raise OSError(f"MIB {self._name}/{mibfile} too large")
+                msg = f"MIB {self._name}/{mibfile} too large"
+                raise OSError(msg)
 
             return MibInfo(
                 path=f"zip://{self._name}/{mibfile}",
@@ -198,4 +200,5 @@ class ZipReader(AbstractReader):
                 mtime=mtime,
             ), decode(mibData)
 
-        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
+        msg = f"source MIB {mibname} not found"
+        raise error.PySmiReaderFileNotFoundError(msg, reader=self)

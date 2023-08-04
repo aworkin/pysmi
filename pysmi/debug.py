@@ -110,7 +110,8 @@ class Debug:
                     self._flags |= flagMap[flag]
 
             except KeyError:
-                raise error.PySmiError(f"bad debug flag {flag}")
+                msg = f"bad debug flag {flag}"
+                raise error.PySmiError(msg)
 
             self(f'debug category \'{flag}\' {"disabled" if inverse else "enabled"}')
 

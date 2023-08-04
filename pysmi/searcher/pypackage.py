@@ -92,10 +92,12 @@ class PyPackageSearcher(AbstractSearcher):
                 return PyFileSearcher(os.path.split(p.__file__)[0]).fileExists(mibname, mtime, rebuild=rebuild)
 
             else:
-                raise error.PySmiFileNotFoundError(f"{self._package} is neither importable nor a file", searcher=self)
+                msg = f'{self._package} is neither importable nor a file'
+                raise error.PySmiFileNotFoundError(msg, searcher=self)
 
         except ImportError:
-            raise error.PySmiFileNotFoundError(f"{self._package} is not importable, trying as a path", searcher=self)
+            msg = f'{self._package} is not importable, trying as a path'
+            raise error.PySmiFileNotFoundError(msg, searcher=self)
 
         for pySfx in BYTECODE_SUFFIXES:
             f = os.path.join(self._package, mibname.upper()) + pySfx
@@ -119,7 +121,8 @@ class PyPackageSearcher(AbstractSearcher):
                 if pyTime >= mtime:
                     raise error.PySmiFileNotModifiedError()
                 else:
-                    raise error.PySmiFileNotFoundError(f"older file {mibname} exists", searcher=self)
+                    msg = f'older file {mibname} exists'
+                    raise error.PySmiFileNotFoundError(msg, searcher=self)
 
             else:
                 if debug.logger & debug.flagSearcher:
@@ -146,6 +149,8 @@ class PyPackageSearcher(AbstractSearcher):
             if pyTime >= mtime:
                 raise error.PySmiFileNotModifiedError()
             else:
-                raise error.PySmiFileNotFoundError(f"older file {mibname} exists", searcher=self)
+                msg = f'older file {mibname} exists'
+                raise error.PySmiFileNotFoundError(msg, searcher=self)
 
-        raise error.PySmiFileNotFoundError(f"no file {mibname} found", searcher=self)
+        msg = f'no file {mibname} found'
+        raise error.PySmiFileNotFoundError(msg, searcher=self)

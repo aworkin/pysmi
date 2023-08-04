@@ -62,8 +62,9 @@ class PyFileWriter(AbstractWriter):
                 os.makedirs(self._path)
 
             except OSError:
+                msg = f'failure creating destination directory {self._path}: {sys.exc_info()[1]}'
                 raise error.PySmiWriterError(
-                    f"failure creating destination directory {self._path}: {sys.exc_info()[1]}",
+                    msg,
                     writer=self,
                 )
 
@@ -86,7 +87,8 @@ class PyFileWriter(AbstractWriter):
             if tfile and os.access(tfile, os.F_OK):
                 os.unlink(tfile)
 
-            raise error.PySmiWriterError(f"failure writing file {pyfile}: {exc[1]}", file=pyfile, writer=self)
+            msg = f'failure writing file {pyfile}: {exc[1]}'
+            raise error.PySmiWriterError(msg, file=pyfile, writer=self)
 
         if debug.logger & debug.flagWriter:
             debug.logger("created file %s" % pyfile)
@@ -102,8 +104,9 @@ class PyFileWriter(AbstractWriter):
                 if pyfile and os.access(pyfile, os.F_OK):
                     os.unlink(pyfile)
 
+                msg = f'failure compiling {pyfile}: {sys.exc_info()[1]}'
                 raise error.PySmiWriterError(
-                    f"failure compiling {pyfile}: {sys.exc_info()[1]}",
+                    msg,
                     file=mibname,
                     writer=self,
                 )

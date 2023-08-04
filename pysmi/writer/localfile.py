@@ -62,8 +62,9 @@ class FileWriter(AbstractWriter):
                 os.makedirs(self._path)
 
             except OSError:
+                msg = f"failure creating destination directory {self._path}: {sys.exc_info()[1]}"
                 raise error.PySmiWriterError(
-                    f"failure creating destination directory {self._path}: {sys.exc_info()[1]}",
+                    msg,
                     writer=self,
                 )
 
@@ -90,7 +91,8 @@ class FileWriter(AbstractWriter):
                 except OSError:
                     pass
 
-            raise error.PySmiWriterError(f"failure writing file {filename}: {exc[1]}", file=filename, writer=self)
+            msg = f"failure writing file {filename}: {exc[1]}"
+            raise error.PySmiWriterError(msg, file=filename, writer=self)
 
         if debug.logger & debug.flagWriter:
             debug.logger(f"{mibname} stored in {filename}")

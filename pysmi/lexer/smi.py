@@ -284,10 +284,12 @@ class SmiV2Lexer(AbstractLexer):
     @TOKEN(r"[A-Z][-a-zA-z0-9]*")
     def t_UPPERCASE_IDENTIFIER(self, t):
         if t.value in self.forbidden_words:
-            raise error.PySmiLexerError(f"{t.value} is forbidden", lineno=t.lineno)
+            msg = f"{t.value} is forbidden"
+            raise error.PySmiLexerError(msg, lineno=t.lineno)
 
         if t.value[-1] == "-":
-            raise error.PySmiLexerError(f"Identifier should not end with '-': {t.value}", lineno=t.lineno)
+            msg = f"Identifier should not end with '-': {t.value}"
+            raise error.PySmiLexerError(msg, lineno=t.lineno)
 
         t.type = self.reserved.get(t.value, "UPPERCASE_IDENTIFIER")
 
@@ -296,7 +298,8 @@ class SmiV2Lexer(AbstractLexer):
     @TOKEN(r"[0-9]*[a-z][-a-zA-z0-9]*")
     def t_LOWERCASE_IDENTIFIER(self, t):
         if t.value[-1] == "-":
-            raise error.PySmiLexerError(f"Identifier should not end with '-': {t.value}", lineno=t.lineno)
+            msg = f"Identifier should not end with '-': {t.value}"
+            raise error.PySmiLexerError(msg, lineno=t.lineno)
         return t
 
     @TOKEN(r"-?[0-9]+")
@@ -319,7 +322,8 @@ class SmiV2Lexer(AbstractLexer):
                 t.type = "NUMBER64"
 
         else:
-            raise error.PySmiLexerError(f"Number {t.value} is too big", lineno=t.lineno)
+            msg = f"Number {t.value} is too big"
+            raise error.PySmiLexerError(msg, lineno=t.lineno)
 
         return t
 
@@ -349,8 +353,9 @@ class SmiV2Lexer(AbstractLexer):
         return t
 
     def t_error(self, t):
+        msg = f"Illegal character '{t.value[0]}', {len(t.value) - 1} characters left unparsed at this stage"
         raise error.PySmiLexerError(
-            f"Illegal character '{t.value[0]}', {len(t.value) - 1} characters left unparsed at this stage",
+            msg,
             lineno=t.lineno,
         )
         # t.lexer.skip(1)
@@ -530,7 +535,8 @@ def lexerFactory(**grammarOptions):
     for option in grammarOptions:
         if grammarOptions[option]:
             if option not in relaxedGrammar:
-                raise error.PySmiError(f"Unknown lexer relaxation option: {option}")
+                msg = f"Unknown lexer relaxation option: {option}"
+                raise error.PySmiError(msg)
 
             for func in relaxedGrammar[option]:
                 classAttr[func.__name__] = func()

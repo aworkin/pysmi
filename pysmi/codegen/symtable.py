@@ -186,7 +186,8 @@ class SymtableCodeGen(AbstractCodeGen):
 
     def regSym(self, symbol, symProps, parents=()):
         if symbol in self._out or symbol in self._postponedSyms:  # add to strict mode - or symbol in self._importMap:
-            raise error.PySmiSemanticError(f"Duplicate symbol found: {symbol}")
+            msg = f"Duplicate symbol found: {symbol}"
+            raise error.PySmiSemanticError(msg)
 
         if self.allParentsExists(parents):
             self._out[symbol] = symProps
@@ -483,7 +484,8 @@ class SymtableCodeGen(AbstractCodeGen):
                 out += (el[1],)  # XXX Do we need to create a new object el[0]?
 
             else:
-                raise error.PySmiSemanticError(f"unknown datatype for OID: {el}")
+                msg = f"unknown datatype for OID: {el}"
+                raise error.PySmiSemanticError(msg)
 
         return out
 
@@ -605,11 +607,13 @@ class SymtableCodeGen(AbstractCodeGen):
                 self.handlersTable[declr[0]](self, self.prepData(declr[1:], classmode), classmode)
 
         if self._postponedSyms:
-            raise error.PySmiSemanticError(f'Unknown parents for symbols: {", ".join(self._postponedSyms)}')
+            msg = f"Unknown parents for symbols: {', '.join(self._postponedSyms)}"
+            raise error.PySmiSemanticError(msg)
 
         for sym in self._parentOids:
             if sym not in self._out and sym not in self._importMap:
-                raise error.PySmiSemanticError(f"Unknown parent symbol: {sym}")
+                msg = f"Unknown parent symbol: {sym}"
+                raise error.PySmiSemanticError(msg)
 
         self._out["_symtable_order"] = list(self._symsOrder)
         self._out["_symtable_cols"] = list(self._cols)

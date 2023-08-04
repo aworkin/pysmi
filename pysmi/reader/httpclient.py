@@ -103,4 +103,5 @@ class HttpReader(AbstractReader):
                     response.read(self.maxMibSize)
                 )
 
-        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
+        msg = f"source MIB {mibname} not found"
+        raise error.PySmiReaderFileNotFoundError(msg, reader=self)

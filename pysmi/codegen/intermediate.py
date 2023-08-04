@@ -156,7 +156,8 @@ class IntermediateCodeGen(AbstractCodeGen):
         moduleCompliance=False,
     ):
         if symbol in self._seenSyms and symbol not in self._importMap:
-            raise error.PySmiSemanticError(f"Duplicate symbol found: {symbol}")
+            msg = f"Duplicate symbol found: {symbol}"
+            raise error.PySmiSemanticError(msg)
 
         self.addToExports(symbol, moduleIdentity)
         self._out[symbol] = outDict
@@ -169,7 +170,8 @@ class IntermediateCodeGen(AbstractCodeGen):
 
             if moduleIdentity:
                 if self._moduleIdentityOid:
-                    raise error.PySmiSemanticError("Duplicate module identity")
+                    msg = "Duplicate module identity"
+                    raise error.PySmiSemanticError(msg)
                 self._moduleIdentityOid = outDict["oid"]
 
             if moduleCompliance:
@@ -187,10 +189,12 @@ class IntermediateCodeGen(AbstractCodeGen):
 
                 if module not in self.symbolTable:
                     # XXX do getname for possible future borrowed mibs
-                    raise error.PySmiSemanticError(f'no module "{module}" in symbolTable')
+                    msg = f'no module "{module}" in symbolTable'
+                    raise error.PySmiSemanticError(msg)
 
                 if parent not in self.symbolTable[module]:
-                    raise error.PySmiSemanticError(f'no symbol "{parent}" in module "{module}"')
+                    msg = f'no symbol "{parent}" in module "{module}"'
+                    raise error.PySmiSemanticError(msg)
                 numericOid += self.genNumericOid(self.symbolTable[module][parent]["oid"])
 
             else:
@@ -200,14 +204,17 @@ class IntermediateCodeGen(AbstractCodeGen):
 
     def getBaseType(self, symName, module):
         if module not in self.symbolTable:
-            raise error.PySmiSemanticError(f'no module "{module}" in symbolTable')
+            msg = f'no module "{module}" in symbolTable'
+            raise error.PySmiSemanticError(msg)
 
         if symName not in self.symbolTable[module]:
-            raise error.PySmiSemanticError(f'no symbol "{symName}" in module "{module}"')
+            msg = f'no symbol "{symName}" in module "{module}"'
+            raise error.PySmiSemanticError(msg)
 
         symType, symSubtype = self.symbolTable[module][symName].get("syntax", (("", ""), ""))
         if not symType[0]:
-            raise error.PySmiSemanticError(f'unknown type for symbol "{symName}"')
+            msg = f'unknown type for symbol "{symName}"'
+            raise error.PySmiSemanticError(msg)
 
         if symType[0] in self.baseTypes:
             return symType, symSubtype
@@ -675,7 +682,8 @@ class IntermediateCodeGen(AbstractCodeGen):
 
                 except Exception:
                     # or no module if it will be borrowed later
-                    raise error.PySmiSemanticError(f'no symbol "{defval}" in module "{module}"')
+                    msg = f'no symbol "{defval}" in module "{module}"'
+                    raise error.PySmiSemanticError(msg)
 
             # enumeration
             elif defvalType[0][0] in ("Integer32", "Integer") and isinstance(defvalType[1], list):
@@ -700,15 +708,17 @@ class IntermediateCodeGen(AbstractCodeGen):
                         defvalBits.append((bit, bitValue))
 
                     else:
-                        raise error.PySmiSemanticError(f'no such bit as "{bit}" for symbol "{objname}"')
+                        msg = f'no such bit as "{bit}" for symbol "{objname}"'
+                        raise error.PySmiSemanticError(msg)
 
                 outDict.update(value=self.genBits([defvalBits])[1], format="bits")
 
                 return outDict
 
             else:
+                msg = f'unknown type "{defvalType}" for defval "{defval}" of symbol "{objname}"'
                 raise error.PySmiSemanticError(
-                    f'unknown type "{defvalType}" for defval "{defval}" of symbol "{objname}"'
+                    msg
                 )
 
         return {"default": outDict}
@@ -800,7 +810,8 @@ class IntermediateCodeGen(AbstractCodeGen):
                 out += (el[1],)  # XXX Do we need to create a new object el[0]?
 
             else:
-                raise error.PySmiSemanticError(f"unknown datatype for OID: {el}")
+                msg = f"unknown datatype for OID: {el}"
+                raise error.PySmiSemanticError(msg)
 
         return ".".join([str(x) for x in self.genNumericOid(out)]), parent
 
@@ -978,7 +989,8 @@ class IntermediateCodeGen(AbstractCodeGen):
 
         for sym in self.symbolTable[self.moduleName[0]]["_symtable_order"]:
             if sym not in self._out:
-                raise error.PySmiCodegenError(f"No generated code for symbol {sym}")
+                msg = f"No generated code for symbol {sym}"
+                raise error.PySmiCodegenError(msg)
 
             outDict[sym] = self._out[sym]
 

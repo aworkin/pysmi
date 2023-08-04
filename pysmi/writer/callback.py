@@ -45,8 +45,9 @@ class CallbackWriter(AbstractWriter):
             self._cbFun(mibname, data, self._cbCtx)
 
         except Exception:
+            msg = f'user callback {self._cbFun} failure writing {mibname}: {sys.exc_info()[1]}'
             raise error.PySmiWriterError(
-                f"user callback {self._cbFun} failure writing {mibname}: {sys.exc_info()[1]}",
+                msg,
                 writer=self,
             )
 

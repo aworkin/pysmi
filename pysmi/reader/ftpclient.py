@@ -54,7 +54,8 @@ class FtpReader(AbstractReader):
         self._user = user
         self._password = password
         if "@mib@" not in locationTemplate:
-            raise error.PySmiError(f"@mib@ placeholder not specified in location at {self}")
+            msg = f"@mib@ placeholder not specified in location at {self}"
+            raise error.PySmiError(msg)
 
     def __str__(self):
         return f'{self.__class__.__name__}{{"ftp://{self._host}{self._locationTemplate}"}}'
@@ -69,8 +70,9 @@ class FtpReader(AbstractReader):
             conn.connect(self._host, self._port, self._timeout)
 
         except ftplib.all_errors:
+            msg = f"failed to connect to FTP server {self._host}:{self._port}: {sys.exc_info()[1]}"
             raise error.PySmiReaderFileNotFoundError(
-                f"failed to connect to FTP server {self._host}:{self._port}: {sys.exc_info()[1]}",
+                msg,
                 reader=self,
             )
 
@@ -79,8 +81,9 @@ class FtpReader(AbstractReader):
 
         except ftplib.all_errors:
             conn.close()
+            msg = f"failed to log in to FTP server {self._host}:{self._port} as {self._user}/{self._password}: {sys.exc_info()[1]}"
             raise error.PySmiReaderFileNotFoundError(
-                f"failed to log in to FTP server {self._host}:{self._port} as {self._user}/{self._password}: {sys.exc_info()[1]}",
+                msg,
                 reader=self,
             )
 
@@ -152,4 +155,5 @@ class FtpReader(AbstractReader):
 
         conn.close()
 
-        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
+        msg = f"source MIB {mibname} not found"
+        raise error.PySmiReaderFileNotFoundError(msg, reader=self)

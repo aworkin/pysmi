@@ -290,12 +290,14 @@ class AbstractCodeGen:
             if s[1:-2]:
                 return int(s[1:-2], 2)
             else:
-                raise error.PySmiSemanticError("empty binary string to int conversion")
+                msg = "empty binary string to int conversion"
+                raise error.PySmiSemanticError(msg)
 
         elif self.isHex(s):
             if s[1:-2]:
                 return int(s[1:-2], 16)
             else:
-                raise error.PySmiSemanticError("empty hex string to int conversion")
+                msg = "empty hex string to int conversion"
+                raise error.PySmiSemanticError(msg)
         else:
             return int(s)

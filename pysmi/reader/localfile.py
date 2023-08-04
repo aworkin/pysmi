@@ -58,7 +58,8 @@ class FileReader(AbstractReader):
                 return dirs
 
             else:
-                raise error.PySmiError(f"directory {path} access error: {sys.exc_info()[1]}")
+                msg = f"directory {path} access error: {sys.exc_info()[1]}"
+                raise error.PySmiError(msg)
 
         for d in subdirs:
             d = os.path.join(decode(path), decode(d))
@@ -124,7 +125,8 @@ class FileReader(AbstractReader):
                         fp.close()
 
                         if len(mibData) == self.maxMibSize:
-                            raise OSError(f"MIB {f} too large")
+                            msg = f"MIB {f} too large"
+                            raise OSError(msg)
 
                         return MibInfo(path=f"file://{f}", file=mibfile, name=mibalias, mtime=mtime), decode(mibData)
 
@@ -133,8 +135,11 @@ class FileReader(AbstractReader):
                             debug.logger(f"source file {f} open failure: {sys.exc_info()[1]}")
 
                         if not self._ignoreErrors:
-                            raise error.PySmiError(f"file {f} access error: {sys.exc_info()[1]}")
+                            msg = f"file {f} access error: {sys.exc_info()[1]}"
+                            raise error.PySmiError(msg)
 
-                    raise error.PySmiReaderFileNotModifiedError(f"source MIB {f} is older than needed", reader=self)
+                    msg = f"source MIB {f} is older than needed"
+                    raise error.PySmiReaderFileNotModifiedError(msg, reader=self)
 
-        raise error.PySmiReaderFileNotFoundError(f"source MIB {mibname} not found", reader=self)
+        msg = f"source MIB {mibname} not found"
+        raise error.PySmiReaderFileNotFoundError(msg, reader=self)

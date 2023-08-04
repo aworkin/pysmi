@@ -190,7 +190,8 @@ def getMibRevision(mibDir, mibFile):
 
             return canonicalMibName, revision
 
-    raise error.PySmiError(f'Can\'t read or parse MIB "{os.path.join(mibDir, mibFile)}"')
+    msg = f"Can't read or parse MIB \"{os.path.join(mibDir, mibFile)}\""
+    raise error.PySmiError(msg)
 
 
 def shortenPath(path, maxLength=45):

@@ -148,7 +148,8 @@ class PySnmpCodeGen(IntermediateCodeGen):
 
         except jinja2.exceptions.TemplateError:
             err = sys.exc_info()[1]
-            raise error.PySmiCodegenError(f"Jinja template rendering error: {err}")
+            msg = f"Jinja template rendering error: {err}"
+            raise error.PySmiCodegenError(msg)
 
         if debug.logger & debug.flagCodegen:
             debug.logger(
