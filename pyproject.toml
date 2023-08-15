@@ -40,6 +40,7 @@ classifiers = [
 dependencies = [
   "jinja2>=2.10.1",
   "ply",
+  "lark",
 ]
 
 [project.urls]

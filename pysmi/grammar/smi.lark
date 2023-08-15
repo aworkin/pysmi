@@ -1,0 +1,298 @@
+?start: mib_file
+
+mib_file: module+
+
+module: module_identifier "DEFINITIONS" [tag_default] [extension_default] "::=" "BEGIN" [exports] [imports] [declarations] "END"
+?module_identifier: IDENTIFIER module_oid?
+module_oid: "{" object_identifier "}"
+
+tag_default: "EXPLICIT TAGS"
+           | "IMPLICIT TAGS"
+           | "AUTOMATIC TAGS"
+extension_default: "EXTENSIBILITY IMPLIED"
+
+exports: "EXPORTS" [symbols_exported] ";"
+symbols_exported: symbol_list
+                | "ALL"
+
+imports: "IMPORTS" [symbols_from_module+] ";"
+symbols_from_module: symbol_list "FROM" IDENTIFIER
+symbol_list: IDENTIFIER ("," IDENTIFIER)*
+
+declarations: declaration+
+?declaration: smiv1_declaration              // RFC 1155 (https://www.ietf.org/rfc/rfc1155.html)
+            | trap_type_declaration           // RFC 1215 (https://www.ietf.org/rfc/rfc1215.html)
+            | smiv2_declaration
+            | compliance_declaration
+            | data_type_declaration           // RFC 2578 | RFC 2579 (https://www.ietf.org/rfc/rfc2579.html)
+
+
+//
+//  SMIv1 - RFC 1155 (https://www.ietf.org/rfc/rfc1155.html)
+//
+?smiv1_declaration: macro_declaration
+                  | object_identifier_declaration
+                  | object_identity_declaration
+                  | object_type_v1_declaration
+
+// MACRO
+macro_declaration: MACRO_NAME "MACRO" macro_body "END"
+MACRO_NAME: "AGENT_CAPABILITIES"
+          | "MODULE_COMPLIANCE"
+          | "MODULE_IDENTITY"
+          | "NOTIFICATION_GROUP"
+          | "NOTIFICATION_TYPE"
+          | "OBJECT_GROUP"
+          | "OBJECT_IDENTITY"
+          | "OBJECT_TYPE"
+          | "TEXTUAL_CONVENTION"
+          | "TRAP_TYPE"
+macro_body: /.+?(?=END)/
+
+// OBJECT IDENTIFIER
+object_identifier_declaration: IDENTIFIER "OBJECT" "IDENTIFIER" "::=" "{" object_identifier "}"
+
+// OBJECT IDENTITY
+object_identity_declaration: IDENTIFIER "OBJECT-IDENTITY" status_clause description_clause [reference_clause] "::=" "{" object_identifier "}"
+
+// OBJECT TYPE
+object_type_v1_declaration: IDENTIFIER "OBJECT-TYPE" syntax_clause access_clause_v1 status_clause_v1 "::=" "{" object_identifier "}"
+access_clause_v1: "ACCESS" ACCESS_V1
+ACCESS_V1: "read-only"
+         | "write-only"
+         | "not-accessible"
+status_clause_v1: "STATUS" STATUS_V1
+STATUS_V1: "mandatory"
+         | "optional"
+         | "obsolete"
+
+
+//
+//  SMIv2 - RFC 2578 (https://www.ietf.org/rfc/rfc2578.html)
+//
+?smiv2_declaration: module_identity_declaration
+                  | object_type_v2_declaration
+                  | notification_type_declaration
+
+// MODULE IDENTITY
+module_identity_declaration: IDENTIFIER "MODULE-IDENTITY" last_updated_clause organization_clause contact_info_clause description_clause [revisions_clause] "::=" "{" object_identifier "}"
+last_updated_clause: "LAST-UPDATED" timestamp
+organization_clause: "ORGANIZATION" ESCAPED_STRING
+contact_info_clause: "CONTACT-INFO" ESCAPED_STRING
+revisions_clause: revision+
+revision: "REVISION" timestamp description_clause
+timestamp: ESCAPED_STRING
+
+// OBJECT TYPE
+object_type_v2_declaration: IDENTIFIER "OBJECT-TYPE" syntax_clause [units_clause] max_access_clause status_clause description_clause [reference_clause] [instance_clause] [defval_clause] "::=" "{" object_identifier "}"
+units_clause: "UNITS" ESCAPED_STRING
+max_access_clause: "MAX-ACCESS" ACCESS
+instance_clause: "AUGMENTS" "{" object_identifier "}"
+              | "INDEX" "{" index_types "}"
+index_types: index_type ("," index_type)*
+index_type: ["IMPLIED"] object_identifier
+defval_clause: "DEFVAL" "{" default_value "}"
+default_value: simple_syntax_value
+             | "{" [bit_names] "}"
+simple_syntax_value: NUMBER
+                   | HEX_STRING
+                   | BIN_STRING
+                   | IDENTIFIER
+                   | ESCAPED_STRING
+bit_names: IDENTIFIER ("," IDENTIFIER)*
+
+// NOTIFICATION TYPE
+notification_type_declaration: IDENTIFIER "NOTIFICATION-TYPE" [objects_clause] status_clause description_clause [reference_clause] "::=" "{" object_identifier "}"
+
+//
+//  COMPLIANCE - RFC 2580 (https://www.ietf.org/rfc/rfc2580.html)
+//
+?compliance_declaration: object_group_declaration
+                       | notification_group_declaration
+                       | module_compliance_declaration
+                       | agent_capabilities_declaration
+
+// OBJECT GROUP
+object_group_declaration: IDENTIFIER "OBJECT-GROUP" objects_clause status_clause description_clause [reference_clause] "::=" "{" object_identifier "}"
+
+// NOTIFICATION GROUP
+notification_group_declaration: IDENTIFIER "NOTIFICATION-GROUP" notifications_clause status_clause description_clause [reference_clause] "::=" "{" object_identifier "}"
+notifications_clause: "NOTIFICATIONS" "{" notifications "}"
+notifications: IDENTIFIER ("," IDENTIFIER)*
+
+// MODULE COMPLIANCE
+module_compliance_declaration: IDENTIFIER "MODULE-COMPLIANCE" status_clause description_clause [reference_clause] module_clause "::=" "{" object_identifier "}"
+module_clause: "MODULE" [mandatory_groups_clause] [compliance_clauses]
+mandatory_groups_clause: "MANDATORY-GROUPS" "{" groups "}"
+groups: IDENTIFIER ("," IDENTIFIER)*
+compliance_clauses: compliance_clause+
+compliance_clause: group_clause
+                  | object_clause
+group_clause: "GROUP" IDENTIFIER description_clause
+object_clause: "OBJECT" IDENTIFIER [syntax_clause] [write_syntax_clause] [min_access_clause] description_clause
+write_syntax_clause: "WRITE-SYNTAX" syntax
+min_access_clause: "MIN-ACCESS" ACCESS
+
+// AGENT CAPABILITIES
+agent_capabilities_declaration: IDENTIFIER "AGENT-CAPABILITIES" product_release_clause status_clause description_clause [reference_clause] [support_clause] "::=" "{" object_identifier "}"
+product_release_clause: "PRODUCT-RELEASE" ESCAPED_STRING
+support_clause: support_statements
+support_statements: support_statement+
+support_statement: "SUPPORTS" IDENTIFIER "INCLUDES" "{" groups "}" [variations_clause]
+variations_clause: variation+
+variation: object_variation
+          | notification_variation
+object_variation: "VARIATION" IDENTIFIER [syntax_clause] [write_syntax_clause] [access_clause__object] [creation_clause] [defval_clause] description_clause
+access_clause__object: "ACCESS" ACCESS__OBJECT
+ACCESS__OBJECT: ACCESS__NOTIFICATION
+              | "accessible-for-notify"
+              | "read-only"
+              | "read-write"
+              | "read-create"
+              | "write-only"  // for backward-compatibility only, per RFC 2580
+creation_clause: "CREATION-REQUIRES" "{" cells "}"
+cells: IDENTIFIER ("," IDENTIFIER)*
+notification_variation: "VARIATION" IDENTIFIER [access_clause__notification] description_clause
+access_clause__notification: "ACCESS" ACCESS__NOTIFICATION
+ACCESS__NOTIFICATION: "not-implemented"
+
+// DATA TYPE
+data_type_declaration: type_name "::=" type_value
+type_name: IDENTIFIER
+         | "IPADDRESS"
+         | "TIMETICKS"
+         | "OPAQUE"
+         | "INTEGER32"
+         | "UNSIGNED32"
+         | "COUNTER32"
+         | "GAUGE32"
+         | "COUNTER64"
+type_value: syntax
+          | textual_convention_declaration
+          | choice_clause
+
+// TRAP TYPE
+trap_type_declaration: IDENTIFIER "TRAP-TYPE" enterprise_clause [variables_clause] [description_clause] [reference_clause] "::=" NUMBER
+enterprise_clause: "ENTERPRISE" IDENTIFIER
+variables_clause: "VARIABLES" "{" objects "}"
+
+textual_convention_declaration: "TEXTUAL-CONVENTION" [display_hint_clause] status_clause description_clause syntax_clause
+display_hint_clause: "DISPLAY-HINT" ESCAPED_STRING
+
+//
+// CLAUSES
+//
+
+syntax_clause: "SYNTAX" syntax
+description_clause: "DESCRIPTION" ESCAPED_STRING
+
+objects_clause: "OBJECTS" "{" objects "}"
+objects: IDENTIFIER ("," IDENTIFIER)*
+
+reference_clause: "REFERENCE" ESCAPED_STRING
+status_clause: "STATUS" STATUS
+
+choice_clause: "CHOICE" "{" choice_body "}"
+choice_body: /[^\}]+?/
+
+//
+//  SYNTAX
+//
+syntax: bits_syntax
+      | object_syntax
+
+bits_syntax: "BITS" "{" named_bits "}"
+named_bits: named_bit+
+named_bit: IDENTIFIER "(" NUMBER ")"
+
+object_syntax: type_tag? simple_syntax
+             | application_syntax
+             | conceptual_table_syntax
+             | row_syntax
+             | entry_type_syntax
+
+type_tag: ("[" ("APPLICATION"|"UNIVERSAL") NUMBER "]" "IMPLICIT")
+simple_syntax: "INTEGER" (range_refinement|enumeration_refinement)?
+             | "Integer32" range_refinement?
+             | "OCTET" "STRING" size_refinement?
+             | "OBJECT" "IDENTIFIER"
+             | IDENTIFIER syntax_refinement
+application_syntax: "IPADDRESS"
+                  | "COUNTER32"
+                  | "COUNTER64"
+                  | "GAUGE32" range_refinement?
+                  | "UNSIGNED32" range_refinement?
+                  | "TIMETICKS"
+                  | "OPAQUE"
+
+conceptual_table_syntax: "SEQUENCE" "OF" row_syntax
+row_syntax: IDENTIFIER
+
+entry_type_syntax: "SEQUENCE" "{" elements "}"
+elements: element ("," element)*
+element: IDENTIFIER sequence_syntax
+
+sequence_syntax: "BITS"  // no `named_bits` here
+               | sequence_object_syntax
+               | IDENTIFIER syntax_refinement?
+sequence_object_syntax: sequence_simple_syntax
+                      | sequence_application_syntax
+sequence_simple_syntax: "INTEGER" syntax_refinement?
+                      | "Integer32" syntax_refinement?
+                      | "OCTET" "STRING" syntax_refinement?
+                      | "OBJECT" "IDENTIFIER" syntax_refinement?
+sequence_application_syntax: "IPADDRESS" syntax_refinement?
+                           | "COUNTER32" syntax_refinement?
+                           | "GAUGE32" syntax_refinement?
+                           | "UNSIGNED32" syntax_refinement?
+                           | "TIMETICKS" syntax_refinement?
+                           | "OPAQUE"
+                           | "COUNTER64" syntax_refinement?
+syntax_refinement: range_refinement
+        | size_refinement
+        | enumeration_refinement
+
+range_refinement: "(" range+ ")"
+size_refinement: "(" "SIZE" "(" range+ ")" ")"
+range: value (".." value)?
+value: NUMBER
+     | HEX_STRING
+     | BIN_STRING
+
+enumeration_refinement: "{" enum_elements "}"
+enum_elements: enum_element ("," enum_element)*
+enum_element: IDENTIFIER "(" NUMBER ")"
+
+//
+//  TOKENS
+//
+
+STATUS: "current"
+      | "obsolete"
+      | "deprecated"
+
+ACCESS: "not-accessible"
+        | "accessible-for-notify"
+        | "read-only"
+        | "read-write"
+        | "read-create"
+
+BIN_STRING: /'[01]*'[bB]/
+HEX_STRING: /'[0-9a-fA-F]*'[hH]/
+
+IDENTIFIER: /[a-zA-Z][-a-zA-Z0-9]*/
+
+object_identifier: SUBIDENTIFIER+
+SUBIDENTIFIER: IDENTIFIER ("(" INT ")")?
+             | INT
+
+COMMENT: /--[^\r\n]*/
+
+%import common.HEXDIGIT
+%import common.INT
+%import common.SIGNED_INT -> NUMBER
+%import common.ESCAPED_STRING
+%import common.WS
+
+%ignore WS
+%ignore COMMENT
