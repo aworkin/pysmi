@@ -10,6 +10,8 @@ Unreleased
 
 - Migrated build backend to ``hatchling``.
 
+- Migrated tests from ``unittest`` to ``pytest``.
+
 - Extensive minor changes aimed at preserving the original code logic while
   bringing implementation into best practices.
 
