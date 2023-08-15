@@ -5,15 +5,16 @@
 # License: http://snmplabs.com/pysmi/license.html
 #
 import os
-import sys
 import tempfile
 import unittest
 from contextlib import suppress
 
+import pytest
+
 from pysmi.reader.zipreader import ZipReader
 
 
-class ZipReaderTestCase(unittest.TestCase):
+class TestZipReader:
     zipArchive = [
         80,
         75,
@@ -2729,7 +2730,7 @@ class ZipReaderTestCase(unittest.TestCase):
 
     zipContents = bytes(zipArchive)
 
-    def testGetDataFromFile(self):
+    def test_get_data_from_file(self):
         filename = None
 
         try:
@@ -2750,7 +2751,7 @@ class ZipReaderTestCase(unittest.TestCase):
             with suppress(Exception):
                 os.remove(filename)
 
-    def testGetInnerZipData(self):
+    def test_get_inner_zip_data(self):
         filename = None
 
         try:
@@ -2772,7 +2773,5 @@ class ZipReaderTestCase(unittest.TestCase):
                 os.remove(filename)
 
 
-suite = unittest.TestLoader().loadTestsFromModule(sys.modules[__name__])
-
 if __name__ == "__main__":
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    pytest.main()
